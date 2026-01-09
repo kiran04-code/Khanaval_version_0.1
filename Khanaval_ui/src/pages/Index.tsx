@@ -15,7 +15,7 @@ import {
   Star,
   MapPin,
   ArrowRight,
-  CheckCircle2,
+  CheckCircle,
   ArrowDown
 } from "lucide-react";
 import heroFood from "/hero-food.jpg";
@@ -96,114 +96,96 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-   <section className="relative pt-24 pb-20 md:pt-36 md:pb-32 overflow-hidden bg-background">
-  {/* Modern Background Decorations */}
-  <div className="absolute top-0 right-0 w-1/2 h-screen bg-primary/5 rounded-full blur-[120px] -z-10 translate-x-1/2 -translate-y-1/2" />
-  <div className="absolute bottom-0 left-0 w-1/3 h-1/2 bg-accent/5 rounded-full blur-[100px] -z-10 -translate-x-1/2 translate-y-1/2" />
+      <section className="relative pt-20 pb-16 md:pt-32 md:pb-32 overflow-hidden bg-dot-pattern">
+        {/* Optional: Decorative background blur */}
+        <div className="absolute top-0 right-0 -z-10 h-[500px] w-[500px] bg-orange-100/50 blur-[120px] rounded-full" />
 
-  <div className="container mx-auto px-4">
-    <div className="grid lg:grid-cols-2 gap-16 items-center">
-      
-      {/* LEFT CONTENT SIDE */}
-      <div className="text-center lg:text-left space-y-8 animate-slide-up">
-        <div className="space-y-4">
-          <Badge variant="outline" className="px-4 py-1.5 border-primary/20 bg-primary/5 text-primary rounded-full font-bold uppercase tracking-widest text-[10px]">
-            🍛 #1 Student Food Network in India
-          </Badge>
-          <h1 className="text-5xl md:text-6xl lg:text-7xl font-black text-foreground leading-[1.05] tracking-tighter">
-            Your Daily Food, <br />
-            <span className="text-primary italic">Simplified.</span>
-          </h1>
-          <p className="text-lg md:text-xl text-muted-foreground max-w-xl mx-auto lg:mx-0 leading-relaxed">
-            Skip the cooking stress. Discover hand-picked messes and tiffins that taste like home, priced for a student's budget.
-          </p>
-        </div>
+        <div className="container mx-auto px-4">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
 
-        {/* PRIMARY ACTIONS */}
-        <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-          <Link to="/mess">
-            <Button size="xl" className="w-full sm:w-auto px-8 h-14 text-lg font-bold rounded-2xl shadow-lg shadow-primary/25 hover:scale-105 transition-all">
-              <MapPin className="w-5 h-5 mr-2" />
-              Find My Mess
-            </Button>
-          </Link>
-          <Link to="/tiffin">
-            <Button variant="outline" size="xl" className="w-full sm:w-auto px-8 h-14 text-lg font-bold rounded-2xl border-2 hover:bg-muted transition-all">
-              <Truck className="w-5 h-5 mr-2" />
-              Order Tiffin
-            </Button>
-          </Link>
-        </div>
+            {/* LEFT CONTENT */}
+            <div className="text-center lg:text-left animate-slide-up z-10">
+              <Badge variant="soft" className="mb-6 px-4 py-1.5 text-sm uppercase tracking-wide border-orange-100">
+                🍛 India’s Trusted Mess Discovery
+              </Badge>
 
-        {/* SOCIAL PROOF */}
-        <div className="pt-4 flex flex-col sm:flex-row items-center gap-6 justify-center lg:justify-start">
-          <div className="flex -space-x-4">
-            {[1, 2, 3, 4, 5].map((i) => (
-              <div key={i} className="w-12 h-12 rounded-full border-4 border-background overflow-hidden shadow-sm">
-                <img src={`https://i.pravatar.cc/150?u=${i}`} alt="user" className="w-full h-full object-cover" />
+              <h1 className="text-4xl md:text-6xl font-extrabold text-foreground tracking-tight leading-[1.1] mb-6">
+                Your Daily Food, <br />
+                <span className="text-gradient">Simplified.</span>
+              </h1>
+
+              <p className="text-lg md:text-xl text-muted-foreground mb-10 max-w-xl mx-auto lg:mx-0 leading-relaxed">
+                Khanaval helps students and professionals discover
+                <span className="font-semibold text-foreground"> hygienic, verified messes </span>
+                with real-time menu updates. No middlemen, just great food.
+              </p>
+
+              {/* CTAs */}
+              <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
+                <Link to="/mess" className="w-full sm:w-auto">
+                  <Button variant="hero" size="xl" className="w-full shadow-lg shadow-orange-200">
+                    <MapPin className="w-5 h-5 mr-2" />
+                    Find Verified Mess
+                  </Button>
+                </Link>
+                <Button variant="ghost" size="xl" className="w-full sm:w-auto">
+                  How it works
+                </Button>
               </div>
-            ))}
-          </div>
-          <div className="text-center sm:text-left">
-            <div className="flex items-center gap-1 justify-center sm:justify-start">
-              {[1, 2, 3, 4, 5].map((s) => (
-                <Star key={s} className="w-4 h-4 fill-primary text-primary" />
-              ))}
-              <span className="ml-2 font-black text-foreground">4.9/5</span>
-            </div>
-            <p className="text-sm text-muted-foreground">Trusted by <span className="text-foreground font-bold">12,000+</span> happy students</p>
-          </div>
-        </div>
-      </div>
-
-      {/* RIGHT VISUAL SIDE */}
-      <div className="relative group animate-fade-in" style={{ animationDelay: "0.3s" }}>
-        {/* Main Image Container */}
-        <div className="relative z-10 p-4">
-          <div className="absolute inset-0 bg-primary/10 rounded-[3rem] rotate-3 -z-10 group-hover:rotate-0 transition-transform duration-700" />
-          <img
-            src={heroFood}
-            alt="Premium Indian Meal"
-            className="rounded-[2.5rem] shadow-2xl w-full max-w-lg mx-auto transform transition-transform duration-700 group-hover:scale-[1.02]"
-          />
-          
-          {/* FLOATING GLASS CARD 1 */}
-          <div className="absolute -left-6 md:-left-12 top-20 bg-white/80 backdrop-blur-xl border border-white/40 rounded-3xl p-4 shadow-2xl animate-float hidden md:block">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-2xl bg-green-500/10 flex items-center justify-center">
-                <CheckCircle2 className="w-6 h-6 text-green-600" />
-              </div>
-              <div>
-                <p className="text-sm font-black text-slate-900 uppercase tracking-tighter">Verified</p>
-                <p className="text-xs font-medium text-slate-500">Hygiene Checked</p>
+              <div className="mt-12 flex flex-col sm:flex-row items-center gap-6 justify-center lg:justify-start border-t border-border pt-8">
+                <div className="flex -space-x-3">
+                  {[1, 2, 3, 4].map((i) => (
+                    <div
+                      key={i}
+                      className="w-12 h-12 rounded-full bg-slate-200 border-2 border-background flex items-center justify-center text-xs font-bold ring-2 ring-orange-50"
+                    >
+                      <img
+                        src={`https://i.pravatar.cc/150?u=${i}`}
+                        alt="user"
+                        className="rounded-full"
+                      />
+                    </div>
+                  ))}
+                  <div className="w-12 h-12 rounded-full bg-orange-500 border-2 border-background flex items-center justify-center text-white text-[10px] font-bold">
+                    +10k
+                  </div>
+                </div>
+                <div className="text-center lg:text-left">
+                  <p className="font-bold text-lg text-foreground leading-none">10,000+ Users</p>
+                  <p className="text-sm text-muted-foreground mt-1">Trusting <span className="font-semibold text-orange-600 text-3xl">Khanaval.com</span> every day</p>
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* FLOATING GLASS CARD 2 */}
-          <div 
-            className="absolute -right-6 md:-right-12 bottom-20 bg-white/80 backdrop-blur-xl border border-white/40 rounded-3xl p-4 shadow-2xl animate-float hidden md:block"
-            style={{ animationDelay: "2s" }}
-          >
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center">
-                <Wallet className="w-6 h-6 text-primary" />
-              </div>
-              <div>
-                <p className="text-sm font-black text-slate-900 uppercase tracking-tighter">Budget-Friendly</p>
-                <p className="text-xs font-medium text-slate-500">Meals from ₹70</p>
+            {/* RIGHT IMAGE */}
+            <div className="relative animate-fade-in lg:block" style={{ animationDelay: "0.2s" }}>
+              <div className="relative">
+                {/* Decorative Element */}
+                <div className="absolute inset-0 bg-gradient-to-tr from-orange-100 to-transparent rounded-3xl -rotate-3 scale-105 -z-10" />
+
+                <img
+                  src={heroFood}
+                  alt="Verified Indian mess food platform"
+                  className="rounded-3xl shadow-2xl shadow-orange-900/10 border-dashed border border-orange-500 transform hover:scale-[1.02] transition-transform duration-500"
+                />
+
+                {/* Floating Card UI (Optional Highlight) */}
+                <div className="absolute -bottom-6 -left-6 bg-white p-4 rounded-xl shadow-xl hidden md:flex items-center gap-4 animate-bounce-slow">
+                  <div className="bg-green-100 p-2 rounded-full">
+                    <CheckCircle className="text-green-600 w-6 h-6" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold">Verified Hygiene</p>
+                    <p className="text-xs text-muted-foreground">FSSAI Standards</p>
+                  </div>
+                </div>
               </div>
             </div>
+
           </div>
         </div>
+      </section>
 
-        {/* Decorative Blur Circle */}
-        <div className="absolute -z-10 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] bg-primary opacity-20 rounded-full blur-[120px]" />
-      </div>
-
-    </div>
-  </div>
-</section>
       {/* STEPS */}
       <section className=" md:py-1 bg-background relative overflow-hidden">
         <div className="absolute top-0 left-1/4 w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
@@ -402,6 +384,8 @@ const Index = () => {
               <p className="text-primary-foreground/80 max-w-2xl mx-auto mb-12 text-lg md:text-xl font-medium leading-relaxed">
                 Stop worrying about what to eat. Join thousands who save over <span className="text-white font-bold border-b-2 border-white/30 italic">₹2,000 monthly</span> on their food subscriptions.
               </p>
+
+              {/* High-Action Buttons */}
               <div className="flex flex-col sm:flex-row gap-6 justify-center w-full sm:w-auto">
                 <Link to="/auth?role=user" className="w-full sm:w-auto">
                   <Button
@@ -423,6 +407,8 @@ const Index = () => {
                   </Button>
                 </Link>
               </div>
+
+              {/* Secondary Trust Line */}
               <p className="mt-12 text-primary-foreground/60 text-sm font-medium">
                 No credit card required • Cancel anytime • 24/7 Support
               </p>

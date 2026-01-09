@@ -66,6 +66,9 @@ export function Navbar() {
               >
                 Find Mess
               </Link>
+               <Link to="/profile" className="text-muted-foreground hover:text-foreground transition-colors">
+              profile
+            </Link>
               <Link
                 to="/tiffin"
                 className="px-4 py-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors"

@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Navbar } from "@/components/layout/Navbar";
+
 import {
   Search,
   Calendar,
@@ -15,8 +16,9 @@ import {
   MapPin,
   ArrowRight,
   CheckCircle2,
+  ArrowDown
 } from "lucide-react";
-import heroFood from "@/assets/hero-food.jpg";
+import heroFood from "/hero-food.jpg";
 import Footer from "@/components/layout/footer";
 
 const features = [
@@ -94,229 +96,341 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <section className="relative pt-24 pb-16 md:pt-32 md:pb-24 overflow-hidden">
-        <div className="container mx-auto px-4">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="text-center lg:text-left animate-slide-up">
-              <Badge variant="soft" className="mb-4">
-                🍛 #1 Food Platform for Students
-              </Badge>
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground leading-tight mb-6">
-                Your Daily Food,{" "}
-                <span className="text-gradient">Simplified.</span>
-              </h1>
-              <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-xl mx-auto lg:mx-0">
-                Find nearby messes, subscribe monthly, or order home-style tiffins.
-                Affordable, hygienic, and hassle-free meals every day.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                <Link to="/mess">
-                  <Button variant="hero" size="xl" className="w-full sm:w-auto">
-                    <MapPin className="w-5 h-5 mr-2" />
-                    Find Mess
-                  </Button>
-                </Link>
-                <Link to="/tiffin">
-                  <Button variant="outline" size="xl" className="w-full sm:w-auto">
-                    <Truck className="w-5 h-5 mr-2" />
-                    Order Tiffin
-                  </Button>
-                </Link>
+   <section className="relative pt-24 pb-20 md:pt-36 md:pb-32 overflow-hidden bg-background">
+  {/* Modern Background Decorations */}
+  <div className="absolute top-0 right-0 w-1/2 h-screen bg-primary/5 rounded-full blur-[120px] -z-10 translate-x-1/2 -translate-y-1/2" />
+  <div className="absolute bottom-0 left-0 w-1/3 h-1/2 bg-accent/5 rounded-full blur-[100px] -z-10 -translate-x-1/2 translate-y-1/2" />
+
+  <div className="container mx-auto px-4">
+    <div className="grid lg:grid-cols-2 gap-16 items-center">
+      
+      {/* LEFT CONTENT SIDE */}
+      <div className="text-center lg:text-left space-y-8 animate-slide-up">
+        <div className="space-y-4">
+          <Badge variant="outline" className="px-4 py-1.5 border-primary/20 bg-primary/5 text-primary rounded-full font-bold uppercase tracking-widest text-[10px]">
+            🍛 #1 Student Food Network in India
+          </Badge>
+          <h1 className="text-5xl md:text-6xl lg:text-7xl font-black text-foreground leading-[1.05] tracking-tighter">
+            Your Daily Food, <br />
+            <span className="text-primary italic">Simplified.</span>
+          </h1>
+          <p className="text-lg md:text-xl text-muted-foreground max-w-xl mx-auto lg:mx-0 leading-relaxed">
+            Skip the cooking stress. Discover hand-picked messes and tiffins that taste like home, priced for a student's budget.
+          </p>
+        </div>
+
+        {/* PRIMARY ACTIONS */}
+        <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+          <Link to="/mess">
+            <Button size="xl" className="w-full sm:w-auto px-8 h-14 text-lg font-bold rounded-2xl shadow-lg shadow-primary/25 hover:scale-105 transition-all">
+              <MapPin className="w-5 h-5 mr-2" />
+              Find My Mess
+            </Button>
+          </Link>
+          <Link to="/tiffin">
+            <Button variant="outline" size="xl" className="w-full sm:w-auto px-8 h-14 text-lg font-bold rounded-2xl border-2 hover:bg-muted transition-all">
+              <Truck className="w-5 h-5 mr-2" />
+              Order Tiffin
+            </Button>
+          </Link>
+        </div>
+
+        {/* SOCIAL PROOF */}
+        <div className="pt-4 flex flex-col sm:flex-row items-center gap-6 justify-center lg:justify-start">
+          <div className="flex -space-x-4">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <div key={i} className="w-12 h-12 rounded-full border-4 border-background overflow-hidden shadow-sm">
+                <img src={`https://i.pravatar.cc/150?u=${i}`} alt="user" className="w-full h-full object-cover" />
               </div>
-              <div className="mt-8 flex items-center gap-6 justify-center lg:justify-start">
-                <div className="flex -space-x-3">
-                  {[1, 2, 3, 4].map((i) => (
-                    <div
-                      key={i}
-                      className="w-10 h-10 rounded-full bg-gradient-hero border-2 border-background flex items-center justify-center text-primary-foreground text-sm font-bold"
-                    >
-                      {i}K
-                    </div>
-                  ))}
-                </div>
-                <div className="text-left">
-                  <p className="font-bold text-foreground">10,000+ Users</p>
-                  <p className="text-sm text-muted-foreground">Trust MealPass daily</p>
-                </div>
+            ))}
+          </div>
+          <div className="text-center sm:text-left">
+            <div className="flex items-center gap-1 justify-center sm:justify-start">
+              {[1, 2, 3, 4, 5].map((s) => (
+                <Star key={s} className="w-4 h-4 fill-primary text-primary" />
+              ))}
+              <span className="ml-2 font-black text-foreground">4.9/5</span>
+            </div>
+            <p className="text-sm text-muted-foreground">Trusted by <span className="text-foreground font-bold">12,000+</span> happy students</p>
+          </div>
+        </div>
+      </div>
+
+      {/* RIGHT VISUAL SIDE */}
+      <div className="relative group animate-fade-in" style={{ animationDelay: "0.3s" }}>
+        {/* Main Image Container */}
+        <div className="relative z-10 p-4">
+          <div className="absolute inset-0 bg-primary/10 rounded-[3rem] rotate-3 -z-10 group-hover:rotate-0 transition-transform duration-700" />
+          <img
+            src={heroFood}
+            alt="Premium Indian Meal"
+            className="rounded-[2.5rem] shadow-2xl w-full max-w-lg mx-auto transform transition-transform duration-700 group-hover:scale-[1.02]"
+          />
+          
+          {/* FLOATING GLASS CARD 1 */}
+          <div className="absolute -left-6 md:-left-12 top-20 bg-white/80 backdrop-blur-xl border border-white/40 rounded-3xl p-4 shadow-2xl animate-float hidden md:block">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-2xl bg-green-500/10 flex items-center justify-center">
+                <CheckCircle2 className="w-6 h-6 text-green-600" />
+              </div>
+              <div>
+                <p className="text-sm font-black text-slate-900 uppercase tracking-tighter">Verified</p>
+                <p className="text-xs font-medium text-slate-500">Hygiene Checked</p>
               </div>
             </div>
+          </div>
 
-            <div className="relative animate-fade-in" style={{ animationDelay: "0.2s" }}>
-              <div className="relative z-10">
-                <img
-                  src={heroFood}
-                  alt="Delicious Indian Thali"
-                  className="rounded-3xl shadow-prominent w-full max-w-lg mx-auto"
-                />
-                <div className="absolute -left-4 md:-left-8 top-1/4 bg-card rounded-2xl p-3 shadow-elevated animate-float hidden sm:block">
-                  <div className="flex items-center gap-2">
-                    <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center">
-                      <CheckCircle2 className="w-5 h-5 text-accent" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold text-foreground">Hygienic</p>
-                      <p className="text-xs text-muted-foreground">100% Verified</p>
-                    </div>
-                  </div>
-                </div>
-                <div
-                  className="absolute -right-4 md:-right-8 bottom-1/4 bg-card rounded-2xl p-3 shadow-elevated animate-float hidden sm:block"
-                  style={{ animationDelay: "1.5s" }}
-                >
-                  <div className="flex items-center gap-2">
-                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                      <Wallet className="w-5 h-5 text-primary" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold text-foreground">₹99/day</p>
-                      <p className="text-xs text-muted-foreground">Starting from</p>
-                    </div>
-                  </div>
-                </div>
+          {/* FLOATING GLASS CARD 2 */}
+          <div 
+            className="absolute -right-6 md:-right-12 bottom-20 bg-white/80 backdrop-blur-xl border border-white/40 rounded-3xl p-4 shadow-2xl animate-float hidden md:block"
+            style={{ animationDelay: "2s" }}
+          >
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center">
+                <Wallet className="w-6 h-6 text-primary" />
               </div>
-              <div className="absolute -z-10 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-gradient-hero opacity-10 rounded-full blur-3xl" />
+              <div>
+                <p className="text-sm font-black text-slate-900 uppercase tracking-tighter">Budget-Friendly</p>
+                <p className="text-xs font-medium text-slate-500">Meals from ₹70</p>
+              </div>
             </div>
           </div>
         </div>
-      </section>
-      <section className="py-16 md:py-24 bg-muted/50">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <Badge variant="soft" className="mb-4">How It Works</Badge>
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Get Started in 3 Easy Steps
+
+        {/* Decorative Blur Circle */}
+        <div className="absolute -z-10 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] bg-primary opacity-20 rounded-full blur-[120px]" />
+      </div>
+
+    </div>
+  </div>
+</section>
+      {/* STEPS */}
+      <section className=" md:py-1 bg-background relative overflow-hidden">
+        <div className="absolute top-0 left-1/4 w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
+
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="text-center mb-20 space-y-4">
+            <Badge variant="soft" className="px-4 py-1.5 rounded-full uppercase tracking-widest text-[10px] font-black bg-primary/10 text-primary border border-primary/20">
+              The Process
+            </Badge>
+            <h2 className="text-4xl md:text-6xl font-black tracking-tight text-foreground leading-[1.1]">
+              Eat Better in <span className="text-primary italic">3 Simple Steps</span>
             </h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              Finding your perfect meal plan has never been easier
+            <p className="text-muted-foreground max-w-xl mx-auto text-lg leading-relaxed">
+              We've streamlined the journey from hunger to high-quality meals so you can focus on your day.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+          <div className="relative grid md:grid-cols-3 gap-12 lg:gap-20 max-w-6xl mx-auto">
+            <div className="hidden md:block absolute top-16 left-[10%] right-[10%] h-[2px] -z-10">
+              <div className="w-full h-full border-t-2 border-dashed border-primary/20" />
+            </div>
+
             {features.map((feature, index) => (
-              <Card
+              <div
                 key={index}
-                variant="elevated"
-                className="relative text-center p-8 animate-slide-up"
-                style={{ animationDelay: `${index * 0.1}s` }}
+                className="group relative flex flex-col items-center text-center transition-all duration-500"
               >
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold">
-                  {index + 1}
+                <div className="relative mb-10">
+
+                  <div className="w-28 h-28 rounded-[2.5rem] bg-card border border-border flex items-center justify-center text-primary shadow-2xl shadow-primary/5 group-hover:border-primary/50 group-hover:shadow-primary/20 group-hover:-translate-y-3 group-hover:rotate-6 transition-all duration-500 ease-out">
+                    <div className="scale-[1.35] group-hover:scale-110 transition-transform duration-500">
+                      {feature.icon}
+                    </div>
+                  </div>
+                  <div className="absolute -top-2 -right-2 w-11 h-11 rounded-2xl bg-primary text-primary-foreground flex items-center justify-center font-black text-lg shadow-xl ring-8 ring-background group-hover:rotate-12 transition-transform">
+                    0{index + 1}
+                  </div>
                 </div>
-                <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4 text-primary">
-                  {feature.icon}
+                <div className="space-y-4">
+                  <h3 className="text-2xl font-extrabold text-foreground group-hover:text-primary transition-colors duration-300">
+                    {feature.title}
+                  </h3>
+                  <p className="text-muted-foreground leading-relaxed font-medium">
+                    {feature.description}
+                  </p>
                 </div>
-                <h3 className="text-xl font-bold text-foreground mb-2">{feature.title}</h3>
-                <p className="text-muted-foreground">{feature.description}</p>
-              </Card>
+                {index < features.length - 1 && (
+                  <div className="md:hidden mt-12 mb-4 text-primary/40 animate-bounce">
+                    <ArrowDown className="w-8 h-8" />
+                  </div>
+                )}
+              </div>
             ))}
+          </div>
+          <div className="mt-24 text-center">
+            <Button size="xl" className="rounded-2xl px-12 py-7 text-lg font-bold shadow-[0_20px_50px_rgba(var(--primary-rgb),0.3)] hover:scale-105 transition-all">
+              Get Started Now
+            </Button>
           </div>
         </div>
       </section>
-      <section className="py-16 md:py-24">
-        <div className="container mx-auto px-4">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <Badge variant="soft" className="mb-4">Why MealPass?</Badge>
-              <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-6">
-                The Smartest Way to Eat Daily
-              </h2>
-              <p className="text-muted-foreground mb-8">
-                We understand the struggle of finding good, affordable food. That's why
-                we've built a platform that makes daily meals simple, transparent, and
-                budget-friendly.
-              </p>
 
+      {/* mess card */}
+      <section className="py-16 md:py-28 bg-background overflow-hidden">
+        <div className="container mx-auto px-4">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+
+            {/* Left Content Side */}
+            <div className="space-y-8">
+              <div className="space-y-4">
+                <Badge variant="soft" className="px-3 py-1 text-sm rounded-full">
+                  Why MealPass?
+                </Badge>
+                <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight text-foreground">
+                  The Smartest Way to <br />
+                  <span className="text-primary">Eat Daily</span>
+                </h2>
+                <p className="text-lg text-muted-foreground max-w-xl leading-relaxed">
+                  We understand the struggle of finding good, affordable food. That's why
+                  we've built a platform that makes daily meals simple, transparent, and
+                  budget-friendly.
+                </p>
+              </div>
+
+              {/* Benefits Grid */}
               <div className="grid sm:grid-cols-2 gap-4">
                 {benefits.map((benefit, index) => (
                   <div
                     key={index}
-                    className="flex items-start gap-3 p-4 rounded-xl bg-muted/50 hover:bg-muted transition-colors"
+                    className="group flex flex-col gap-3 p-5 rounded-2xl border border-border/50 bg-card hover:border-primary/50 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300"
                   >
-                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary flex-shrink-0">
+                    <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
                       {benefit.icon}
                     </div>
                     <div>
-                      <h4 className="font-semibold text-foreground mb-1">{benefit.title}</h4>
-                      <p className="text-sm text-muted-foreground">{benefit.description}</p>
+                      <h4 className="font-bold text-foreground mb-1 group-hover:text-primary transition-colors">
+                        {benefit.title}
+                      </h4>
+                      <p className="text-sm leading-snug text-muted-foreground">
+                        {benefit.description}
+                      </p>
                     </div>
                   </div>
                 ))}
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              {popularMesses.slice(0, 2).map((mess, index) => (
-                <Card
-                  key={mess.id}
-                  variant="interactive"
-                  className={`overflow-hidden ${index === 0 ? "col-span-2" : ""}`}
-                >
-                  <div className={`relative ${index === 0 ? "h-48" : "h-32"}`}>
-                    <img
-                      src={mess.image}
-                      alt={mess.name}
-                      className="w-full h-full object-cover"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-foreground/60 to-transparent" />
-                    <div className="absolute bottom-3 left-3 right-3">
-                      <Badge variant={mess.isVeg ? "veg" : "non-veg"} className="mb-1">
-                        {mess.isVeg ? "Veg" : "Non-Veg"}
-                      </Badge>
-                      <h4 className="font-bold text-primary-foreground">{mess.name}</h4>
-                      <div className="flex items-center gap-2 text-xs text-primary-foreground/80">
-                        <Star className="w-3 h-3 fill-gold text-gold" />
-                        <span>{mess.rating}</span>
-                        <span>•</span>
-                        <span>{mess.distance}</span>
+            {/* Right Visual Side - Bento Grid Style */}
+            <div className="relative">
+              {/* Decorative Background Element */}
+              <div className="absolute -top-12 -right-12 w-64 h-64 bg-primary/5 rounded-full blur-3xl -z-10" />
+
+              <div className="grid grid-cols-2 gap-4">
+                {popularMesses.slice(0,).map((mess, index) => (
+                  <Card
+                    key={mess.id}
+                    className={`group overflow-hidden border-none shadow-2xl ${index === 0 ? "col-span-2 aspect-[16/9]" : "col-span-2 md:col-span-1 aspect-square"
+                      }`}
+                  >
+                    <div className="relative h-full w-full">
+                      <img
+                        src={mess.image}
+                        alt={mess.name}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+
+                      <div className="absolute bottom-4 left-4 right-4">
+                        <Badge
+                          className={`mb-2 ${mess.isVeg ? "bg-green-500/90" : "bg-red-500/90"} border-none text-white`}
+                        >
+                          {mess.isVeg ? "Pure Veg" : "Non-Veg Available"}
+                        </Badge>
+                        <h4 className="text-xl font-bold text-white mb-1">{mess.name}</h4>
+                        <div className="flex items-center gap-3 text-sm text-white/80">
+                          <div className="flex items-center gap-1">
+                            <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                            <span className="font-medium text-white">{mess.rating}</span>
+                          </div>
+                          <span>•</span>
+                          <span>{mess.distance}</span>
+                        </div>
                       </div>
                     </div>
+                  </Card>
+                ))}
+
+                <Link to="/mess" className="col-span-2 mt-2">
+                  <Button size="lg" variant="outline" className="w-full group rounded-xl border-2 hover:bg-primary hover:text-primary-foreground transition-all">
+                    Explore All Local Messes
+                    <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                  </Button>
+                </Link>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+      {/* bannrs */}
+      <section className="py-8 md:py-5 relative overflow-hidden">
+        <div className="container mx-auto px-4">
+          <div className="relative group p-8 md:p-20 rounded-[3rem] bg-primary overflow-hidden shadow-[0_40px_80px_-15px_rgba(var(--primary-rgb),0.3)]">
+            <div className="absolute inset-0 opacity-30 bg-[radial-gradient(circle_at_20%_30%,#ffffff_0%,transparent_50%),radial-gradient(circle_at_80%_70%,#000000_0%,transparent_50%)]" />
+            <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-white/5 rounded-full blur-[100px] -mr-48 -mt-48 animate-pulse" />
+
+            <div className="relative z-10 flex flex-col items-center text-center">
+              <div className="flex flex-col items-center gap-4 mb-10 animate-fade-in">
+                <div className="flex -space-x-3">
+                  {[1, 2, 3, 4, 5].map((i) => (
+                    <div
+                      key={i}
+                      className="w-12 h-12 rounded-2xl border-4 border-primary bg-muted overflow-hidden transition-transform hover:-translate-y-2"
+                    >
+                      <img
+                        src={`https://i.pravatar.cc/150?u=meal${i}`}
+                        alt="User avatar"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  ))}
+                  <div className="w-12 h-12 rounded-2xl border-4 border-primary bg-white text-primary flex items-center justify-center text-xs font-black shadow-lg">
+                    +2k
                   </div>
-                </Card>
-              ))}
-              <Link to="/mess" className="col-span-2">
-                <Button variant="soft" className="w-full">
-                  View All Messes
-                  <ArrowRight className="w-4 h-4 ml-2" />
-                </Button>
-              </Link>
+                </div>
+                <p className="text-primary-foreground/90 font-bold text-sm tracking-widest uppercase">
+                  Join the MealPass Community
+                </p>
+              </div>
+              <h2 className="text-5xl md:text-7xl font-black text-white mb-8 leading-[1] tracking-tighter">
+                Ready to <span className="text-white/70 italic">Simplify</span> <br />
+                Your Daily Meals?
+              </h2>
+
+              <p className="text-primary-foreground/80 max-w-2xl mx-auto mb-12 text-lg md:text-xl font-medium leading-relaxed">
+                Stop worrying about what to eat. Join thousands who save over <span className="text-white font-bold border-b-2 border-white/30 italic">₹2,000 monthly</span> on their food subscriptions.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-6 justify-center w-full sm:w-auto">
+                <Link to="/auth?role=user" className="w-full sm:w-auto">
+                  <Button
+                    size="xl"
+                    className="w-full sm:w-auto px-12 h-18 bg-white text-primary hover:bg-white/90 hover:scale-105 hover:shadow-[0_20px_40px_rgba(255,255,255,0.2)] transition-all text-xl font-black rounded-2xl"
+                  >
+                    Get Started Free
+                    <ArrowRight className="ml-2 w-6 h-6" />
+                  </Button>
+                </Link>
+
+                <Link to="/auth?role=provider" className="w-full sm:w-auto">
+                  <Button
+                    variant="outline"
+                    size="xl"
+                    className="w-full sm:w-auto px-12 h-18 border-white/20 text-white hover:bg-white/10 text-xl font-bold rounded-2xl backdrop-blur-md"
+                  >
+                    List Your Mess
+                  </Button>
+                </Link>
+              </div>
+              <p className="mt-12 text-primary-foreground/60 text-sm font-medium">
+                No credit card required • Cancel anytime • 24/7 Support
+              </p>
             </div>
           </div>
         </div>
       </section>
-      <section className="py-16 md:py-24">
-        <div className="container mx-auto px-4">
-          <Card variant="flat" className="bg-gradient-hero p-8 md:p-12 text-center rounded-3xl">
-            <h2 className="text-3xl md:text-4xl font-bold text-primary-foreground mb-4">
-              Ready to Simplify Your Meals?
-            </h2>
-            <p className="text-primary-foreground/80 max-w-2xl mx-auto mb-8">
-              Join thousands of students and professionals who save time and money
-              with MealPass every day.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link to="/auth?role=user">
-                <Button
-                  variant="secondary"
-                  size="lg"
-                  className="w-full sm:w-auto bg-card text-foreground hover:bg-card/90"
-                >
-                  Get Started Free
-                </Button>
-              </Link>
-              <Link to="/auth?role=provider">
-                <Button
-                  variant="outline"
-                  size="lg"
-                  className="w-full sm:w-auto border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10"
-                >
-                  List Your Mess
-                </Button>
-              </Link>
-            </div>
-          </Card>
-        </div>
-      </section>
-      <Footer/>
+      <Footer />
     </div>
   );
 };

@@ -179,7 +179,7 @@ export default function MessDetailPage() {
                           {meal}
                         </h4>
                         <ul className="space-y-2">
-                          {(mess.menu as any)[day][meal].map((item: string, i: number) => (
+                          {(mess.menu as unknown)[day][meal].map((item: string, i: number) => (
                             <li key={i} className="text-sm text-muted-foreground flex items-center gap-2">
                               <span className="w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0" />
                               {item}

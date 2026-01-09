@@ -132,19 +132,12 @@ export default function UserDashboard() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Top Navigation */}
       <header className="sticky top-0 z-50 bg-card/80 backdrop-blur-lg border-b border-border">
         <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between h-16 gap-4">
-            {/* Logo */}
-            <Link to="/" className="flex items-center gap-2 flex-shrink-0">
-              <div className="w-9 h-9 rounded-xl bg-gradient-hero flex items-center justify-center">
-                <span className="text-primary-foreground font-bold">M</span>
-              </div>
-              <span className="text-lg font-bold text-foreground hidden sm:block">MealPass</span>
+          <div className="flex items-center justify-between h-17 gap-4">
+            <Link to="/" className="md:w-[230px] w-[200px] md:h-fit ">
+              <img src="/logo.png" alt="logo of khanaval.com" className="" />
             </Link>
-
-            {/* Search Bar */}
             <div className="flex-1 max-w-md">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />

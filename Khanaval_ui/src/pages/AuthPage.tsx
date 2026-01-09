@@ -1,242 +1,140 @@
 import { useState } from "react";
-import { useSearchParams, Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
-import { Eye, EyeOff, Mail, Lock, User, Building2, ArrowLeft } from "lucide-react";
+import { 
+  ArrowLeft, Mail, Lock, Smartphone, 
+  ChevronRight, User, Building2, Gherkin 
+} from "lucide-react";
 
-type UserRole = "user" | "provider";
-type AuthMode = "login" | "signup";
-
-export default function AuthPage() {
-  const [searchParams] = useSearchParams();
+export default function HybridAuthPage() {
   const navigate = useNavigate();
-  const initialRole = (searchParams.get("role") as UserRole) || "user";
-
-  const [role, setRole] = useState<UserRole>(initialRole);
-  const [mode, setMode] = useState<AuthMode>("login");
-  const [showPassword, setShowPassword] = useState(false);
+  const [role, setRole] = useState("user"); // "user" or "provider"
+  const [step, setStep] = useState(1); // Used for user phone step
   const [isLoading, setIsLoading] = useState(false);
 
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-    name: "",
-    businessName: "",
-  });
+  // User Flow: Google -> Phone
+  const handleUserGoogle = async () => {
+    setIsLoading(true);
+    await new Promise(r => setTimeout(r, 1000));
+    setIsLoading(false);
+    setStep(2); // Move to phone number
+  };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  // Provider Flow: Email + Password
+  const handleProviderLogin = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-
-    toast({
-      title: mode === "login" ? "Welcome back!" : "Account created!",
-      description:
-        mode === "login"
-          ? "You have successfully logged in."
-          : "Your account has been created. Please log in.",
-    });
-
+    await new Promise(r => setTimeout(r, 1500));
     setIsLoading(false);
-
-    // Navigate to appropriate dashboard
-    if (role === "provider") {
-      navigate("/provider");
-    } else {
-      navigate("/dashboard");
-    }
+    navigate("/provider/dashboard");
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <Link
-          to="/"
-          className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6 transition-colors"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Back to Home
-        </Link>
+    <div className="min-h-screen bg-[#F9FAFB] flex items-center justify-center p-4">
+      <div className="w-full max-w-[440px]">
+        
+        {/* 1. ROLE SELECTOR (The Hub) */}
+        <div className="flex p-1.5 bg-slate-200/50 backdrop-blur-md rounded-[24px] mb-8 border border-white">
+          <button
+            onClick={() => { setRole("user"); setStep(1); }}
+            className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-[20px] text-sm font-black transition-all ${
+              role === "user" ? "bg-white text-orange-600 shadow-sm" : "text-slate-500"
+            }`}
+          >
+            <User className="w-4 h-4" /> Customer
+          </button>
+          <button
+            onClick={() => setRole("provider")}
+            className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-[20px] text-sm font-black transition-all ${
+              role === "provider" ? "bg-white text-slate-900 shadow-sm" : "text-slate-500"
+            }`}
+          >
+            <Building2 className="w-4 h-4" /> Provider
+          </button>
+        </div>
 
-        <Card variant="elevated" className="animate-scale-in">
-          <CardHeader className="text-center pb-2">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-hero flex items-center justify-center mx-auto mb-4">
-              <span className="text-primary-foreground font-bold text-2xl">M</span>
-            </div>
-            <CardTitle className="text-2xl">
-              {mode === "login" ? "Welcome Back" : "Create Account"}
-            </CardTitle>
-            <CardDescription>
-              {mode === "login"
-                ? "Log in to access your MealPass account"
-                : "Join MealPass and simplify your daily meals"}
-            </CardDescription>
-          </CardHeader>
+        <Card className="border-none shadow-[0_40px_100px_-20px_rgba(0,0,0,0.1)] rounded-[40px] bg-white overflow-hidden">
+          <CardContent className="pt-12 pb-10 px-8">
+            
+            {/* --- USER FLOW (Google + Number) --- */}
+            {role === "user" && (
+              <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <div className="text-center mb-10">
+                  <h1 className="text-3xl font-black text-slate-900 tracking-tight">User Login</h1>
+                  <p className="text-slate-400 font-medium mt-2">
+                    {step === 1 ? "Quick access with Google" : "Complete your profile"}
+                  </p>
+                </div>
 
-          <CardContent className="pt-4">
-            {/* Role Toggle */}
-            <div className="flex rounded-xl bg-muted p-1 mb-6">
-              <button
-                type="button"
-                onClick={() => setRole("user")}
-                className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg text-sm font-medium transition-all ${
-                  role === "user"
-                    ? "bg-card text-foreground shadow-soft"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                <User className="w-4 h-4" />
-                User
-              </button>
-              <button
-                type="button"
-                onClick={() => setRole("provider")}
-                className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg text-sm font-medium transition-all ${
-                  role === "provider"
-                    ? "bg-card text-foreground shadow-soft"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                <Building2 className="w-4 h-4" />
-                Provider
-              </button>
-            </div>
+                {step === 1 ? (
+                  <Button 
+                    onClick={handleUserGoogle}
+                    className="w-full h-16 bg-white hover:bg-slate-50 border-2 border-slate-100 text-slate-700 rounded-3xl flex items-center justify-center gap-4 transition-all"
+                  >
+                    <img src="https://www.svgrepo.com/show/355037/google-icon.svg" className="w-6 h-6" alt="G" />
+                    <span className="font-bold text-base">Continue with Google</span>
+                  </Button>
+                ) : (
+                  <form onSubmit={(e) => { e.preventDefault(); navigate("/dashboard"); }} className="space-y-4">
+                    <div className="relative group">
+                      <div className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 font-bold border-r pr-3">+91</div>
+                      <Input 
+                        placeholder="Phone Number" 
+                        className="h-16 pl-20 rounded-3xl bg-slate-50 border-none font-bold text-lg" 
+                        autoFocus
+                      />
+                    </div>
+                    <Button className="w-full h-16 bg-orange-600 hover:bg-orange-500 text-white rounded-3xl font-black text-lg shadow-lg shadow-orange-100">
+                      Finish Setup
+                    </Button>
+                  </form>
+                )}
+              </div>
+            )}
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {mode === "signup" && (
+            {/* --- PROVIDER FLOW (Old School Login) --- */}
+            {role === "provider" && (
+              <form onSubmit={handleProviderLogin} className="animate-in fade-in slide-in-from-bottom-4 duration-500 space-y-5">
+                <div className="text-center mb-10">
+                  <h1 className="text-3xl font-black text-slate-900 tracking-tight">Provider Portal</h1>
+                  <p className="text-slate-400 font-medium mt-2">Manage your kitchen & menu</p>
+                </div>
+
                 <div className="space-y-2">
-                  <Label htmlFor="name">
-                    {role === "provider" ? "Business Name" : "Full Name"}
-                  </Label>
+                  <Label className="text-[11px] font-black uppercase tracking-widest text-slate-400 ml-1">Business Email</Label>
                   <div className="relative">
-                    <Input
-                      id="name"
-                      placeholder={role === "provider" ? "Your mess/tiffin name" : "Your name"}
-                      value={role === "provider" ? formData.businessName : formData.name}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          [role === "provider" ? "businessName" : "name"]: e.target.value,
-                        })
-                      }
-                      className="pl-10"
-                      required
-                    />
-                    {role === "provider" ? (
-                      <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                    ) : (
-                      <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                    )}
+                    <Input className="h-14 pl-12 rounded-2xl bg-slate-50 border-transparent focus:bg-white focus:border-slate-900 font-bold" placeholder="kitchen@example.com" />
+                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-300" />
                   </div>
                 </div>
-              )}
 
-              <div className="space-y-2">
-                <Label htmlFor="email">Email or Phone</Label>
-                <div className="relative">
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="you@example.com"
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="pl-10"
-                    required
-                  />
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <div className="space-y-2">
+                  <Label className="text-[11px] font-black uppercase tracking-widest text-slate-400 ml-1">Password</Label>
+                  <div className="relative">
+                    <Input type="password" className="h-14 pl-12 rounded-2xl bg-slate-50 border-transparent focus:bg-white focus:border-slate-900 font-bold" placeholder="••••••••" />
+                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-300" />
+                  </div>
                 </div>
-              </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <div className="relative">
-                  <Input
-                    id="password"
-                    type={showPassword ? "text" : "password"}
-                    placeholder="••••••••"
-                    value={formData.password}
-                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                    className="pl-10 pr-10"
-                    required
-                  />
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                  </button>
+                <Button className="w-full h-14 bg-slate-900 hover:bg-black text-white rounded-2xl font-black text-lg transition-all">
+                  {isLoading ? "Verifying..." : "Provider Login"}
+                </Button>
+                
+                <div className="text-center">
+                  <button type="button" className="text-sm font-bold text-orange-600">Forgot Kitchen Password?</button>
                 </div>
-              </div>
+              </form>
+            )}
 
-              {mode === "login" && (
-                <div className="text-right">
-                  <button
-                    type="button"
-                    className="text-sm text-primary hover:underline"
-                  >
-                    Forgot password?
-                  </button>
-                </div>
-              )}
-
-              <Button type="submit" variant="hero" className="w-full" disabled={isLoading}>
-                {isLoading ? (
-                  <span className="flex items-center gap-2">
-                    <span className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
-                    {mode === "login" ? "Logging in..." : "Creating account..."}
-                  </span>
-                ) : mode === "login" ? (
-                  "Log In"
-                ) : (
-                  "Create Account"
-                )}
-              </Button>
-            </form>
-
-            <div className="mt-6 text-center text-sm text-muted-foreground">
-              {mode === "login" ? (
-                <>
-                  Don't have an account?{" "}
-                  <button
-                    type="button"
-                    onClick={() => setMode("signup")}
-                    className="text-primary font-medium hover:underline"
-                  >
-                    Sign up
-                  </button>
-                </>
-              ) : (
-                <>
-                  Already have an account?{" "}
-                  <button
-                    type="button"
-                    onClick={() => setMode("login")}
-                    className="text-primary font-medium hover:underline"
-                  >
-                    Log in
-                  </button>
-                </>
-              )}
-            </div>
           </CardContent>
         </Card>
 
-        <p className="text-center text-xs text-muted-foreground mt-6">
-          By continuing, you agree to our{" "}
-          <a href="#" className="text-primary hover:underline">
-            Terms of Service
-          </a>{" "}
-          and{" "}
-          <a href="#" className="text-primary hover:underline">
-            Privacy Policy
-          </a>
+        <p className="mt-8 text-center text-xs text-slate-400 font-medium italic">
+          Secure encrypted login for <span className="text-orange-500 text-xl font-bold">Khanaval.com</span> {role === "provider" ? "Partners" : "Customers"}
         </p>
       </div>
     </div>

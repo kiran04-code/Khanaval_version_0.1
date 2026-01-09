@@ -219,7 +219,7 @@ export default function MessDetailPage() {
                       </div>
                       <CardContent className="p-6">
                         <ul className="space-y-4">
-                          {(mess.menu as any)[day][meal.type].map((item: string, i: number) => (
+                          {(mess.menu as unknown)[day][meal.type].map((item: string, i: number) => (
                             <li key={i} className="flex items-start gap-3 group/item">
                               <div className="mt-1 w-1.5 h-1.5 rounded-full bg-orange-500 transition-transform group-hover/item:scale-125" />
                               <span className="text-slate-600 font-bold leading-tight">{item}</span>

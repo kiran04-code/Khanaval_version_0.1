@@ -9,9 +9,9 @@ const Footer = () => {
           
           {/* Brand Section */}
           <div className="lg:col-span-4 space-y-6">
-            <Link to="/" className="inline-block">
-              <img src="/logo.png" alt="Khanaval Logo" className="h-10 w-auto" />
-            </Link>
+              <Link to="/" className="md:w-[100px] w-[200px] md:h-fit ">
+                  <img src="/logo.png" alt="logo of khanaval.com" className="" />
+          </Link>
             <p className="text-muted-foreground text-sm leading-relaxed max-w-xs">
               Connecting you with authentic local mess services and home-cooked tiffins. 
               Taste the tradition, delivered to your doorstep.

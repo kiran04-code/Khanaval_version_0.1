@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Navbar } from "@/components/layout/Navbar";
 
@@ -8,7 +8,6 @@ import {
   Search,
   Calendar,
   QrCode,
-  Truck,
   Shield,
   Wallet,
   Clock,
@@ -16,10 +15,12 @@ import {
   MapPin,
   ArrowRight,
   CheckCircle,
-  ArrowDown
+  ArrowDown,
+  Loader2
 } from "lucide-react";
 import heroFood from "/hero-food.jpg";
 import Footer from "@/components/layout/footer";
+import { useEffect, useState } from "react";
 
 const features = [
   {
@@ -92,11 +93,34 @@ const popularMesses = [
   },
 ];
 
+
+const SkeletonBlock = ({ className }) => (
+  <div className={`animate-pulse bg-slate-200 rounded-xl ${className}`} />
+);
+
+const MessSkeleton = ({ isLarge }) => (
+  <div className={`rounded-[2.5rem] bg-slate-50 p-6 flex flex-col justify-end gap-3 border border-slate-100 overflow-hidden relative ${isLarge ? "col-span-2 aspect-[16/9]" : "col-span-2 md:col-span-1 aspect-square"}`}>
+    <div className="absolute inset-0 bg-gradient-to-t from-slate-200/50 to-transparent animate-pulse" />
+    <SkeletonBlock className="h-5 w-24 mb-2 bg-slate-300/50" />
+    <SkeletonBlock className="h-8 w-3/4 bg-slate-300/50" />
+    <SkeletonBlock className="h-4 w-1/2 bg-slate-300/50" />
+  </div>
+);
 const Index = () => {
+const [isLoading, setIsLoading] = useState(true);
+
+  // 2 Second Loading Simulation
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 5000);
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <section className="relative pt-20 pb-16 md:pt-32 md:pb-32 overflow-hidden bg-dot-pattern">
+      <section className="relative pt-20 pb-16 md:pt-14 md:pb-32 overflow-hidden bg-dot-pattern">
         {/* Optional: Decorative background blur */}
         <div className="absolute top-0 right-0 -z-10 h-[500px] w-[500px] bg-orange-100/50 blur-[120px] rounded-full" />
 
@@ -250,96 +274,86 @@ const Index = () => {
       </section>
 
       {/* mess card */}
-      <section className="py-16 md:py-28 bg-background overflow-hidden">
+<section className="py-16 md:py-28 bg-white overflow-hidden">
         <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
-
-            {/* Left Content Side */}
+            
             <div className="space-y-8">
               <div className="space-y-4">
-                <Badge variant="soft" className="px-3 py-1 text-sm rounded-full">
+                <Badge variant="soft" className="px-3 py-1 text-sm rounded-full bg-primary/10 text-primary border-none">
                   Why MealPass?
                 </Badge>
-                <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight text-foreground">
+                <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight text-foreground leading-tight">
                   The Smartest Way to <br />
-                  <span className="text-primary">Eat Daily</span>
+                  <span className="text-primary italic">Eat Daily</span>
                 </h2>
                 <p className="text-lg text-muted-foreground max-w-xl leading-relaxed">
-                  We understand the struggle of finding good, affordable food. That's why
-                  we've built a platform that makes daily meals simple, transparent, and
-                  budget-friendly.
+                  We verify every mess so you don't have to. Real menus, real prices, real hygiene.
                 </p>
               </div>
 
-              {/* Benefits Grid */}
               <div className="grid sm:grid-cols-2 gap-4">
                 {benefits.map((benefit, index) => (
-                  <div
-                    key={index}
-                    className="group flex flex-col gap-3 p-5 rounded-2xl border border-border/50 bg-card hover:border-primary/50 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300"
-                  >
-                    <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+                  <div key={index} className="flex flex-col gap-3 p-5 rounded-2xl border border-border/50 bg-card hover:border-primary/50 transition-all duration-300">
+                    <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
                       {benefit.icon}
                     </div>
                     <div>
-                      <h4 className="font-bold text-foreground mb-1 group-hover:text-primary transition-colors">
-                        {benefit.title}
-                      </h4>
-                      <p className="text-sm leading-snug text-muted-foreground">
-                        {benefit.description}
-                      </p>
+                      <h4 className="font-bold text-foreground mb-1">{benefit.title}</h4>
+                      <p className="text-sm text-muted-foreground">{benefit.description}</p>
                     </div>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* Right Visual Side - Bento Grid Style */}
-            <div className="relative">
-              {/* Decorative Background Element */}
-              <div className="absolute -top-12 -right-12 w-64 h-64 bg-primary/5 rounded-full blur-3xl -z-10" />
-
+            {/* BENTO GRID AREA: SHOW SKELETON OR DATA */}
+            <div className="relative min-h-[500px]">
               <div className="grid grid-cols-2 gap-4">
-                {popularMesses.slice(0,).map((mess, index) => (
-                  <Card
-                    key={mess.id}
-                    className={`group overflow-hidden border-none shadow-2xl ${index === 0 ? "col-span-2 aspect-[16/9]" : "col-span-2 md:col-span-1 aspect-square"
+                {isLoading ? (
+                  <>
+                    <MessSkeleton isLarge={true} />
+                    <MessSkeleton isLarge={false} />
+                    <MessSkeleton isLarge={false} />
+                  </>
+                ) : (
+                  popularMesses.map((mess, index) => (
+                    <Card
+                      key={mess.id}
+                      className={`group overflow-hidden border-none shadow-2xl relative animate-in fade-in zoom-in duration-500 ${
+                        index === 0 ? "col-span-2 aspect-[16/9]" : "col-span-2 md:col-span-1 aspect-square"
                       }`}
-                  >
-                    <div className="relative h-full w-full">
+                    >
                       <img
                         src={mess.image}
                         alt={mess.name}
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-
-                      <div className="absolute bottom-4 left-4 right-4">
-                        <Badge
-                          className={`mb-2 ${mess.isVeg ? "bg-green-500/90" : "bg-red-500/90"} border-none text-white`}
-                        >
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
+                      <div className="absolute bottom-6 left-6 right-6">
+                        <Badge className={`mb-2 ${mess.isVeg ? "bg-green-500/90" : "bg-red-500/90"} border-none text-white`}>
                           {mess.isVeg ? "Pure Veg" : "Non-Veg Available"}
                         </Badge>
-                        <h4 className="text-xl font-bold text-white mb-1">{mess.name}</h4>
+                        <h4 className="text-2xl font-black text-white mb-1">{mess.name}</h4>
                         <div className="flex items-center gap-3 text-sm text-white/80">
                           <div className="flex items-center gap-1">
                             <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                            <span className="font-medium text-white">{mess.rating}</span>
+                            <span className="font-bold text-white">{mess.rating}</span>
                           </div>
                           <span>•</span>
-                          <span>{mess.distance}</span>
+                          <span className="font-medium">{mess.distance}</span>
                         </div>
                       </div>
-                    </div>
-                  </Card>
-                ))}
-
-                <Link to="/mess" className="col-span-2 mt-2">
-                  <Button size="lg" variant="outline" className="w-full group rounded-xl border-2 hover:bg-primary hover:text-primary-foreground transition-all">
-                    Explore All Local Messes
-                    <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-                  </Button>
-                </Link>
+                    </Card>
+                  ))
+                )}
+                {!isLoading && (
+                  <Link to="/mess" className="col-span-2 mt-4">
+                    <Button variant="outline" className="w-full h-14 rounded-2xl border-2 font-bold hover:bg-primary hover:text-white transition-all">
+                      Explore All Local Messes <ArrowRight className="ml-2 w-4 h-4" />
+                    </Button>
+                  </Link>
+                )}
               </div>
             </div>
 

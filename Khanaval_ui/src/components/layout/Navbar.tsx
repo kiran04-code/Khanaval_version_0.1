@@ -20,6 +20,9 @@ export function Navbar() {
             <Link to="/mess" className="text-muted-foreground hover:text-foreground transition-colors">
               Find Mess
             </Link>
+            <Link to="/profile" className="text-muted-foreground hover:text-foreground transition-colors">
+              profile
+            </Link>
             <Link to="/tiffin" className="text-muted-foreground hover:text-foreground transition-colors">
               Order Tiffin
             </Link>

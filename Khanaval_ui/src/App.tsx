@@ -11,6 +11,8 @@ import EPassPage from "./pages/EPassPage";
 import OrderTrackingPage from "./pages/OrderTrackingPage";
 import ProviderDashboard from "./pages/ProviderDashboard";
 import NotFound from "./pages/NotFound";
+import ProfilePage from "./pages/Profile";
+import KhanavalProfile from "./pages/Profile";
 
 const queryClient = new QueryClient();
 
@@ -24,6 +26,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/auth" element={<AuthPage />} />
           <Route path="/dashboard" element={<UserDashboard />} />
+          <Route path="/profile" element={<KhanavalProfile />} />
           <Route path="/mess/:id" element={<MessDetailPage />} />
           <Route path="/epass" element={<EPassPage />} />
           <Route path="/order/:id" element={<OrderTrackingPage />} />

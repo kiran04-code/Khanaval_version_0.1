@@ -1,21 +1,17 @@
 import { ApolloServer } from "@apollo/server";
+import { user } from "./user/index.js";
 
 const StartGraphql = async () => {
   const server = new ApolloServer({
     typeDefs: `
+       ${user.typeDefs}
       type Query {
-        getdata: Boolean
-      }
-
-      type Mutation {
-        _empty: String
+        ${user.query}
       }
     `,
     resolvers: {
       Query: {
-        getdata: () => {
-          return true;
-        },
+        ...user.resolvers.query
       },
     },
   });

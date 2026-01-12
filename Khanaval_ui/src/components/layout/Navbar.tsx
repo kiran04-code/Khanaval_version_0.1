@@ -46,9 +46,9 @@ export function Navbar() {
               <div className="flex items-center gap-4">
                 <Link to="/profile">
                   <Avatar className="w-10 h-10 ring-2 ring-orange-500/30 cursor-pointer">
-                    <AvatarImage src={user.imageUrl || ""} />
+                    <AvatarImage src={user?.imageUrl || ""} />
                     <AvatarFallback>
-                      {user.first_name?.[0] ?? "U"}
+                      {user?.first_name?.[0] ?? "U"}
                     </AvatarFallback>
                   </Avatar>
                 </Link>
@@ -101,11 +101,11 @@ export function Navbar() {
                 className="flex items-center gap-4 px-4 py-3"
               >
                 <Avatar className="w-10 h-10">
-                  <AvatarImage src={user.imageUrl || ""} />
+                  <AvatarImage src={user?.imageUrl || ""} />
                  
                 </Avatar>
                 <div>
-                  <p className="font-semibold">{user.first_name} {user.last_name}</p>
+                  <p className="font-semibold">{user?.first_name} {user?.last_name}</p>
                   <p className="text-xs text-muted-foreground">View profile</p>
                 </div>
               </Link>

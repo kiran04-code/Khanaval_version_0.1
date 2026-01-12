@@ -36,11 +36,11 @@ const navigate = useNavigate();
       }
     ]
   });
-const handlelogout = async()=>{
+const handlelogout = ()=>{
    window.localStorage.removeItem("_user_Token__")
+    queryClient.invalidateQueries({queryKey:["current_user"]})
+   queryClient.clear();
    navigate("/auth")
-  await queryClient.invalidateQueries({queryKey:["current_user"]})
-  queryClient.clear();
 }
   return (
     <div className="min-h-screen bg-[#FFFBF9] pb-12 selection:bg-orange-100">

@@ -7,12 +7,15 @@ const StartGraphql = async () => {
       type Query {
         ${user.query}
       }
-    `,
+        type Mutation {
+      ${user.mutation}
+     }
+      `,
         resolvers: {
-            Query: {
-                ...user.resolvers.query
-            },
+            Query: user.resolvers.Query,
+            Mutation: user.resolvers.Mutation
         },
+        introspection: true
     });
     await server.start();
     return server;

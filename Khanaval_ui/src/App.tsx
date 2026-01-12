@@ -13,7 +13,9 @@ import ProviderDashboard from "./pages/ProviderDashboard";
 import NotFound from "./pages/NotFound";
 import ProfilePage from "./pages/Profile";
 import KhanavalProfile from "./pages/Profile";
-
+import {ReactQueryDevtools} from "@tanstack/react-query-devtools"
+import { PublicRoute } from "./components/PublicRoutes";
+import {ProtectedRoutes} from "./components/Routes1";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -24,9 +26,9 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
-          <Route path="/auth" element={<AuthPage />} />
+          <Route path="/auth" element={<PublicRoute><AuthPage/></PublicRoute>} />
           <Route path="/dashboard" element={<UserDashboard />} />
-          <Route path="/profile" element={<KhanavalProfile />} />
+          <Route path="/profile" element={<ProtectedRoutes><KhanavalProfile /></ProtectedRoutes>} />
           <Route path="/mess/:id" element={<MessDetailPage />} />
           <Route path="/epass" element={<EPassPage />} />
           <Route path="/order/:id" element={<OrderTrackingPage />} />
@@ -37,6 +39,7 @@ const App = () => (
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
+    <ReactQueryDevtools/>
   </QueryClientProvider>
 );
 

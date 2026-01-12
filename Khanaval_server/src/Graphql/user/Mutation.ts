@@ -1,2 +1,3 @@
-export const  mutation = `#graphql
+export const mutation = `#graphql
+_dummy: Boolean
 `;

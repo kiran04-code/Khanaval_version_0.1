@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -8,8 +8,21 @@ import {
   Flame, UtensilsCrossed, Bell,
   Clock
 } from "lucide-react";
+import { useCurrentUser } from "@/hooks/user-hook";
+import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
+import { Navigate, useNavigate } from "react-router-dom";
 
 export default function KhanavalProfile() {
+const navigate = useNavigate();
+
+  const {user} = useCurrentUser()
+  useEffect(()=>{
+    if(!user){
+         navigate("/auth", { replace: true });
+    }
+  },[user,navigate])
+  const queryClient = useQueryClient()
   const [userData] = useState({
     name: "Aryan Kulkarni",
     email: "aryan.k@example.com",
@@ -28,7 +41,12 @@ export default function KhanavalProfile() {
       }
     ]
   });
-
+const handlelogout = useCallback(async()=>{
+   window.localStorage.removeItem("_user_Token__")
+   navigate("/auth")
+  await queryClient.invalidateQueries({queryKey:["current_user"]})
+  queryClient.clear();
+},[navigate, queryClient])
   return (
     <div className="min-h-screen bg-[#FFFBF9] pb-12 selection:bg-orange-100">
       {/* 1. Dynamic Header with Gradient */}
@@ -43,7 +61,7 @@ export default function KhanavalProfile() {
           <div className="relative group">
             <div className="absolute inset-0 bg-orange-400 blur-2xl opacity-20 group-hover:opacity-40 transition-opacity" />
             <img 
-              src={userData.avatar} 
+              src={user.imageUrl} 
               className="w-32 h-32 rounded-[45px] bg-white border-8 border-white shadow-2xl relative" 
               alt="Profile"
             />
@@ -53,7 +71,8 @@ export default function KhanavalProfile() {
           </div>
           
           <div className="text-center mt-6">
-            <h1 className="text-3xl font-black text-slate-900 tracking-tight">{userData.name}</h1>
+            <h1 className="text-3xl font-black text-slate-900 tracking-tight">{user.first_name} {user.last_name}</h1>
+            <h1 className="text-3xl font-black text-slate-900 tracking-tight">{user.emailId}</h1>
             <div className="flex items-center justify-center gap-2 mt-2">
                <Badge className="bg-orange-100 text-orange-700 hover:bg-orange-100 border-none font-bold">
                  <Flame className="w-3 h-3 mr-1 fill-orange-500" /> {userData.streak} Day Streak
@@ -139,7 +158,7 @@ export default function KhanavalProfile() {
             </button>
           ))}
           
-          <button className="flex items-center justify-center gap-2 p-5 text-red-500 font-black uppercase text-xs tracking-widest mt-4">
+          <button onClick={handlelogout} className="flex items-center justify-center gap-2 p-5 text-red-500 font-black uppercase text-xs tracking-widest mt-4">
             <LogOut className="w-4 h-4" /> Sign Out
           </button>
         </div>

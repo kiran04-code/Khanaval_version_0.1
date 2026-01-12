@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import { expressMiddleware } from "@as-integrations/express5";
 import StartGraphql from "./Graphql/index.js";
 import { MongoDbConnnection } from "./config/mongodb.js";
+import jwtService from "./services/JwtToken.js";
 dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3002;
@@ -26,7 +27,22 @@ app.get("/", (req, res) => {
     res.send("Backend is Wroking Properly 🌐!");
 });
 // Graphql
-app.get("/graphql", expressMiddleware(await StartGraphql()));
+app.use("/graphql", expressMiddleware(await StartGraphql(), {
+    context: async ({ req, res }) => {
+        const authHeader = req.headers.authorization;
+        let user;
+        if (typeof authHeader == "string" && authHeader.startsWith("Bearer ")) {
+            const token = authHeader.replace("Bearer ", "").trim();
+            try {
+                user = jwtService.Jwtdecoder(token);
+            }
+            catch (error) {
+                user = undefined;
+            }
+        }
+        return { user };
+    }
+}));
 // db Connection
 MongoDbConnnection(`${process.env.MONGODB_URI}`).then(() => {
     console.log("Mongodb is Connected.");

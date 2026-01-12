@@ -17,11 +17,6 @@ export default function KhanavalProfile() {
 const navigate = useNavigate();
 
   const {user} = useCurrentUser()
-  useEffect(()=>{
-    if(!user){
-         navigate("/auth", { replace: true });
-    }
-  },[user,navigate])
   const queryClient = useQueryClient()
   const [userData] = useState({
     name: "Aryan Kulkarni",
@@ -41,12 +36,12 @@ const navigate = useNavigate();
       }
     ]
   });
-const handlelogout = useCallback(async()=>{
+const handlelogout = async()=>{
    window.localStorage.removeItem("_user_Token__")
    navigate("/auth")
   await queryClient.invalidateQueries({queryKey:["current_user"]})
   queryClient.clear();
-},[navigate, queryClient])
+}
   return (
     <div className="min-h-screen bg-[#FFFBF9] pb-12 selection:bg-orange-100">
       {/* 1. Dynamic Header with Gradient */}

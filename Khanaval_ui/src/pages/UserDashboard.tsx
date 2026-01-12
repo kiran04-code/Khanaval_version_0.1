@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -13,6 +13,7 @@ import {
   History, Sparkles
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useCurrentUser } from "@/hooks/user-hook";
 
 // --- SKELETON COMPONENT (If not already in UI folder) ---
 const Skeleton = ({ className }) => (
@@ -58,16 +59,16 @@ export default function UserDashboard() {
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true); // Loading state
   const activeSub = mySubscriptions[0];
-
+  const navgiagte = useNavigate()
   // Dummy 3-second loader effect
   useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 3000);
     return () => clearTimeout(timer);
   }, []);
-
+  const {user} = useCurrentUser()
   return (
     <div className="min-h-screen bg-slate-50/50 pb-20">
-      {/* HEADER */}
+      
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-slate-100">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-20 gap-6">
@@ -87,14 +88,13 @@ export default function UserDashboard() {
 
             <div className="flex items-center gap-3">
               <div className="hidden sm:flex flex-col items-end mr-1">
-                <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider leading-none mb-1">Credits</span>
-                {loading ? <Skeleton className="h-4 w-16" /> : <span className="text-sm font-bold text-slate-900">₹540.00</span>}
+
               </div>
               <Button variant="outline" size="icon" className="rounded-2xl relative">
                 <Bell className="w-5 h-5" />
               </Button>
-              <div className="w-10 h-10 rounded-2xl bg-orange-100 overflow-hidden">
-                {loading ? <Skeleton className="w-full h-full" /> : <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="User" />}
+              <div className="w-10 h-10 rounded-2xl bg-orange-100 overflow-hidden  cursor-pointer" onClick={()=> navgiagte("/profile")} >
+                {loading ? <Skeleton className="w-full h-full" /> : <img src={user?.imageUrl} alt="User" />}
               </div>
             </div>
           </div>

@@ -1,0 +1,2 @@
+export declare const query = "#graphql \nProviderverficationOTP(number:String!):SignupResponseprovider\nProviderverfication(payload:signupinputp!):SignupResponseOfverifed\nProviderverficationOTPLogin(number:String!):SignupResponseprovider\nProviderverficationLogin(payload:loginpinputp!):SignupResponseOfverifed\ngetProviderdata:provider\n";
+//# sourceMappingURL=query.d.ts.map

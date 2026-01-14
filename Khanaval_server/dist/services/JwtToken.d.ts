@@ -1,7 +1,7 @@
 import Jwt from "jsonwebtoken";
-import type { Iuser } from "../model/types.js";
+import type { JwtTokeninput } from "../model/types.js";
 declare class jwtService {
-    static createToken: (user: Iuser) => Promise<string>;
+    static createToken: (user: JwtTokeninput) => Promise<string>;
     static Jwtdecoder(token: string | undefined): string | Jwt.JwtPayload | undefined;
 }
 export default jwtService;

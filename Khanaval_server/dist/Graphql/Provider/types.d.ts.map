@@ -1,0 +1,1 @@
+{"version":3,"file":"types.d.ts","sourceRoot":"","sources":["../../../src/Graphql/Provider/types.ts"],"names":[],"mappings":"AAAA,MAAM,WAAW,SAAS;IACtB,SAAS,EAAC,MAAM,CAAC;IAChB,MAAM,EAAC,MAAM,CAAA;IACb,GAAG,EAAC,MAAM,CAAA;CACd;AACD,MAAM,WAAW,cAAc;IAC1B,MAAM,EAAC,MAAM,CAAA;IACb,GAAG,EAAC,MAAM,CAAA;CACd"}

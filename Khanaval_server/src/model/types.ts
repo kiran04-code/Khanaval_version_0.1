@@ -11,11 +11,13 @@ export interface IProvider {
     id?:string,
     OwnerName:string,
     number:string,
-    otp:string
     user_type?:string
     MessRegister:boolean
 }
 
 export  interface JwtToken {
     _id:string
+}
+export  interface JwtTokeninput {
+    id:string
 }

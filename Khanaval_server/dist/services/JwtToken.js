@@ -10,7 +10,8 @@ class jwtService {
     };
     static Jwtdecoder(token) {
         if (token) {
-            return Jwt.verify(token, jwtSecret);
+            const data = Jwt.verify(token, jwtSecret);
+            return data;
         }
     }
 }

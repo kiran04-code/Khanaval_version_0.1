@@ -1,0 +1,2 @@
+export declare const typeDefs = "#graphql\ninput signupinputp {\n     Ownername:String!,\n     number:String!\n     otp:Int!\n}\ninput loginpinputp {\n     number:String!\n     otp:Int!\n}\ntype SignupResponseprovider {\n  success: Boolean!\n  message:String,\n}\ntype SignupResponseOfverifed {\n  success: Boolean!\n  message:String,\n  token:String\n}\ntype provider {\n    id:ID!\n    OwnerName:String!,\n    number:String!,\n    emailId:String!\n    MessRegister:String}\n";
+//# sourceMappingURL=typedef.d.ts.map

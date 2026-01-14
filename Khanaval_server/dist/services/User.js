@@ -11,11 +11,9 @@ class UserService {
         if (existingUser) {
             return null; // user already exists
         }
-        const namesofUser = userdata.first_name || userdata.emailId.split("@")[1];
-        console.log(namesofUser);
         const result = await user.create({
-            first_name: namesofUser,
-            last_name: userdata.last_name || "",
+            first_name: userdata.first_name || userdata.emailId.split("@")[1],
+            last_name: userdata.last_name || " ",
             emailId: userdata.emailId,
             number: userdata.number,
             imageUrl: userdata.imageUrl,

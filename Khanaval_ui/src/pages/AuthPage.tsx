@@ -91,7 +91,7 @@ export default function HybridAuthPage() {
       }
     } catch (error) {
       console.log(error)
-      toast({ variant: "destructive", title: "Signup Failed", description: "Something went wrong." });
+      toast({ variant: "destructive", title: "Signup failed. business email addresses are not allowed. Please use a Personal email ", description: "Something went wrong." });
     } finally {
       setIsLoading(false);
     }

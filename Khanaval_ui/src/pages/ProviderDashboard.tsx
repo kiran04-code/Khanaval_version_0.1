@@ -19,9 +19,11 @@ import {
   TrendingUp,
   Clock,
   CheckCircle,
+  Users2,
 } from "lucide-react";
+import { ProviderProfile } from "./ProviderProfile";
 
-type TabType = "dashboard" | "menu" | "subscribers" | "scanner" | "earnings";
+type TabType = "dashboard" | "menu" | "subscribers" | "scanner" | "earnings" | "Profile";
 
 const stats = [
   { icon: <Users className="w-5 h-5" />, value: 156, label: "Active Subscribers", trend: { value: 12, isPositive: true } },
@@ -42,6 +44,7 @@ const navItems = [
   { id: "subscribers" as TabType, icon: Users, label: "Subscribers" },
   { id: "scanner" as TabType, icon: QrCode, label: "Scan QR" },
   { id: "earnings" as TabType, icon: Wallet, label: "Earnings" },
+  { id: "Profile" as TabType, icon: Users2, label: "Profile" },
 ];
 
 export default function ProviderDashboard() {
@@ -201,6 +204,7 @@ export default function ProviderDashboard() {
           {activeTab === "subscribers" && <SubscriberManagement />}
 
           {activeTab === "earnings" && <EarningsDashboard />}
+          {activeTab === "Profile" && <ProviderProfile />}
         </div>
       </main>
     </div>

@@ -11,7 +11,6 @@ class UserService {
                 { number: userdata.number }
             ]
         });
-
         if (existingUser) {
             return null; // user already exists
         }
@@ -23,11 +22,8 @@ class UserService {
             imageUrl: userdata.imageUrl,
             user_type: "customer"
         });
-
         const token = await jwtService.createToken(result);
         return token;
-
-
     }
     public static async userLogin(emailId: string) {
         try {

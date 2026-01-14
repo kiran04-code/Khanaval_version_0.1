@@ -21,6 +21,7 @@ import {
   CheckCircle,
   Users2,
 } from "lucide-react";
+import { UserProviderdata } from "@/hooks/Provider";
 import { ProviderProfile } from "./ProviderProfile";
 
 type TabType = "dashboard" | "menu" | "subscribers" | "scanner" | "earnings" | "Profile";
@@ -50,7 +51,7 @@ const navItems = [
 export default function ProviderDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<TabType>("dashboard");
-
+ const {Providerdata} = UserProviderdata()
   const handleNavClick = (tabId: TabType) => {
     setActiveTab(tabId);
     setSidebarOpen(false);

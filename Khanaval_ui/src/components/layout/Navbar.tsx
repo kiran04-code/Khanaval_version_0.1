@@ -85,7 +85,7 @@ export function Navbar() {
                 
                 {/* ROLE-BASED BUTTONS */}
                 {isProvider ? (
-                  <Link to="/provider/dashboard">
+                  <Link to="/provider">
                     <Button className="bg-orange-600 hover:bg-orange-700 text-white rounded-full px-6 h-10 text-xs font-black gap-2 shadow-orange-200 shadow-lg">
                       <LayoutDashboard className="w-4 h-4" />
                       DASHBOARD

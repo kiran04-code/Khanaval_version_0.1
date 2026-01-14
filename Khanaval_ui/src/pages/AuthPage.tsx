@@ -266,7 +266,7 @@ export default function HybridAuthPage() {
                       value={providerOtp}
                       maxLength={4}
                       onChange={(e) => setProviderOtp(e.target.value)}
-                      className="h-16 rounded-2xl bg-slate-50 border-slate-200 font-black text-center text-2xl tracking-[1em] focus:bg-white"
+                      className="h-16 rounded-2xl bg-slate-50 border-slate-200 font-black text-center text-xl tracking-[0.5em] focus:bg-white"
                     />
                     <Button className="w-full h-14 bg-slate-900 hover:bg-slate-800 text-white rounded-2xl font-bold shadow-xl">
                       Verify & Continue

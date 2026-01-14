@@ -190,7 +190,7 @@ export default function HybridAuthPage() {
                     </div>
                     <div className="flex justify-center py-4">
                       <GoogleLogin
-                        width="300"
+                        width="220"
                         shape="pill"
                         onSuccess={(res) => handleGoogleSuccess(res.credential || "")}
                       />

@@ -56,7 +56,7 @@ const handlelogout = ()=>{
           <div className="relative group">
             <div className="absolute inset-0 bg-orange-400 blur-2xl opacity-20 group-hover:opacity-40 transition-opacity" />
             <img 
-              src={user.imageUrl} 
+              src={user?.imageUrl} 
               className="w-32 h-32 rounded-[45px] bg-white border-8 border-white shadow-2xl relative" 
               alt="Profile"
             />
@@ -66,8 +66,8 @@ const handlelogout = ()=>{
           </div>
           
           <div className="text-center mt-6">
-            <h1 className="text-3xl font-black text-slate-900 tracking-tight">{user.first_name} {user.last_name}</h1>
-            <h1 className="text-3xl font-black text-slate-900 tracking-tight">{user.emailId}</h1>
+            <h1 className="text-[15px] md:text-3xl font-black text-slate-900 tracking-tight">{user.first_name} {user.last_name}</h1>
+            <h1 className="text-[15px] md:text-3xl font-black text-slate-900 tracking-tight">{user.emailId}</h1>
             <div className="flex items-center justify-center gap-2 mt-2">
                <Badge className="bg-orange-100 text-orange-700 hover:bg-orange-100 border-none font-bold">
                  <Flame className="w-3 h-3 mr-1 fill-orange-500" /> {userData.streak} Day Streak

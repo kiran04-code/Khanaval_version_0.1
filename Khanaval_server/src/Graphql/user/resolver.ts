@@ -50,7 +50,8 @@ const Query = {
             throw new Error("Google email missing");
         }
         const TokenOfSignIn = UserService.userLogin(googleresult.email)
-        if (TokenOfSignIn==null) {
+        console.log(TokenOfSignIn)
+        if (TokenOfSignIn == null) {
             return {
                 success: false,
                 token: TokenOfSignIn,

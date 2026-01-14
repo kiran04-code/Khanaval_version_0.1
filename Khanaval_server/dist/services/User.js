@@ -25,6 +25,7 @@ class UserService {
     static async userLogin(emailId) {
         try {
             const existingUser = await user.findOne({ emailId });
+            console.log(existingUser);
             if (!existingUser) {
                 return null;
             }

@@ -33,6 +33,7 @@ class UserService {
     public static async userLogin(emailId: string) {
         try {
             const existingUser = await  user.findOne({emailId})
+            console.log(existingUser)
             if(!existingUser){
                 return null
             }

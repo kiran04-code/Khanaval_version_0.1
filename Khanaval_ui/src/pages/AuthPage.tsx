@@ -64,41 +64,37 @@ export default function HybridAuthPage() {
 
   /* ---------------- USER SIGNUP ---------------- */
 
-  const handleFinalUserSignup = async (e: React.FormEvent) => {
+ const handleFinalUserSignup = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    console.log("userdata", googleToken)
     if (phoneNumber.length < 10) {
-      toast({ title: "Please enter a valid phone number" });
+      toast({ title: "Invalid Number", description: "Enter a 10-digit phone number." });
       return;
     }
+
     setIsLoading(true);
-    const { verifiedgoodtokenandnumberforSignup } =
-      await graphqlClient.request(VERIFIED_USER_GOOGLE, {
-        payload: {
-          number: phoneNumber,
-          token: googleToken
+    try {
+      const { verifiedgoodtokenandnumberforSignup } = await graphqlClient.request(
+        VERIFIED_USER_GOOGLE,
+        {
+          payload: { number: phoneNumber, token: googleToken }
         }
-      });
-
-    if (verifiedgoodtokenandnumberforSignup.success) {
-      localStorage.setItem(
-        "_user_Token__",
-        verifiedgoodtokenandnumberforSignup.token
       );
-      toast({ title: "Signup successful" });
-      navigate("/");
-      setIsLoading(false);
 
-    } else {
-      toast({ title: verifiedgoodtokenandnumberforSignup.message });
-      setUserMode("login")
-      setStep(1);
+      if (verifiedgoodtokenandnumberforSignup.success) {
+        localStorage.setItem("_user_Token__", verifiedgoodtokenandnumberforSignup.token);
+        toast({ title: "Signup successful" });
+        navigate("/");
+      } else {
+        toast({ title: verifiedgoodtokenandnumberforSignup.message });
+        setUserMode("login");
+        setStep(1);
+      }
+    } catch (error) {
+      toast({ variant: "destructive", title: "Signup Failed", description: "Something went wrong." });
+    } finally {
       setIsLoading(false);
     }
-
   };
-
   /* ---------------- PROVIDER (UNCHANGED) ---------------- */
 
   const handleProviderLogin = async (e: React.FormEvent) => {

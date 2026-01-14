@@ -14,7 +14,6 @@ import { useCurrentUser } from "@/hooks/user-hook";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import { Navigate, useNavigate } from "react-router-dom";
-import { subBusinessDays } from "date-fns";
 
 export default function KhanavalProfile() {
 const navigate = useNavigate();
@@ -79,7 +78,7 @@ const handlelogout = ()=>{
             
             <div className="flex items-center justify-center gap-3 mt-4">
                <Badge variant="secondary" className="bg-orange-100 text-orange-700 border-none px-4 py-1.5 rounded-full font-bold">
-                 <Flame className="w-4 h-4 mr-1.5 fill-orange-500 text-orange-500" /> {subBusinessDays} Day Streak
+                 <Flame className="w-4 h-4 mr-1.5 fill-orange-500 text-orange-500" /> {userData.streak} Day Streak
                </Badge>
                <span className="text-slate-300 font-light">|</span>
                <span className="text-slate-500 font-bold text-sm text-center">Member since 2025</span>

@@ -90,6 +90,7 @@ export default function HybridAuthPage() {
         setStep(1);
       }
     } catch (error) {
+      console.log(error)
       toast({ variant: "destructive", title: "Signup Failed", description: "Something went wrong." });
     } finally {
       setIsLoading(false);

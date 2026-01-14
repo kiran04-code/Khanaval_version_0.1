@@ -16,7 +16,11 @@ import {
   ArrowRight,
   CheckCircle,
   ArrowDown,
-  Loader2
+  Loader2,
+  Timer,
+  User,
+  Utensils,
+  ShieldAlert
 } from "lucide-react";
 
 import Footer from "@/components/layout/footer";
@@ -108,7 +112,7 @@ const MessSkeleton = ({ isLarge }) => (
 );
 const Index = () => {
   const [isLoading, setIsLoading] = useState(true);
-  const {Providerdata} = UserProviderdata()
+  const { Providerdata } = UserProviderdata()
   console.log(Providerdata)
 
   // 2 Second Loading Simulation
@@ -118,11 +122,11 @@ const Index = () => {
     }, 5000);
     return () => clearTimeout(timer);
   }, []);
-  
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <section className="relative pt-[85px] pb-16 md:pt-16 md:pb-32 overflow-hidden bg-dot-pattern">
+      <section className="relative pt-[85px] pb-16 md:pt-16 md:pb-3 overflow-hidden bg-dot-pattern">
         {/* Optional: Decorative background blur */}
         <div className="absolute top-0 right-0 -z-10 h-[500px] w-[500px] bg-orange-100/50 blur-[120px] rounded-full" />
 
@@ -139,12 +143,44 @@ const Index = () => {
                 Your Daily Food, <br />
                 <span className="text-gradient">Simplified.</span>
               </h1>
+              <div className="space-y-6 mb-10 max-w-xl mx-auto lg:mx-0">
+                {/* The Paragraph - Refined */}
+                <p className="text-lg md:text-xl text-slate-600 leading-relaxed">
+                  Discover the most <span className="text-orange-600 font-black italic">trusted</span> messes in your city.
+                  Built for students and professionals who value quality.
+                </p>
 
-              <p className="text-lg md:text-xl text-muted-foreground mb-10 max-w-xl mx-auto lg:mx-0 leading-relaxed">
-                Khanaval helps students and professionals discover
-                <span className="font-semibold text-foreground"> hygienic, verified messes </span>
-                with real-time menu updates. No middlemen, just great food.
-              </p>
+                {/* Feature Highlights Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                  <div className="flex items-center gap-3 p-3 rounded-2xl bg-white border border-slate-100 shadow-sm hover:border-orange-200 transition-colors">
+                    <div className="bg-orange-100 p-2 rounded-xl text-orange-600">
+                      <ShieldAlert className="w-5 h-5" />
+                    </div>
+                    <span className="text-sm font-bold text-slate-700 uppercase tracking-tight">Hygienic & Verified</span>
+                  </div>
+
+                  <div className="flex items-center gap-3 p-3 rounded-2xl bg-white border border-slate-100 shadow-sm hover:border-orange-200 transition-colors">
+                    <div className="bg-orange-100 p-2 rounded-xl text-orange-600">
+                      <Timer className="w-5 h-5" />
+                    </div>
+                    <span className="text-sm font-bold text-slate-700 uppercase tracking-tight">Real-time Menus</span>
+                  </div>
+
+                  <div className="flex items-center gap-3 p-3 rounded-2xl bg-white border border-slate-100 shadow-sm hover:border-orange-200 transition-colors">
+                    <div className="bg-orange-100 p-2 rounded-xl text-orange-600">
+                      <User className="w-5 h-5" />
+                    </div>
+                    <span className="text-sm font-bold text-slate-700 uppercase tracking-tight">No Middlemen</span>
+                  </div>
+
+                  <div className="flex items-center gap-3 p-3 rounded-2xl bg-white border border-slate-100 shadow-sm hover:border-orange-200 transition-colors">
+                    <div className="bg-orange-100 p-2 rounded-xl text-orange-600">
+                      <Utensils className="w-5 h-5" />
+                    </div>
+                    <span className="text-sm font-bold text-slate-700 uppercase tracking-tight">Home-Cooked Taste</span>
+                  </div>
+                </div>
+              </div>
 
               {/* CTAs */}
               <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
@@ -184,7 +220,7 @@ const Index = () => {
             </div>
 
             {/* RIGHT IMAGE */}
-            <div className="relative animate-fade-in lg:block" style={{ animationDelay: "0.2s" }}>
+            <div className="relative md:pb-12 lg:mb-20 animate-fade-in lg:block" style={{ animationDelay: "0.2s" }}>
               <div className="relative">
                 {/* Decorative Element */}
                 <div className="absolute inset-0 bg-gradient-to-tr from-orange-100 to-transparent rounded-3xl -rotate-3 scale-105 -z-10" />
@@ -213,7 +249,7 @@ const Index = () => {
       </section>
 
       {/* STEPS */}
-      <section className=" md:py-1 bg-background relative overflow-hidden">
+      <section className=" md:py-5 py-5 bg-background relative overflow-hidden">
         <div className="absolute top-0 left-1/4 w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
         <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
 
@@ -276,10 +312,10 @@ const Index = () => {
       </section>
 
       {/* mess card */}
-<section className="py-16 md:py-28 bg-white overflow-hidden">
+      <section className="py-16 md:py-28 bg-white overflow-hidden">
         <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
-            
+
             <div className="space-y-8">
               <div className="space-y-4">
                 <Badge variant="soft" className="px-3 py-1 text-sm rounded-full bg-primary/10 text-primary border-none">
@@ -322,9 +358,8 @@ const Index = () => {
                   popularMesses.map((mess, index) => (
                     <Card
                       key={mess.id}
-                      className={`group overflow-hidden border-none shadow-2xl relative animate-in fade-in zoom-in duration-500 ${
-                        index === 0 ? "col-span-2 aspect-[16/9]" : "col-span-2 md:col-span-1 aspect-square"
-                      }`}
+                      className={`group overflow-hidden border-none shadow-2xl relative animate-in fade-in zoom-in duration-500 ${index === 0 ? "col-span-2 aspect-[16/9]" : "col-span-2 md:col-span-1 aspect-square"
+                        }`}
                     >
                       <img
                         src={mess.image}

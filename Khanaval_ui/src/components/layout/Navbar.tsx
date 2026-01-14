@@ -100,7 +100,7 @@ export function Navbar() {
                   </Link>
                 )}
 
-                <Link to={isProvider ? "/provider/profile" : "/profile"}>
+                <Link to={isProvider ? "/provider" : "/profile"}>
                   <Avatar className="w-10 h-10 border-2 border-orange-100 shadow-sm transition-transform hover:scale-105">
                     <AvatarImage src={isProvider ? Providerdata?.imageUrl : user?.imageUrl} />
                     <AvatarFallback className="bg-orange-100 text-orange-700 font-black text-[11px]">
@@ -180,7 +180,7 @@ export function Navbar() {
               {/* MOBILE ACTION BUTTON */}
               {isLoggedIn && (
                 <Link 
-                  to={isProvider ? "/provider/dashboard" : "/profile"} 
+                  to={isProvider ? "/provider" : "/profile"} 
                   onClick={() => setMobileMenuOpen(false)}
                   className="flex items-center justify-between p-5 font-black text-white bg-slate-900 rounded-2xl mt-4 shadow-xl"
                 >

@@ -122,7 +122,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <section className="relative pt-22 pb-16 md:pt-16 md:pb-32 overflow-hidden bg-dot-pattern">
+      <section className="relative pt-[85px] pb-16 md:pt-16 md:pb-32 overflow-hidden bg-dot-pattern">
         {/* Optional: Decorative background blur */}
         <div className="absolute top-0 right-0 -z-10 h-[500px] w-[500px] bg-orange-100/50 blur-[120px] rounded-full" />
 

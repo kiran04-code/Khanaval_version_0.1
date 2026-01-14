@@ -1,158 +1,212 @@
-import { Link } from "react-router-dom";
-import { Menu, X, User, Building2, LogOut } from "lucide-react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Menu, X, Building2, LogOut, LayoutDashboard, ChevronRight, Info, UtensilsCrossed, Pizza, UserCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useCurrentUser } from "@/hooks/user-hook";
+import { UserProviderdata } from "@/hooks/Provider";
+import { cn } from "@/lib/utils";
+import { useQueryClient } from "@tanstack/react-query";
 
 export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const queryClient = useQueryClient();
 
   const token = localStorage.getItem("_user_Token__");
-  const {user} = useCurrentUser()
+  const { user } = useCurrentUser();
+  const { Providerdata } = UserProviderdata();
+  
   const isLoggedIn = Boolean(token);
+  const isProvider = Boolean(Providerdata);
+
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("_user_Token__");
-
+    queryClient.invalidateQueries({ queryKey: ["provider-data"] });
+    queryClient.invalidateQueries({ queryKey: ["current_user"] });
+       queryClient.clear();
+    setMobileMenuOpen(false);
+    navigate("/");
   };
 
-  return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-card/80 backdrop-blur-lg border-b border-border">
-      <div className="container mx-auto">
+  const navLinks = [
+    { name: "How It Works", path: "/how-it-works", icon: Info },
+    { name: "Find Mess", path: "/mess", icon: UtensilsCrossed },
+    { name: "Order Tiffin", path: "/tiffin", icon: Pizza },
+  ];
 
-        {/* TOP BAR */}
-        <div className="flex items-center justify-between h-[80px]">
-          <Link to="/" className="md:w-[230px] w-[200px]">
-            <img src="/logo.png" alt="logo of khanaval.com" />
+  return (
+    <nav className={cn(
+      "fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b-2",
+      scrolled 
+        ? "bg-white/90 backdrop-blur-md py-3 shadow-lg border-orange-600" 
+        : "bg-white py-2 border-orange-500"
+    )}>
+      <div className="container mx-auto px-6">
+        <div className="flex items-center justify-between">
+          
+          <Link to="/" className="md:w-[170px] w-[200px] md:h-fit">
+            <img src="/logo.png" alt="logo" className="w-full h-auto" />
           </Link>
 
-          {/* DESKTOP LINKS */}
-          <div className="hidden md:flex items-center gap-6">
-            <Link to="/how-it-works" className="text-muted-foreground hover:text-foreground">
-              How It Works
-            </Link>
-            <Link to="/mess" className="text-muted-foreground hover:text-foreground">
-              Find Mess
-            </Link>
-            <Link to="/tiffin" className="text-muted-foreground hover:text-foreground">
-              Order Tiffin
-            </Link>
-          </div>
+          {/* DESKTOP ACTIONS */}
+          <div className="hidden lg:flex items-center gap-5">
+            
+            {/* PILL NAVIGATION */}
+            <div className="flex items-center bg-orange-50 p-1 rounded-full border border-orange-100 shadow-inner">
+              {navLinks.map((link) => (
+                <Link 
+                  key={link.path}
+                  to={link.path} 
+                  className={cn(
+                    "px-5 py-2 rounded-full text-xs font-extrabold transition-all duration-200",
+                    location.pathname === link.path 
+                      ? "bg-orange-600 text-white shadow-md scale-105" 
+                      : "text-slate-600 hover:text-orange-600"
+                  )}
+                >
+                  {link.name}
+                </Link>
+              ))}
+            </div>
 
-          {/* DESKTOP AUTH / PROFILE */}
-          <div className="hidden md:flex items-center gap-3">
+            <div className="h-8 w-[2px] bg-orange-100 mx-1" />
+
             {isLoggedIn ? (
-              <div className="flex items-center gap-4">
-                <Link to="/profile">
-                  <Avatar className="w-10 h-10 ring-2 ring-orange-500/30 cursor-pointer">
-                    <AvatarImage src={user?.imageUrl || ""} />
-                    <AvatarFallback>
-                      {user?.first_name?.[0] ?? "U"}
+              <div className="flex items-center gap-3 bg-white border border-slate-200 p-1 rounded-full shadow-sm">
+                
+                {/* ROLE-BASED BUTTONS */}
+                {isProvider ? (
+                  <Link to="/provider/dashboard">
+                    <Button className="bg-orange-600 hover:bg-orange-700 text-white rounded-full px-6 h-10 text-xs font-black gap-2 shadow-orange-200 shadow-lg">
+                      <LayoutDashboard className="w-4 h-4" />
+                      DASHBOARD
+                    </Button>
+                  </Link>
+                ) : (
+                  <Link to="/profile">
+                    <Button className="bg-slate-900 hover:bg-slate-800 text-white rounded-full px-6 h-10 text-xs font-black gap-2 shadow-lg">
+                      <UserCircle className="w-4 h-4 text-orange-500" />
+                      MY PROFILE
+                    </Button>
+                  </Link>
+                )}
+
+                <Link to={isProvider ? "/provider/profile" : "/profile"}>
+                  <Avatar className="w-10 h-10 border-2 border-orange-100 shadow-sm transition-transform hover:scale-105">
+                    <AvatarImage src={isProvider ? Providerdata?.imageUrl : user?.imageUrl} />
+                    <AvatarFallback className="bg-orange-100 text-orange-700 font-black text-[11px]">
+                      {(isProvider ? Providerdata?.OwnerName?.[0] : user?.first_name?.[0]) || "U"}
                     </AvatarFallback>
                   </Avatar>
                 </Link>
 
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={handleLogout}
-                  title="Logout"
-                >
-                  <LogOut className="w-5 h-5 text-muted-foreground" />
+                <Button variant="ghost" size="icon" onClick={handleLogout} className="rounded-full text-slate-400 hover:text-red-500 hover:bg-red-50">
+                  <LogOut className="w-5 h-5" />
                 </Button>
               </div>
             ) : (
-              <>
+              <div className="flex items-center gap-3">
                 <Link to="/auth?role=user">
-                  <Button variant="ghost" size="sm">
-                    <User className="w-4 h-4 mr-2" />
-                    User Login
-                  </Button>
+                  <Button variant="ghost" className="text-xs font-black text-slate-700 hover:text-orange-600 uppercase">Login</Button>
                 </Link>
                 <Link to="/auth?role=provider">
-                  <Button variant="outline" size="sm">
-                    <Building2 className="w-4 h-4 mr-2" />
-                    Provider Login
+                  <Button className="bg-slate-900 hover:bg-orange-600 text-white rounded-full px-6 h-10 text-xs font-black uppercase tracking-widest shadow-lg">
+                    Provider Portal
                   </Button>
                 </Link>
-              </>
+              </div>
             )}
           </div>
 
-          {/* MOBILE MENU BUTTON */}
-          <button
-            className="md:hidden p-2 rounded-lg hover:bg-muted"
+          {/* MOBILE TOGGLE */}
+          <button 
+            className="lg:hidden p-2 rounded-xl border-2 border-orange-100 bg-orange-50 text-orange-600 shadow-sm" 
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
-            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            {mobileMenuOpen ? <X className="w-7 h-7" /> : <Menu className="w-7 h-7" />}
           </button>
         </div>
 
         {/* MOBILE MENU */}
         {mobileMenuOpen && (
-          <div className="md:hidden py-4 border-t border-border animate-slide-up">
+          <div className="lg:hidden fixed inset-x-0 top-[78px] bg-white border-b-4 border-orange-600 shadow-2xl p-6 space-y-6 animate-in slide-in-from-top duration-300 z-50">
+             
+             {isLoggedIn && (
+               <div className="flex items-center gap-4 p-4 bg-orange-50 rounded-3xl border border-orange-100">
+                 <Avatar className="w-14 h-14 border-4 border-white shadow-md">
+                   <AvatarImage src={isProvider ? Providerdata?.imageUrl : user?.imageUrl} />
+                   <AvatarFallback className="bg-orange-600 text-white font-bold font-black text-xl">
+                      {(isProvider ? Providerdata?.OwnerName?.[0] : user?.first_name?.[0])}
+                    </AvatarFallback>
+                 </Avatar>
+                 <div>
+                   <p className="font-black text-slate-900 text-lg uppercase leading-none mb-1">
+                     {isProvider ? Providerdata?.OwnerName : user?.first_name}
+                   </p>
+                   <p className="text-[10px] font-bold text-orange-600 uppercase tracking-widest">
+                     {isProvider ? "Verified Provider" : "Customer Profile"}
+                   </p>
+                 </div>
+               </div>
+             )}
 
-            {/* MOBILE PROFILE */}
-            {isLoggedIn && (
-              <Link
-                to="/profile"
-                onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center gap-4 px-4 py-3"
-              >
-                <Avatar className="w-10 h-10">
-                  <AvatarImage src={user?.imageUrl || ""} />
-                 
-                </Avatar>
-                <div>
-                  <p className="font-semibold">{user?.first_name} {user?.last_name}</p>
-                  <p className="text-xs text-muted-foreground">View profile</p>
-                </div>
-              </Link>
-            )}
-
-            <div className="flex flex-col gap-2 px-2">
-              <Link to="/how-it-works" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 rounded-lg hover:bg-muted">
-                How It Works
-              </Link>
-              <Link to="/mess" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 rounded-lg hover:bg-muted">
-                Find Mess
-              </Link>
-              <Link to="/tiffin" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2 rounded-lg hover:bg-muted">
-                Order Tiffin
-              </Link>
+            <div className="flex flex-col gap-3">
+              {navLinks.map((link) => (
+                <Link 
+                  key={link.path}
+                  to={link.path} 
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={cn(
+                    "flex items-center gap-4 p-4 font-black rounded-2xl transition-all",
+                    location.pathname === link.path 
+                      ? "bg-orange-600 text-white shadow-lg" 
+                      : "bg-slate-50 text-slate-700"
+                  )}
+                >
+                  <link.icon className="w-5 h-5" />
+                  {link.name.toUpperCase()}
+                </Link>
+              ))}
+              
+              {/* MOBILE ACTION BUTTON */}
+              {isLoggedIn && (
+                <Link 
+                  to={isProvider ? "/provider/dashboard" : "/profile"} 
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center justify-between p-5 font-black text-white bg-slate-900 rounded-2xl mt-4 shadow-xl"
+                >
+                  <span className="flex items-center gap-3">
+                    {isProvider ? <LayoutDashboard className="w-5 h-5 text-orange-500" /> : <UserCircle className="w-5 h-5 text-orange-500" />}
+                    {isProvider ? "GO TO DASHBOARD" : "VIEW MY PROFILE"}
+                  </span>
+                  <ChevronRight className="w-5 h-5 opacity-50" />
+                </Link>
+              )}
             </div>
 
-            {/* MOBILE AUTH BUTTONS */}
             {!isLoggedIn && (
-              <div className="border-t border-border mt-3 pt-3 px-2 space-y-2">
-                <Link to="/auth?role=user" onClick={() => setMobileMenuOpen(false)}>
-                  <Button variant="ghost" className="w-full justify-start">
-                    <User className="w-4 h-4 mr-2" />
-                    User Login
-                  </Button>
-                </Link>
-                <Link to="/auth?role=provider" onClick={() => setMobileMenuOpen(false)}>
-                  <Button variant="outline" className="w-full justify-start">
-                    <Building2 className="w-4 h-4 mr-2" />
-                    Provider Login
-                  </Button>
-                </Link>
+              <div className="grid grid-cols-1 gap-3 mt-4">
+                <Link to="/auth?role=user" onClick={() => setMobileMenuOpen(false)}><Button variant="outline" className="w-full h-14 rounded-2xl font-black border-2">USER LOGIN</Button></Link>
+                <Link to="/auth?role=provider" onClick={() => setMobileMenuOpen(false)}><Button className="w-full h-14 bg-orange-600 text-white rounded-2xl font-black">PROVIDER LOGIN</Button></Link>
               </div>
             )}
 
-            {/* MOBILE LOGOUT */}
             {isLoggedIn && (
-              <div className="border-t border-border mt-3 pt-3 px-2">
-                <Button
-                  variant="ghost"
-                  className="w-full justify-start text-red-500"
-                  onClick={handleLogout}
-                >
-                  <LogOut className="w-4 h-4 mr-2" />
-                  Logout
-                </Button>
-              </div>
+              <button 
+                onClick={handleLogout} 
+                className="w-full flex items-center justify-center gap-2 p-4 text-red-600 font-black border-t border-slate-100 pt-6 mt-2"
+              >
+                <LogOut className="w-5 h-5" /> LOGOUT
+              </button>
             )}
           </div>
         )}

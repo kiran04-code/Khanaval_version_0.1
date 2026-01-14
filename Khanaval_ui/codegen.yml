@@ -1,0 +1,17 @@
+schema: http://localhost:3003/graphql
+
+documents:
+  - src/**/*.{ts,tsx}
+
+generates:
+  src1/gql/:
+    preset: client
+    plugins:
+      - typescript
+      - typescript-operations
+      - typescript-react-apollo
+
+pluckConfig:
+  modules:
+    - name: graphql-tag
+      identifier: gql

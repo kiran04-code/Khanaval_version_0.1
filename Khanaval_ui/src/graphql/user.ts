@@ -1,4 +1,4 @@
-import { gql } from "@apollo/client";
+import gql from "graphql-tag";
 export const VERIFIED_USER_GOOGLE  = gql`
 query VerifiedUserGoogle($payload: signupinput!) {
   verifiedgoodtokenandnumberforSignup(payload: $payload) {

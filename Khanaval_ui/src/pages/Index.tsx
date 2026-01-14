@@ -18,10 +18,10 @@ import {
   ArrowDown,
   Loader2
 } from "lucide-react";
-import heroFood from "/hero-food.jpg";
+
 import Footer from "@/components/layout/footer";
 import { useEffect, useState } from "react";
-
+import { UserProviderdata } from "@/hooks/Provider";
 const features = [
   {
     icon: <Search className="w-6 h-6" />,
@@ -107,7 +107,9 @@ const MessSkeleton = ({ isLarge }) => (
   </div>
 );
 const Index = () => {
-const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
+  const {Providerdata} = UserProviderdata()
+  console.log(Providerdata)
 
   // 2 Second Loading Simulation
   useEffect(() => {
@@ -116,11 +118,11 @@ const [isLoading, setIsLoading] = useState(true);
     }, 5000);
     return () => clearTimeout(timer);
   }, []);
-
+  
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <section className="relative pt-20 pb-16 md:pt-14 md:pb-32 overflow-hidden bg-dot-pattern">
+      <section className="relative pt-22 pb-16 md:pt-16 md:pb-32 overflow-hidden bg-dot-pattern">
         {/* Optional: Decorative background blur */}
         <div className="absolute top-0 right-0 -z-10 h-[500px] w-[500px] bg-orange-100/50 blur-[120px] rounded-full" />
 
@@ -188,7 +190,7 @@ const [isLoading, setIsLoading] = useState(true);
                 <div className="absolute inset-0 bg-gradient-to-tr from-orange-100 to-transparent rounded-3xl -rotate-3 scale-105 -z-10" />
 
                 <img
-                  src={heroFood}
+                  src="/hero-food.jpg"
                   alt="Verified Indian mess food platform"
                   className="rounded-3xl shadow-2xl shadow-orange-900/10 border-dashed border border-orange-500 transform hover:scale-[1.02] transition-transform duration-500"
                 />

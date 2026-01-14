@@ -53,9 +53,11 @@ export default function HybridAuthPage() {
       );
       toast({ title: "Login successful" });
       navigate("/");
+      setIsLoading(false);
     } else {
       toast({ title: verifiedgoodtokenandnumberforSignin.message });
       setUserMode("signup")
+      setIsLoading(false);
     }
 
   };
@@ -86,11 +88,13 @@ export default function HybridAuthPage() {
       );
       toast({ title: "Signup successful" });
       navigate("/");
+      setIsLoading(false);
 
     } else {
       toast({ title: verifiedgoodtokenandnumberforSignup.message });
       setUserMode("login")
       setStep(1);
+      setIsLoading(false);
     }
 
   };

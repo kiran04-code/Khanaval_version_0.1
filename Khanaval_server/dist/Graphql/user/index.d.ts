@@ -25,7 +25,11 @@ export declare const user: {
                 token: string;
             }) => Promise<{
                 success: boolean;
-                token: Promise<string | null>;
+                token: null;
+                message: string;
+            } | {
+                success: boolean;
+                token: string;
                 message: string;
             }>;
         };

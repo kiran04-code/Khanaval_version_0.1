@@ -6,12 +6,15 @@ import {
   User, Calendar, CreditCard, Settings, LogOut, 
   ChevronRight, MapPin, History, ShieldCheck, 
   Flame, UtensilsCrossed, Bell,
-  Clock
+  Clock,
+  Mail,
+  Phone
 } from "lucide-react";
 import { useCurrentUser } from "@/hooks/user-hook";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import { Navigate, useNavigate } from "react-router-dom";
+import { subBusinessDays } from "date-fns";
 
 export default function KhanavalProfile() {
 const navigate = useNavigate();
@@ -65,15 +68,21 @@ const handlelogout = ()=>{
             </div>
           </div>
           
-          <div className="text-center mt-6">
-            <h1 className="text-[15px] md:text-3xl font-black text-slate-900 tracking-tight">{user.first_name} {user.last_name}</h1>
-            <h1 className="text-[15px] md:text-3xl font-black text-slate-900 tracking-tight">{user.emailId}</h1>
-            <div className="flex items-center justify-center gap-2 mt-2">
-               <Badge className="bg-orange-100 text-orange-700 hover:bg-orange-100 border-none font-bold">
-                 <Flame className="w-3 h-3 mr-1 fill-orange-500" /> {userData.streak} Day Streak
+         <div className="text-center mt-6 space-y-1">
+            <h1 className="text-3xl font-black text-slate-900 tracking-tight">
+              {user.first_name} {user.last_name}
+            </h1>
+            <div className="flex flex-col items-center gap-1 text-slate-500 font-medium">
+              <span className="flex items-center gap-1.5 text-sm"><Mail className="w-3.5 h-3.5" /> {user.emailId}</span>
+              <span className="flex items-center gap-1.5 text-sm"><Phone className="w-3.5 h-3.5" /> {user.number}</span>
+            </div>
+            
+            <div className="flex items-center justify-center gap-3 mt-4">
+               <Badge variant="secondary" className="bg-orange-100 text-orange-700 border-none px-4 py-1.5 rounded-full font-bold">
+                 <Flame className="w-4 h-4 mr-1.5 fill-orange-500 text-orange-500" /> {subBusinessDays} Day Streak
                </Badge>
-               <span className="text-slate-400 font-bold text-sm">•</span>
-               <span className="text-slate-500 font-bold text-sm">Member since 2025</span>
+               <span className="text-slate-300 font-light">|</span>
+               <span className="text-slate-500 font-bold text-sm text-center">Member since 2025</span>
             </div>
           </div>
         </div>

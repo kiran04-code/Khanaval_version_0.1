@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { UserProviderdata } from '@/hooks/Provider';
+import { Link } from 'react-router-dom';
 
 export function ProviderProfile() {
 const {Providerdata} = UserProviderdata()
@@ -173,9 +174,9 @@ const {Providerdata} = UserProviderdata()
                   <h3 className="text-2xl font-black text-slate-900">Setup Your Mess</h3>
                   <p className="text-slate-500 font-medium mt-2">You haven't added your mess details yet. Join 100+ providers today.</p>
                 </div>
-                <Button className="bg-orange-600 hover:bg-orange-700 text-white h-14 px-10 rounded-2xl font-black shadow-xl shadow-orange-100 uppercase tracking-widest text-xs active:scale-95 transition-all">
+                <Link to={"/provider/messsResgiter"} className="bg-orange-600 hover:bg-orange-700 text-white h-14 px-10 rounded-2xl font-black shadow-xl shadow-orange-100 uppercase tracking-widest text-xs active:scale-95 transition-all">
                   Register My Mess Now
-                </Button>
+                </Link>
               </div>
             )}
           </div>

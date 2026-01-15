@@ -10,6 +10,8 @@ class ProviderService {
             const GenratedProviderOTP = generateOtp();
             const redisKey = `otp:provider:${number}`;
             const userfound = await Provider.findOne({ number: number });
+            console.log("Signup_number", number);
+            console.log("Signup_User", userfound);
             if (userfound) {
                 return {
                     success: false,
@@ -74,6 +76,8 @@ class ProviderService {
             const GenratedProviderOTP = generateOtp();
             const redisKey = `otp:provider:${number}`;
             const userfound = await Provider.findOne({ number: number });
+            console.log("login_number", number);
+            console.log("login_User", userfound);
             if (!userfound) {
                 return {
                     success: false,

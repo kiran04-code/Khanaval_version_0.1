@@ -113,7 +113,7 @@ export default function HybridAuthPage() {
 
     setIsLoading(true);
     try {
-      if (providerName === "signup") {
+      if (providerMode  === "signup") {
         const { ProviderverficationOTP } = await graphqlClient.request(PROVIDER_OTP_SIGNUP_QUERY, {
           number: providerNumber
         });
@@ -134,7 +134,7 @@ export default function HybridAuthPage() {
           setProviderStep(2);
         } else {
           toast({ title: `${ProviderverficationOTPLogin.message}`, variant: "destructive" });
-          setProviderMode(providerMode === "signup" ? "login" : "signup");
+          setProviderMode(providerMode  === "login" ? "signup" : "signup");
         }
       }
 
@@ -150,7 +150,7 @@ export default function HybridAuthPage() {
   const handleProviderVerify = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      if (providerMode === "signup") {
+      if (providerMode  === "signup") {
         if (providerOtp.length !== 4) {
           toast({ title: "Enter 4 digit OTP" });
           return;

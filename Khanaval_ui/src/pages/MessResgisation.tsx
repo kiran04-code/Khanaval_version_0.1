@@ -3,7 +3,7 @@ import {
   Camera, ArrowRight, CheckCircle2, 
   ChevronLeft, MapPin, ShieldCheck, 
   Utensils, Smartphone, MessageCircle,
-  Clock, Search, Check
+  Clock, Search, Check, Info, Lock
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -22,38 +22,28 @@ export default function UpdishOnboarding() {
       } else {
         setIsCompleted(true);
       }
-    }, 1500); // Slightly longer to appreciate the animation
+    }, 1500); 
   };
 
   const prevStep = () => setStep(s => s - 1);
 
-  // --- BRANDED THALI LOADER ---
-// ... (previous imports remains the same)
-
-  // --- BRANDED THALI LOADER ---
+  // --- BRANDED THALI LOADER (UNSPLASH) ---
   const UpdishLoader = () => (
     <div className="fixed inset-0 z-[100] bg-white/95 backdrop-blur-md flex flex-col items-center justify-center">
       <div className="relative">
-        {/* Animated Outer Ring */}
         <div className="absolute -inset-4 border-2 border-dashed border-orange-200 rounded-full animate-spin-slow" />
-        
-        {/* The Thali Image Container */}
         <div className="relative w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-2xl">
           <img 
             src="https://images.unsplash.com/photo-1546833999-b9f581a1996d?auto=format&fit=crop&w=300&q=80" 
             alt="Indian Thali"
             className="w-full h-full object-cover animate-pulse-gentle"
           />
-          {/* Glossy Overlay */}
           <div className="absolute inset-0 bg-gradient-to-tr from-black/20 to-transparent pointer-events-none" />
         </div>
-
-        {/* Small Floating Icon */}
         <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-orange-600 rounded-full flex items-center justify-center shadow-lg border-2 border-white">
           <Utensils className="text-white w-5 h-5" />
         </div>
       </div>
-      
       <div className="mt-12 text-center">
         <div className="flex items-center justify-center gap-1 mb-2">
            <span className="w-1.5 h-1.5 bg-orange-600 rounded-full animate-bounce [animation-delay:-0.3s]" />
@@ -63,29 +53,15 @@ export default function UpdishOnboarding() {
         <h3 className="font-bold text-slate-900 text-lg tracking-tight">Setting up your kitchen</h3>
         <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-orange-500 mt-1">Updish Premium</p>
       </div>
-
-      <style    >{`
-        @keyframes spin-slow {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-        @keyframes pulse-gentle {
-          0%, 100% { transform: scale(1); }
-          50% { transform: scale(1.05); }
-        }
-        .animate-spin-slow {
-          animation: spin-slow 12s linear infinite;
-        }
-        .animate-pulse-gentle {
-          animation: pulse-gentle 3s ease-in-out infinite;
-        }
+      <style>{`
+        @keyframes spin-slow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes pulse-gentle { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+        .animate-spin-slow { animation: spin-slow 12s linear infinite; }
+        .animate-pulse-gentle { animation: pulse-gentle 3s ease-in-out infinite; }
       `}</style>
     </div>
   );
 
-// ... (rest of the component logic remains the same)
-
-  // --- FINAL SUCCESS VIEW ---
   if (isCompleted) {
     return (
       <div className="min-h-screen bg-white max-w-md mx-auto flex flex-col items-center justify-center p-8 text-center animate-in fade-in duration-500">
@@ -94,7 +70,6 @@ export default function UpdishOnboarding() {
         </div>
         <h2 className="text-2xl font-bold text-slate-900 mb-2">Application Received</h2>
         <p className="text-slate-500 text-sm mb-8">Verification takes up to <span className="text-orange-600 font-bold">24 hours</span> before going live.</p>
-        
         <div className="w-full space-y-3">
           <div className="flex items-center gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-100 text-left">
             <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
@@ -115,7 +90,6 @@ export default function UpdishOnboarding() {
             </div>
           </div>
         </div>
-
         <Button className="mt-10 w-full h-14 bg-slate-900 text-white rounded-2xl font-bold uppercase tracking-wider hover:bg-slate-800 transition-colors">
           Go to Dashboard
         </Button>
@@ -172,11 +146,12 @@ export default function UpdishOnboarding() {
           <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
             <h2 className="text-xl font-bold">Menu Photos</h2>
             <div className="grid grid-cols-2 gap-4">
-              <div className="col-span-2 aspect-video bg-white rounded-3xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center gap-2 hover:bg-orange-50/30 transition-all cursor-pointer">
-                <div className="w-12 h-12 bg-orange-50 rounded-full flex items-center justify-center">
+              <div className="col-span-2 aspect-video bg-white rounded-3xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center gap-2 hover:bg-orange-50/30 transition-all cursor-pointer group">
+                <div className="w-12 h-12 bg-orange-50 rounded-full flex items-center justify-center group-hover:bg-orange-100 transition-colors">
                   <Utensils className="text-orange-600 w-6 h-6" />
                 </div>
                 <p className="font-bold text-sm">Cover Photo</p>
+                <p className="text-[10px] text-gray-400">Best view of your main thali</p>
               </div>
               {['Kitchen', 'Dining'].map(label => (
                 <div key={label} className="aspect-square bg-white rounded-2xl border border-gray-100 flex flex-col items-center justify-center gap-1 hover:border-orange-200 transition-colors cursor-pointer">
@@ -193,10 +168,19 @@ export default function UpdishOnboarding() {
             <h2 className="text-xl font-bold text-center">Service Location</h2>
             <div className="relative aspect-square w-full flex items-center justify-center">
               <div className="absolute w-48 h-48 bg-orange-100 rounded-full animate-pulse opacity-50" />
-              <div className="z-10 bg-white p-6 rounded-[32px] shadow-xl border border-orange-50 flex flex-col items-center">
+              <div className="z-10 bg-white p-6 rounded-[32px] shadow-xl border border-orange-50 flex flex-col items-center text-center">
                 <MapPin className="text-orange-600 w-8 h-8 mb-4" />
-                <Button className="rounded-full bg-slate-900 px-6 h-10 text-[10px] font-bold uppercase tracking-widest text-white">Detect GPS</Button>
+                <Button className="rounded-full bg-slate-900 px-6 h-10 text-[10px] font-bold uppercase tracking-widest text-white mb-4">Detect GPS</Button>
+                <p className="text-[11px] text-gray-400 px-4">Pin your kitchen location for local delivery radius</p>
               </div>
+            </div>
+            {/* NEW: Address Preview Box to fill space */}
+            <div className="bg-white p-4 rounded-2xl border border-gray-100 border-dashed">
+                <div className="flex items-center gap-3 mb-2">
+                    <Info className="w-4 h-4 text-orange-400" />
+                    <span className="text-[11px] font-bold text-gray-900 uppercase">Delivery Range</span>
+                </div>
+                <p className="text-xs text-gray-500 leading-relaxed">Once detected, students within <span className="text-slate-900 font-bold">5km</span> of your location will be able to order from your mess.</p>
             </div>
           </div>
         )}
@@ -204,15 +188,37 @@ export default function UpdishOnboarding() {
         {step === 4 && (
           <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
             <h2 className="text-xl font-bold">Safety & Legal</h2>
-            <div className="bg-white p-6 rounded-2xl border border-gray-100 space-y-4">
+            <div className="bg-white p-6 rounded-2xl border border-gray-100 space-y-4 shadow-sm">
               <div className="space-y-2">
-                <label className="text-[11px] font-bold text-gray-400 uppercase">FSSAI Number</label>
-                <input className="w-full h-12 bg-gray-50 rounded-xl px-4 font-mono font-bold tracking-widest outline-none border border-transparent focus:border-orange-200" placeholder="14 DIGITS" />
+                <div className="flex justify-between items-center">
+                  <label className="text-[11px] font-bold text-gray-400 uppercase">FSSAI Number</label>
+                  <span className="text-[10px] text-orange-600 font-bold bg-orange-50 px-2 py-0.5 rounded-full">Mandatory</span>
+                </div>
+                <input className="w-full h-12 bg-gray-50 rounded-xl px-4 font-mono font-bold tracking-widest outline-none border border-transparent focus:border-orange-200 transition-all" placeholder="14 DIGITS" />
               </div>
               <div className="p-4 bg-blue-50 rounded-xl flex items-start gap-3">
                 <ShieldCheck className="w-5 h-5 text-blue-600 shrink-0" />
                 <p className="text-[11px] text-blue-800 font-medium leading-relaxed">Verified licenses get 2x more orders from safety-conscious students.</p>
               </div>
+            </div>
+
+            {/* NEW: Trust Checklist to fill the empty space */}
+            <div className="space-y-3 px-2">
+                <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Our Community Standards</p>
+                <div className="grid grid-cols-1 gap-2">
+                    {[
+                        { icon: Check, text: "High hygiene standards maintained" },
+                        { icon: Check, text: "Transparent pricing for students" },
+                        { icon: Lock, text: "Data encrypted & secure" }
+                    ].map((item, i) => (
+                        <div key={i} className="flex items-center gap-3">
+                            <div className="w-5 h-5 rounded-full bg-green-50 flex items-center justify-center">
+                                <item.icon className="w-3 h-3 text-green-600" />
+                            </div>
+                            <span className="text-xs text-gray-600">{item.text}</span>
+                        </div>
+                    ))}
+                </div>
             </div>
           </div>
         )}

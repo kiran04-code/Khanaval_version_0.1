@@ -144,7 +144,7 @@ export function Navbar() {
                <div className="flex items-center gap-4 p-4 bg-orange-50 rounded-3xl border border-orange-100">
                  <Avatar className="w-14 h-14 border-4 border-white shadow-md">
                    <AvatarImage src={isProvider ? Providerdata?.imageUrl : user?.imageUrl} />
-                   <AvatarFallback className="bg-orange-600 text-white font-bold font-black text-xl">
+                   <AvatarFallback className="bg-orange-600 text-white font-bold text-xl">
                       {(isProvider ? Providerdata?.OwnerName?.[0] : user?.first_name?.[0])}
                     </AvatarFallback>
                  </Avatar>

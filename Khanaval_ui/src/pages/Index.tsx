@@ -71,7 +71,7 @@ const popularMesses = [
   {
     id: "1",
     name: "Sharma's Kitchen",
-    image: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400",
+    image: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&q=80&w=800",
     distance: "0.5 km",
     price: 3000,
     rating: 4.5,
@@ -80,7 +80,7 @@ const popularMesses = [
   {
     id: "2",
     name: "Gupta Bhojanalaya",
-    image: "https://images.unsplash.com/photo-1567337710282-00832b415979?w=400",
+    image: "https://images.unsplash.com/photo-1517244683847-7456b63c5969?q=80&w=800&auto=format&fit=crop",
     distance: "0.8 km",
     price: 2800,
     rating: 4.3,
@@ -88,12 +88,30 @@ const popularMesses = [
   },
   {
     id: "3",
-    name: "South Spice",
-    image: "https://images.unsplash.com/photo-1512058564366-18510be2db19?w=400",
+    name: "The South Spice",
+    image: "https://images.unsplash.com/photo-1589302168068-964664d93dc0?auto=format&fit=crop&q=80&w=800",
     distance: "1.2 km",
     price: 3200,
     rating: 4.7,
     isVeg: false,
+  },
+  {
+    id: "4",
+    name: "Punjab Junction",
+    image: "https://images.unsplash.com/photo-1585937421612-70a008356fbe?auto=format&fit=crop&q=80&w=800",
+    distance: "1.5 km",
+    price: 3500,
+    rating: 4.8,
+    isVeg: false,
+  },
+  {
+    id: "5",
+    name: "Royal Thali",
+    image: "https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?auto=format&fit=crop&q=80&w=800",
+    distance: "0.3 km",
+    price: 2500,
+    rating: 4.6,
+    isVeg: true,
   },
 ];
 
@@ -347,7 +365,7 @@ const Index = () => {
 
             {/* BENTO GRID AREA: SHOW SKELETON OR DATA */}
             <div className="relative min-h-[500px]">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 lg:grid-cols-2 gap-3 md:gap-4">
                 {isLoading ? (
                   <>
                     <MessSkeleton isLarge={true} />
@@ -358,23 +376,35 @@ const Index = () => {
                   popularMesses.map((mess, index) => (
                     <Card
                       key={mess.id}
-                      className={`group overflow-hidden border-none shadow-2xl relative animate-in fade-in zoom-in duration-500 ${index === 0 ? "col-span-2 aspect-[16/9]" : "col-span-2 md:col-span-1 aspect-square"
-                        }`}
+                      className={`group overflow-hidden border-none shadow-2xl relative animate-in fade-in zoom-in duration-500 
+            ${/* Mobile Logic: Card 1 is full width, others are half. 
+                 Desktop Logic: Revert to your original 'index === 0' span */
+                        index === 0
+                          ? "col-span-2 aspect-[16/9]"
+                          : "col-span-1 lg:col-span-1 aspect-square md:aspect-square"
+                        }
+            ${/* Hide card 4 and 5 on desktop to maintain your 'Old Layout' */
+                        index > 2 ? "flex lg:hidden" : "flex"
+                        }
+          `}
                     >
                       <img
                         src={mess.image}
                         alt={mess.name}
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
-                      <div className="absolute bottom-6 left-6 right-6">
-                        <Badge className={`mb-2 ${mess.isVeg ? "bg-green-500/90" : "bg-red-500/90"} border-none text-white`}>
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/20 to-transparent" />
+
+                      <div className="absolute bottom-3 left-3 right-3 md:bottom-6 md:left-6 md:right-6">
+                        <Badge className={`mb-2 ${mess.isVeg ? "bg-green-500/90" : "bg-red-500/90"} border-none text-white text-[10px] md:text-xs`}>
                           {mess.isVeg ? "Pure Veg" : "Non-Veg Available"}
                         </Badge>
-                        <h4 className="text-2xl font-black text-white mb-1">{mess.name}</h4>
-                        <div className="flex items-center gap-3 text-sm text-white/80">
+                        <h4 className="text-sm md:text-2xl font-black text-white mb-1 leading-tight line-clamp-1">
+                          {mess.name}
+                        </h4>
+                        <div className="flex items-center gap-2 md:gap-3 text-[10px] md:text-sm text-white/80">
                           <div className="flex items-center gap-1">
-                            <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                            <Star className="w-3 h-3 md:w-4 md:h-4 fill-yellow-400 text-yellow-400" />
                             <span className="font-bold text-white">{mess.rating}</span>
                           </div>
                           <span>•</span>
@@ -384,9 +414,10 @@ const Index = () => {
                     </Card>
                   ))
                 )}
+
                 {!isLoading && (
                   <Link to="/mess" className="col-span-2 mt-4">
-                    <Button variant="outline" className="w-full h-14 rounded-2xl border-2 font-bold hover:bg-primary hover:text-white transition-all">
+                    <Button variant="outline" className="w-full h-12 md:h-14 rounded-xl md:rounded-2xl border-2 font-bold hover:bg-primary hover:text-white transition-all">
                       Explore All Local Messes <ArrowRight className="ml-2 w-4 h-4" />
                     </Button>
                   </Link>

@@ -22,23 +22,68 @@ export default function UpdishOnboarding() {
       } else {
         setIsCompleted(true);
       }
-    }, 1000);
+    }, 1500); // Slightly longer to appreciate the animation
   };
 
   const prevStep = () => setStep(s => s - 1);
 
   // --- BRANDED THALI LOADER ---
+// ... (previous imports remains the same)
+
+  // --- BRANDED THALI LOADER ---
   const UpdishLoader = () => (
-    <div className="fixed inset-0 z-[100] bg-white/90 backdrop-blur-sm flex flex-col items-center justify-center">
-      <div className="relative flex items-center justify-center">
-        <div className="absolute w-20 h-20 bg-orange-100 rounded-full animate-ping opacity-40" />
-        <div className="relative w-16 h-16 bg-orange-600 rounded-2xl flex items-center justify-center shadow-lg animate-bounce">
-          <Utensils className="text-white w-8 h-8" />
+    <div className="fixed inset-0 z-[100] bg-white/95 backdrop-blur-md flex flex-col items-center justify-center">
+      <div className="relative">
+        {/* Animated Outer Ring */}
+        <div className="absolute -inset-4 border-2 border-dashed border-orange-200 rounded-full animate-spin-slow" />
+        
+        {/* The Thali Image Container */}
+        <div className="relative w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-2xl">
+          <img 
+            src="https://images.unsplash.com/photo-1546833999-b9f581a1996d?auto=format&fit=crop&w=300&q=80" 
+            alt="Indian Thali"
+            className="w-full h-full object-cover animate-pulse-gentle"
+          />
+          {/* Glossy Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-tr from-black/20 to-transparent pointer-events-none" />
+        </div>
+
+        {/* Small Floating Icon */}
+        <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-orange-600 rounded-full flex items-center justify-center shadow-lg border-2 border-white">
+          <Utensils className="text-white w-5 h-5" />
         </div>
       </div>
-      <p className="mt-8 text-[11px] font-bold uppercase tracking-widest text-orange-600">Processing...</p>
+      
+      <div className="mt-12 text-center">
+        <div className="flex items-center justify-center gap-1 mb-2">
+           <span className="w-1.5 h-1.5 bg-orange-600 rounded-full animate-bounce [animation-delay:-0.3s]" />
+           <span className="w-1.5 h-1.5 bg-orange-600 rounded-full animate-bounce [animation-delay:-0.15s]" />
+           <span className="w-1.5 h-1.5 bg-orange-600 rounded-full animate-bounce" />
+        </div>
+        <h3 className="font-bold text-slate-900 text-lg tracking-tight">Setting up your kitchen</h3>
+        <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-orange-500 mt-1">Updish Premium</p>
+      </div>
+
+      <style    >{`
+        @keyframes spin-slow {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+        @keyframes pulse-gentle {
+          0%, 100% { transform: scale(1); }
+          50% { transform: scale(1.05); }
+        }
+        .animate-spin-slow {
+          animation: spin-slow 12s linear infinite;
+        }
+        .animate-pulse-gentle {
+          animation: pulse-gentle 3s ease-in-out infinite;
+        }
+      `}</style>
     </div>
   );
+
+// ... (rest of the component logic remains the same)
 
   // --- FINAL SUCCESS VIEW ---
   if (isCompleted) {
@@ -52,14 +97,18 @@ export default function UpdishOnboarding() {
         
         <div className="w-full space-y-3">
           <div className="flex items-center gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-100 text-left">
-            <MessageCircle className="w-5 h-5 text-green-600" />
+            <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+              <MessageCircle className="w-5 h-5 text-green-600" />
+            </div>
             <div>
               <p className="text-xs font-bold text-slate-900">WhatsApp Alerts</p>
               <p className="text-[10px] text-slate-500 tracking-tight">Enabled for incoming orders</p>
             </div>
           </div>
           <div className="flex items-center gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-100 text-left">
-            <Smartphone className="w-5 h-5 text-orange-600" />
+            <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
+              <Smartphone className="w-5 h-5 text-orange-600" />
+            </div>
             <div>
               <p className="text-xs font-bold text-slate-900">App Notifications</p>
               <p className="text-[10px] text-slate-500 tracking-tight">Real-time status tracking active</p>
@@ -67,7 +116,7 @@ export default function UpdishOnboarding() {
           </div>
         </div>
 
-        <Button className="mt-10 w-full h-14 bg-slate-900 text-white rounded-2xl font-bold uppercase tracking-wider">
+        <Button className="mt-10 w-full h-14 bg-slate-900 text-white rounded-2xl font-bold uppercase tracking-wider hover:bg-slate-800 transition-colors">
           Go to Dashboard
         </Button>
       </div>
@@ -79,7 +128,7 @@ export default function UpdishOnboarding() {
       {loading && <UpdishLoader />}
 
       <nav className="p-4 flex items-center bg-white border-b border-gray-100">
-        <button onClick={prevStep} className={`p-2 ${step === 1 ? 'invisible' : ''}`}>
+        <button onClick={prevStep} className={`p-2 hover:bg-gray-50 rounded-full transition-colors ${step === 1 ? 'invisible' : ''}`}>
           <ChevronLeft className="w-6 h-6 text-gray-600" />
         </button>
         <div className="flex-1 text-center">
@@ -124,11 +173,13 @@ export default function UpdishOnboarding() {
             <h2 className="text-xl font-bold">Menu Photos</h2>
             <div className="grid grid-cols-2 gap-4">
               <div className="col-span-2 aspect-video bg-white rounded-3xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center gap-2 hover:bg-orange-50/30 transition-all cursor-pointer">
-                <Utensils className="text-orange-600 w-6 h-6" />
+                <div className="w-12 h-12 bg-orange-50 rounded-full flex items-center justify-center">
+                  <Utensils className="text-orange-600 w-6 h-6" />
+                </div>
                 <p className="font-bold text-sm">Cover Photo</p>
               </div>
               {['Kitchen', 'Dining'].map(label => (
-                <div key={label} className="aspect-square bg-white rounded-2xl border border-gray-100 flex flex-col items-center justify-center gap-1">
+                <div key={label} className="aspect-square bg-white rounded-2xl border border-gray-100 flex flex-col items-center justify-center gap-1 hover:border-orange-200 transition-colors cursor-pointer">
                   <Camera className="w-5 h-5 text-gray-400" />
                   <span className="text-[10px] font-bold text-gray-400 uppercase">{label}</span>
                 </div>
@@ -141,7 +192,7 @@ export default function UpdishOnboarding() {
           <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
             <h2 className="text-xl font-bold text-center">Service Location</h2>
             <div className="relative aspect-square w-full flex items-center justify-center">
-              <div className="absolute w-48 h-48 bg-orange-100 rounded-full animate-pulse" />
+              <div className="absolute w-48 h-48 bg-orange-100 rounded-full animate-pulse opacity-50" />
               <div className="z-10 bg-white p-6 rounded-[32px] shadow-xl border border-orange-50 flex flex-col items-center">
                 <MapPin className="text-orange-600 w-8 h-8 mb-4" />
                 <Button className="rounded-full bg-slate-900 px-6 h-10 text-[10px] font-bold uppercase tracking-widest text-white">Detect GPS</Button>
@@ -156,11 +207,11 @@ export default function UpdishOnboarding() {
             <div className="bg-white p-6 rounded-2xl border border-gray-100 space-y-4">
               <div className="space-y-2">
                 <label className="text-[11px] font-bold text-gray-400 uppercase">FSSAI Number</label>
-                <input className="w-full h-12 bg-gray-50 rounded-xl px-4 font-mono font-bold tracking-widest outline-none" placeholder="14 DIGITS" />
+                <input className="w-full h-12 bg-gray-50 rounded-xl px-4 font-mono font-bold tracking-widest outline-none border border-transparent focus:border-orange-200" placeholder="14 DIGITS" />
               </div>
               <div className="p-4 bg-blue-50 rounded-xl flex items-start gap-3">
                 <ShieldCheck className="w-5 h-5 text-blue-600 shrink-0" />
-                <p className="text-[11px] text-blue-800 font-medium">Verified licenses get 2x more orders.</p>
+                <p className="text-[11px] text-blue-800 font-medium leading-relaxed">Verified licenses get 2x more orders from safety-conscious students.</p>
               </div>
             </div>
           </div>

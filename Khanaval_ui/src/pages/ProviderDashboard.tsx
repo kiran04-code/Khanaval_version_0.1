@@ -35,13 +35,8 @@ export default function ProviderDashboard() {
   
   // Fetching your provider data
   const { Providerdata } = UserProviderdata();
-  
-  /**
-   * 1. REGISTRATION GUARD
-   * If MessRegistered is false, we return the Onboarding flow immediately.
-   * This prevents the sidebar and dashboard from even rendering.
-   */
-  if (Providerdata?.MessRegistered === false) {
+  console.log(Providerdata?.MessRegister) 
+  if (Providerdata?.MessRegister === false) {
     return <UpdishOnboarding />;
   }
 

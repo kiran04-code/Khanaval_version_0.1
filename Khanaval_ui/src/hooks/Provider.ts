@@ -8,6 +8,5 @@ export const UserProviderdata = () =>{
         queryKey:["provider-data"],
         queryFn:()=>graphqlClient.request(PROVIDER_CURRENT_DATA)
     })
-    console.log(query)
     return {...query ,Providerdata:query.data?.getProviderdata}
 }

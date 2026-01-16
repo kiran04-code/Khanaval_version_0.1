@@ -35,7 +35,7 @@ export default function ProviderDashboard() {
   
   // Fetching your provider data
   const { Providerdata } = UserProviderdata();
-  console.log(Providerdata?.MessRegister) 
+  console.log(Providerdata) 
   if (Providerdata?.MessRegister === false) {
     return <UpdishOnboarding />;
   }

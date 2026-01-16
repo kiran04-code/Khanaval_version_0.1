@@ -40,7 +40,10 @@ export default function UpdishOnboarding() {
         lng: null,
         address: "",
         city: "",
+        suburb:"",
         state: "",
+        landmark:"",
+        accuracy:"",
         postcode: ""
     });
     const [locationStatus, setLocationStatus] = useState('idle');
@@ -50,56 +53,72 @@ export default function UpdishOnboarding() {
         setTimeout(() => setToast({ show: false, message: "", type: "error" }), 3000);
     };
 
-    const detectLocation = () => {
-        if (!navigator.geolocation) {
-            return showToast("Your browser does not support GPS detection.");
-        }
+ const detectLocation = () => {
+    if (!navigator.geolocation) {
+        return showToast("Your browser does not support GPS detection.");
+    }
 
-        setLocationStatus('detecting');
+    setLocationStatus('detecting');
 
-        const options = {
-            enableHighAccuracy: true,
-            timeout: 15000,
-            maximumAge: 0
-        };
-
-        navigator.geolocation.getCurrentPosition(
-            async (position) => {
-                const { latitude, longitude, accuracy } = position.coords;
-
-                try {
-                    // Using LocationIQ for Reverse Geocoding
-                    const response = await fetch(
-                        `https://us1.locationiq.com/v1/reverse.php?key=pk.91fc812339a9eec58d906360c5be50fc&lat=${latitude}&lon=${longitude}&format=json`
-                    );
-                    const data = await response.json();
-                    
-                    setLocationData({
-                        lat: latitude,
-                        lng: longitude,
-                        address: data.display_name,
-                        city: data.address.city || data.address.town || data.address.village || "N/A",
-                        state: data.address.state,
-                        postcode: data.address.postcode,
-                        accuracy: Math.round(accuracy) + "m"
-                    });
-                    
-                    setLocationStatus('confirmed');
-                    showToast("Mess Location Verified!", "success");
-                } catch (err) {
-                    setLocationData(prev => ({ ...prev, lat: latitude, lng: longitude }));
-                    setLocationStatus('confirmed');
-                    showToast("GPS captured, but address lookup failed.");
-                }
-            },
-            (error) => {
-                setLocationStatus('idle');
-                showToast("Please enable GPS/Location permissions.");
-            },
-            options
-        );
+    const options = {
+        enableHighAccuracy: true,
+        timeout: 15000,
+        maximumAge: 0
     };
 
+    navigator.geolocation.getCurrentPosition(
+        async (position) => {
+            const { latitude, longitude, accuracy } = position.coords;
+
+            try {
+                // We add &addressdetails=1 to ensure we get house numbers and landmarks
+                const response = await fetch(
+                    `https://us1.locationiq.com/v1/reverse.php?key=pk.91fc812339a9eec58d906360c5be50fc&lat=${latitude}&lon=${longitude}&format=json&addressdetails=1`
+                );
+                const data = await response.json();
+                const addr = data.address;
+                console.log(data)
+                // --- SMART LANDMARK LOGIC ---
+                // We check for shop name (amenity), house number, or building name
+                const buildingOrShop = addr.amenity || addr.house_name || addr.office || addr.shop || "";
+                const houseNumber = addr.house_number ? `House No. ${addr.house_number}, ` : "";
+                const road = addr.road || addr.pedestrian || "";
+                
+                // Combine them for a "Local Detail" field
+                const localDetail = buildingOrShop 
+                    ? `${buildingOrShop} (${road})` 
+                    : `${houseNumber}${road}`;
+
+                setLocationData({
+                    lat: latitude,
+                    lng: longitude,
+                    // The full detailed address
+                    address: data.display_name,
+                    // The specific shop/house/landmark
+                    landmark: buildingOrShop || "Near " + road,
+                    city: addr.city || addr.town || addr.village || "N/A",
+                    suburb: addr.suburb || addr.neighbourhood || "",
+                    state: addr.state,
+                    postcode: addr.postcode,
+                    accuracy: Math.round(accuracy) + "m"
+                });
+                
+                setLocationStatus('confirmed');
+                showToast("Shop/Mess Location Identified!", "success");
+            } catch (err) {
+                console.error("Geocoding error:", err);
+                setLocationData(prev => ({ ...prev, lat: latitude, lng: longitude }));
+                setLocationStatus('confirmed');
+                showToast("GPS captured, but address lookup failed.");
+            }
+        },
+        (error) => {
+            setLocationStatus('idle');
+            showToast("Please enable GPS/Location permissions.");
+        },
+        options
+    );
+};
     const handleSubmit = () => {
         if (!locationData.lat || !locationData.lng) {
             return showToast("Please detect location before submitting.");
@@ -306,72 +325,98 @@ export default function UpdishOnboarding() {
                         </div>
                     </div>
                 )}
+{step === 3 && (
+    <div className="space-y-6 animate-in fade-in flex-1 flex flex-col">
+        <div className="text-center space-y-1">
+            <h2 className="text-xl font-bold text-gray-900">Service Location</h2>
+            <p className="text-xs text-gray-500 italic">Precision GPS Verification</p>
+        </div>
 
-                {step === 3 && (
-                    <div className="space-y-6 animate-in fade-in flex-1 flex flex-col">
-                        <div className="text-center space-y-1">
-                            <h2 className="text-xl font-bold text-gray-900">Service Location</h2>
-                            <p className="text-xs text-gray-500 italic">Live GPS verification</p>
-                        </div>
-                        
-                        <div className="flex-1 flex flex-col items-center justify-center">
-                            {locationStatus === 'detecting' && (
-                                <div className="absolute flex items-center justify-center">
-                                    <div className="w-48 h-48 bg-orange-100 rounded-full animate-ping opacity-30" />
-                                </div>
-                            )}
+        <div className="flex-1 flex flex-col items-center justify-center">
+            {locationStatus === 'detecting' && (
+                <div className="absolute flex items-center justify-center">
+                    <div className="w-48 h-48 bg-orange-100 rounded-full animate-ping opacity-30" />
+                </div>
+            )}
 
-                            <div className={`w-full max-w-xs bg-white p-6 rounded-[32px] border transition-all duration-500 flex flex-col items-center text-center ${locationStatus === 'confirmed' ? 'border-emerald-100 shadow-xl bg-emerald-50/20' : 'border-gray-100 shadow-sm'}`}>
-                                <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-6 transition-colors ${locationStatus === 'confirmed' ? 'bg-emerald-500' : 'bg-orange-50'}`}>
-                                    {locationStatus === 'confirmed' ? <MapPinned className="text-white w-8 h-8" /> : <MapPin className="text-orange-600 w-8 h-8" />}
-                                </div>
+            <div className={`w-full max-w-sm bg-white p-6 rounded-[32px] border transition-all duration-500 flex flex-col items-center ${locationStatus === 'confirmed' ? 'border-emerald-100 shadow-xl bg-emerald-50/10' : 'border-gray-100 shadow-sm'}`}>
+                
+                {/* ICON SECTION */}
+                <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-6 transition-colors shadow-inner ${locationStatus === 'confirmed' ? 'bg-emerald-500 shadow-emerald-200' : 'bg-orange-50'}`}>
+                    {locationStatus === 'confirmed' ? <MapPinned className="text-white w-8 h-8" /> : <MapPin className="text-orange-600 w-8 h-8" />}
+                </div>
 
-                                {locationStatus === 'idle' && (
-                                    <>
-                                        <h3 className="font-bold text-slate-900 mb-2">Enable GPS</h3>
-                                        <p className="text-xs text-slate-400 mb-6 px-4">We need your current location to show your mess to nearby students.</p>
-                                        <Button onClick={detectLocation} className="rounded-xl bg-slate-900 px-6 h-12 text-[10px] font-black uppercase text-white shadow-lg">Detect Location</Button>
-                                    </>
-                                )}
-
-                                {locationStatus === 'detecting' && (
-                                    <div className="space-y-3">
-                                        <Loader2 className="w-6 h-6 text-orange-600 animate-spin mx-auto" />
-                                        <p className="text-[10px] font-black uppercase text-orange-600 tracking-widest">Fetching Coordinates...</p>
-                                    </div>
-                                )}
-
-                                {locationStatus === 'confirmed' && (
-                                    <div className="animate-in zoom-in-95 duration-500 w-full">
-                                        <div className="flex items-center justify-center gap-2 mb-4">
-                                            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                                            <span className="text-[9px] font-black text-emerald-600 uppercase tracking-widest">Verified Address</span>
-                                        </div>
-                                        
-                                        <div className="space-y-3 text-left bg-white p-4 rounded-2xl border border-emerald-100/50">
-                                            <div>
-                                                <p className="text-[9px] font-bold text-slate-400 uppercase">Street / Landmark</p>
-                                                <p className="text-xs font-bold text-slate-800 line-clamp-2">{locationData.address}</p>
-                                            </div>
-                                            <div className="grid grid-cols-2 gap-2">
-                                                <div>
-                                                    <p className="text-[9px] font-bold text-slate-400 uppercase">City</p>
-                                                    <p className="text-xs font-bold text-slate-800">{locationData.city}</p>
-                                                </div>
-                                                <div>
-                                                    <p className="text-[9px] font-bold text-slate-400 uppercase">Pincode</p>
-                                                    <p className="text-xs font-bold text-slate-800">{locationData.postcode}</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        
-                                        <button onClick={detectLocation} className="mt-4 text-[10px] font-bold text-orange-600 hover:underline">Incorrect? Try Again</button>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
+                {locationStatus === 'idle' && (
+                    <div className="text-center">
+                        <h3 className="font-bold text-slate-900 mb-2">Enable Mess GPS</h3>
+                        <p className="text-xs text-slate-400 mb-6 px-4 leading-relaxed">We need your shop's exact location to show your menu to students within 1-2 km.</p>
+                        <Button onClick={detectLocation} className="rounded-xl bg-slate-900 px-8 h-12 text-[10px] font-black uppercase text-white shadow-lg active:scale-95">Verify My Location</Button>
                     </div>
                 )}
+
+                {locationStatus === 'detecting' && (
+                    <div className="space-y-3 text-center">
+                        <Loader2 className="w-6 h-6 text-orange-600 animate-spin mx-auto" />
+                        <p className="text-[10px] font-black uppercase text-orange-600 tracking-widest">Pinpointing Address...</p>
+                    </div>
+                )}
+
+                {locationStatus === 'confirmed' && (
+                    <div className="animate-in zoom-in-95 duration-500 w-full space-y-4">
+                        <div className="flex items-center justify-center gap-2">
+                            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                            <span className="text-[9px] font-black text-emerald-600 uppercase tracking-widest">Location Match Found</span>
+                        </div>
+                        
+                        {/* DETAILED ADDRESS CARD */}
+                        <div className="space-y-4 text-left bg-white p-5 rounded-2xl border border-emerald-100/50 shadow-sm">
+                            
+                            {/* LANDMARK / SHOP NAME */}
+                            <div className="pb-3 border-b border-slate-50">
+                                <p className="text-[9px] font-black text-orange-500 uppercase tracking-tighter mb-1">Mess Landmark / Building</p>
+                                <div className="flex items-start gap-2">
+                                    <div className="w-5 h-5 bg-orange-50 rounded flex items-center justify-center shrink-0 mt-0.5">
+                                        <Navigation className="w-3 h-3 text-orange-600" />
+                                    </div>
+                                    <p className="text-sm font-black text-slate-800 leading-tight">
+                                        {locationData.landmark || "Building Detected"}
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* AREA / SUBURB */}
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <p className="text-[9px] font-bold text-slate-400 uppercase mb-1">Locality/Area</p>
+                                    <p className="text-xs font-bold text-slate-700">{locationData.suburb || "Local Area"}</p>
+                                </div>
+                                <div>
+                                    <p className="text-[9px] font-bold text-slate-400 uppercase mb-1">City</p>
+                                    <p className="text-xs font-bold text-slate-700">{locationData.city}</p>
+                                </div>
+                            </div>
+
+                            {/* FULL DISPLAY ADDRESS */}
+                            <div className="pt-2">
+                                <p className="text-[9px] font-bold text-slate-400 uppercase mb-1">Full Delivery Address</p>
+                                <p className="text-[11px] font-medium text-slate-500 line-clamp-2 leading-relaxed italic">
+                                    {locationData.address}
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <button 
+                            onClick={detectLocation} 
+                            className="w-full py-2 text-[10px] font-black text-slate-400 hover:text-orange-600 transition-colors uppercase tracking-widest"
+                        >
+                            Refetch GPS Coordinates
+                        </button>
+                    </div>
+                )}
+            </div>
+        </div>
+    </div>
+)}
 
                 {step === 4 && (
                     <div className="space-y-6 animate-in fade-in slide-in-from-right-4">

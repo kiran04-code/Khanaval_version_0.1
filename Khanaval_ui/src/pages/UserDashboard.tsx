@@ -29,7 +29,7 @@ const QuickActionBadge = ({ icon: Icon, label, active, onClick }) => (
 
 // --- PREMIUM MESS CARD (Responsive Layout) ---
 const MessCard = ({ name, image, distance, monthlyPrice, rating, isVeg, timing }) => (
-  <Card className="group overflow-hidden rounded-[2.5rem] border-none bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all duration-500 hover:shadow-[0_20px_40px_rgba(255,145,77,0.15)] mt-10 mb-10 hover:-translate-y-2">
+  <Card className="group overflow-hidden rounded-[2.5rem] border-none bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all duration-500 hover:shadow-[0_20px_40px_rgba(255,145,77,0.15)] mt-5 mb-10 hover:-translate-y-2">
     <div className="relative h-56 w-full overflow-hidden">
       <img src={image} alt={name} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" />
       

@@ -100,7 +100,7 @@ export default function UserDashboard() {
       {/* --- DESKTOP HEADER --- */}
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-2xl border-b border-slate-100/60 hidden md:block">
         <div className="container mx-auto px-6 h-20 flex items-center justify-between gap-10">
-          <Link to="/" className="md:w-[170px]">
+           <Link to="/" className="md:w-[170px] w-[200px] md:h-fit">
             <img src="/logo.png" alt="logo" className="w-full h-auto" />
           </Link>
 
@@ -134,7 +134,9 @@ export default function UserDashboard() {
       {/* --- MOBILE STICKY SEARCH & LOCATION --- */}
       <div className="md:hidden sticky top-0 z-50 bg-white px-4 pt-4 pb-3 shadow-sm border-b border-slate-50">
         <div className="flex items-center justify-between mb-3">
-           <img src="/logo.png" alt="logo" className="h-6 w-auto" />
+              <Link to="/" className="md:w-[170px] w-[200px] md:h-fit">
+            <img src="/logo.png" alt="logo" className="w-full h-auto" />
+          </Link>
            <Button variant="ghost" size="icon" className="rounded-full"><Bell className="w-5 h-5" /></Button>
         </div>
         
@@ -166,7 +168,7 @@ export default function UserDashboard() {
         </div>
 
         {/* GRID SECTION */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 md:gap-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 mt-3 gap-8 md:gap-10">
           {loading ? (
              Array(4).fill(0).map((_, i) => <Skeleton key={i} className="h-[400px] w-full rounded-[2.5rem]" />)
           ) : (

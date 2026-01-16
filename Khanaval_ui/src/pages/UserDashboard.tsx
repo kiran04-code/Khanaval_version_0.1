@@ -29,7 +29,7 @@ const QuickActionBadge = ({ icon: Icon, label, active, onClick }) => (
 
 // --- PREMIUM MESS CARD (Responsive Layout) ---
 const MessCard = ({ name, image, distance, monthlyPrice, rating, isVeg, timing }) => (
-  <Card className="group overflow-hidden rounded-[2.5rem] border-none bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all duration-500 hover:shadow-[0_20px_40px_rgba(255,145,77,0.15)] hover:-translate-y-2">
+  <Card className="group overflow-hidden rounded-[2.5rem] border-none bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all duration-500 hover:shadow-[0_20px_40px_rgba(255,145,77,0.15)] mt-10 mb-10 hover:-translate-y-2">
     <div className="relative h-56 w-full overflow-hidden">
       <img src={image} alt={name} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" />
       
@@ -93,7 +93,9 @@ export default function UserDashboard() {
       {/* DESKTOP HEADER */}
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-2xl border-b border-slate-100/60 hidden md:block">
         <div className="container mx-auto px-6 h-20 flex items-center justify-between gap-10">
-          <Link to="/" className="w-44 font-black text-2xl text-orange-500 tracking-tighter">MEALPASS</Link>
+           <Link to="/" className="md:w-[170px] w-[200px] md:h-fit">
+            <img src="/logo.png" alt="logo" className="w-full h-auto" />
+          </Link>
           <div className="flex-1 max-w-2xl relative">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
             <Input placeholder="Search your favorite mess..." className="pl-12 bg-slate-50 border-none rounded-2xl h-12 w-full focus-visible:ring-2 focus-visible:ring-orange-500/20" />
@@ -124,31 +126,7 @@ export default function UserDashboard() {
         </div>
 
         {/* ACTIVE E-PASS - "THE WALLET CARD" */}
-        <div className="relative group overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-slate-900 to-slate-800 p-6 md:p-10 mb-10 text-white shadow-2xl transition-all hover:shadow-orange-200/40">
-            <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-orange-500 opacity-20 rounded-full blur-[100px]" />
-            <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
-                <div className="flex gap-6">
-                    <div className="bg-white/10 backdrop-blur-2xl p-4 md:p-6 rounded-[2rem] border border-white/10 flex items-center justify-center">
-                        <QrCode className="w-8 h-8 md:w-12 md:h-12 text-orange-400" />
-                    </div>
-                    <div>
-                        <h2 className="text-2xl md:text-4xl font-black mb-1 tracking-tighter">Sharma's Kitchen</h2>
-                        <p className="text-orange-400 text-xs md:text-sm font-black uppercase tracking-widest flex items-center gap-2">
-                            <span className="w-2 h-2 bg-orange-400 rounded-full animate-pulse" /> Active Subscription
-                        </p>
-                    </div>
-                </div>
-                <div className="w-full md:w-auto flex items-center justify-between md:justify-end gap-10 md:pl-10 md:border-l border-white/10">
-                    <div className="text-left md:text-center">
-                        <p className="text-4xl md:text-6xl font-black tabular-nums">24</p>
-                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-[0.2em]">Meals Left</p>
-                    </div>
-                    <Button className="bg-orange-500 text-white hover:bg-orange-400 font-black px-8 py-7 md:py-8 rounded-[1.5rem] text-lg shadow-xl shadow-orange-500/20">
-                        View Pass
-                    </Button>
-                </div>
-            </div>
-        </div>
+        
 
         {/* HORIZONTAL FILTERS - Optimized for Touch */}
         <div className="flex gap-3 overflow-x-auto no-scrollbar pb-8 -mx-4 px-4 md:mx-0 md:px-0">
@@ -177,11 +155,9 @@ export default function UserDashboard() {
 
       {/* MOBILE BOTTOM NAVIGATION */}
       <nav className="fixed bottom-0 left-0 right-0 z-[100] bg-white/80 backdrop-blur-xl border-t border-slate-100 px-6 py-4 md:hidden flex justify-between items-center">
-        <button className="flex flex-col items-center gap-1 text-orange-500 font-bold"><Home className="w-6 h-6" /><span className="text-[10px]">Explore</span></button>
-        <button className="flex flex-col items-center gap-1 text-slate-400 font-bold"><History className="w-6 h-6" /><span className="text-[10px]">Orders</span></button>
+        <button onClick={()=>navigate("/profile")} className="flex flex-col items-center gap-1 text-orange-500 font-bold"><Home className="w-6 h-6" /><span className="text-[10px]">Explore</span></button>
         <div className="relative -top-8 bg-slate-900 p-4 rounded-full shadow-2xl shadow-orange-500/40 border-4 border-white"><QrCode className="w-6 h-6 text-white" /></div>
-        <button className="flex flex-col items-center gap-1 text-slate-400 font-bold"><Heart className="w-6 h-6" /><span className="text-[10px]">Saved</span></button>
-        <button className="flex flex-col items-center gap-1 text-slate-400 font-bold"><User className="w-6 h-6" /><span className="text-[10px]">Profile</span></button>
+        <button onClick={()=>navigate("/profile")} className="flex flex-col items-center gap-1 text-slate-400 font-bold"><User className="w-6 h-6" /><span className="text-[10px]" >Profile</span></button>
       </nav>
     </div>
   );

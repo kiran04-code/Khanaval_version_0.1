@@ -1,12 +1,13 @@
 import { Html5Qrcode } from "html5-qrcode";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { X } from "lucide-react";
+import { X, CheckCircle } from "lucide-react";
 
 export default function QRScanPages() {
   const navigate = useNavigate();
   const qrRef = useRef<Html5Qrcode | null>(null);
   const scanned = useRef(false);
+  const [success, setSuccess] = useState(false);
 
   useEffect(() => {
     const qr = new Html5Qrcode("qr-reader");
@@ -14,12 +15,20 @@ export default function QRScanPages() {
 
     qr.start(
       { facingMode: "environment" },
-      { fps: 12, qrbox: 250 },
-      (text) => {
+      {
+        fps: 12,
+        qrbox: { width: 260, height: 260 },
+      },
+      async (text) => {
         if (scanned.current) return;
         scanned.current = true;
 
-        handleQr(text, qr);
+        playBeep();
+        vibrate();
+        setSuccess(true);
+
+        await qr.stop();
+        handleQr(text);
       },
       () => {}
     ).catch(console.error);
@@ -29,31 +38,28 @@ export default function QRScanPages() {
     };
   }, []);
 
-  const handleQr = async (text: string, qr: Html5Qrcode) => {
-    await qr.stop();
+  const handleQr = (text: string) => {
+    setTimeout(() => {
+      if (text.startsWith("MESS_QR:")) {
+        return navigate(`/attendance/verify?token=${text.replace("MESS_QR:", "")}`);
+      }
 
-    // 🔹 MESS QR
-    if (text.startsWith("MESS_QR:")) {
-      const token = text.replace("MESS_QR:", "");
-      return navigate(`/attendance/verify?token=${token}`);
-    }
+      if (text.startsWith("ATTEND:")) {
+        return navigate(`/attendance/student?code=${text}`);
+      }
 
-    // 🔹 ATTENDANCE QR
-    if (text.startsWith("ATTEND:")) {
-      return navigate(`/attendance/student?code=${text}`);
-    }
+      if (text.startsWith("http")) {
+        return navigate(`/external?url=${encodeURIComponent(text)}`);
+      }
 
-    // 🔹 URL QR
-    if (text.startsWith("http")) {
-      return navigate(`/external?url=${encodeURIComponent(text)}`);
-    }
-
-    // 🔹 UNKNOWN QR
-    navigate(`/qr/error?data=${encodeURIComponent(text)}`);
+      navigate(`/qr/error?data=${encodeURIComponent(text)}`);
+    }, 700); // allow animation
   };
 
   return (
-    <div className="fixed inset-0 bg-black z-50">
+    <div className="fixed inset-0 bg-black z-50 overflow-hidden">
+
+      {/* Back Button */}
       <button
         onClick={() => navigate(-1)}
         className="absolute top-4 left-4 z-50 p-2 bg-black/50 rounded-full text-white"
@@ -61,14 +67,76 @@ export default function QRScanPages() {
         <X />
       </button>
 
+      {/* CAMERA */}
       <div
         id="qr-reader"
         className="w-full h-screen [&_video]:w-full [&_video]:h-full [&_video]:object-cover"
       />
 
+      {/* Scanner Frame */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <div className="w-72 h-72 border-4 border-orange-500 rounded-xl" />
+        <div className="relative w-72 h-72 border-4 border-orange-500 rounded-2xl">
+          <div className="absolute left-4 right-4 h-[2px] bg-orange-400 animate-scan" />
+        </div>
       </div>
+
+      {/* SUCCESS OVERLAY */}
+      {success && (
+        <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center z-50 animate-fade-in">
+          <CheckCircle className="w-20 h-20 text-green-400 mb-4 animate-scale-in" />
+          <p className="text-white font-semibold text-lg">
+            QR Scanned Successfully
+          </p>
+        </div>
+      )}
+
+      <style jsx global>{`
+        @keyframes scan {
+          0% { top: 0; }
+          100% { top: 100%; }
+        }
+        .animate-scan {
+          animation: scan 2s linear infinite;
+        }
+        .animate-scale-in {
+          animation: scaleIn 0.3s ease-out forwards;
+        }
+        .animate-fade-in {
+          animation: fadeIn 0.2s ease-in;
+        }
+        @keyframes scaleIn {
+          from { transform: scale(0.5); opacity: 0; }
+          to { transform: scale(1); opacity: 1; }
+        }
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+      `}</style>
     </div>
   );
+}
+
+/* 🔊 Beep */
+function playBeep() {
+  const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+
+  osc.frequency.value = 1000;
+  gain.gain.value = 0.1;
+
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+
+  osc.start();
+  setTimeout(() => {
+    osc.stop();
+    ctx.close();
+  }, 150);
+}
+
+/* 📳 Vibration */
+function vibrate() {
+  navigator.vibrate?.(120);
 }

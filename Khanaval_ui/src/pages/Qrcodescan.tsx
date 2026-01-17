@@ -82,7 +82,7 @@ export default function NormalQRScanner() {
         </div>
 
         {/* Bottom Instruction */}
-        <div className="absolute bottom-12 left-0 right-0 z-10 flex justify-center">
+        <div className="absolute bottom-20 left-0 right-0 z-10 flex justify-center">
           <span className="bg-black/50 backdrop-blur-md text-white px-6 py-2 rounded-full border border-white/20 text-sm font-medium flex items-center gap-2">
             <ShieldCheck className="w-4 h-4 text-orange-500" />
             Align QR code inside the box

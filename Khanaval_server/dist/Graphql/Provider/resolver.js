@@ -51,10 +51,6 @@ const Query = {
             MessQrcode: mess.MessQrcode
         };
     },
-    getallMess: async () => {
-        const data = await Mess.find({ messVerified: true });
-        return data;
-    }
 };
 const Mutation = {
     CreateMessProvider: async (parent, { payload }, idx) => {

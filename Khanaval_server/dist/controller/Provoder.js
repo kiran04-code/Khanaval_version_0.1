@@ -1,4 +1,7 @@
+import { response } from "express";
 import cloudinary from "../config/cloudnary.js";
+import Mess from "../model/Mess.js";
+import { redisclient } from "../config/redis.js";
 export const BufferimagetoURlimage = async (req, res) => {
     if (!req.files) {
         return res.status(400).json({ success: false, message: "No files uploaded" });
@@ -31,6 +34,19 @@ export const BufferimagetoURlimage = async (req, res) => {
             kitchen: kitchenUrl,
             dining: diningUrl
         }
+    });
+};
+export const getAllDATA = async (req, res) => {
+    const cachekey = "AllMESS";
+    const cachedata = await redisclient.get(cachekey);
+    if (cachedata)
+        return res.json({
+            allmess: JSON.parse(cachedata)
+        });
+    const mess = await Mess.find({ messVerified: true }).populate("providerId");
+    await redisclient.set(cachekey, JSON.stringify(mess));
+    return res.json({
+        allmess: mess
     });
 };
 //# sourceMappingURL=Provoder.js.map

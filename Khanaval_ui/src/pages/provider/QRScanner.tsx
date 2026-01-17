@@ -11,7 +11,7 @@ export default function SubscriberCheckInQR() {
   const [qrBase64, setQrBase64] = useState<string>("");
   const [isGenerating, setIsGenerating] = useState(false);
 
-  const messName = messdata?.name || "Premium Mess";
+  const messName = messdata?.identity?.name || "Premium Mess";
 
   // --- GENERATE QR ON THE FLY (Fixes the Download Error) ---
   useEffect(() => {
@@ -80,7 +80,7 @@ export default function SubscriberCheckInQR() {
       
       doc.setTextColor(40, 40, 40);
       doc.setFontSize(22);
-      doc.text(messdata.identity?.name, center, 72, { align: "center" });
+      doc.text(messdata?.identity?.name, center, 72, { align: "center" });
 
       // 5. QR Code Area
       doc.addImage(messdata?.MessQrcode, "PNG", 45, 95, 120, 120);
@@ -124,7 +124,7 @@ export default function SubscriberCheckInQR() {
 
         <CardContent className="p-8">
           <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold text-slate-800">{messName}</h2>
+            <h2 className="text-2xl font-bold text-slate-800">{messdata?.identity?.name}</h2>
             <p className="text-slate-400 text-sm mt-1">Ready for Subscriber Scans</p>
           </div>
 
@@ -144,12 +144,12 @@ export default function SubscriberCheckInQR() {
           {/* Information Badges */}
           <div className="mt-8 grid grid-cols-2 gap-3">
             <div className="flex items-center gap-2 px-4 py-3 bg-slate-50 rounded-2xl border border-slate-100">
-              <UserCheck className="w-4 h-4 text-orange-600" />
+        
               <span className="text-[11px] font-bold text-slate-600 uppercase">Subscribers</span>
             </div>
             <div className="flex items-center gap-2 px-4 py-3 bg-slate-50 rounded-2xl border border-slate-100">
-              <CheckCircle2 className="w-4 h-4 text-green-600" />
-              <span className="text-[11px] font-bold text-slate-600 uppercase">Secure Log</span>
+
+              <span className="text-[10px] font-bold text-slate-600 uppercase">Secure Log</span>
             </div>
           </div>
 

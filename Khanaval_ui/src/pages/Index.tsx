@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -26,20 +26,26 @@ import {
 import Footer from "@/components/layout/footer";
 import { useEffect, useState } from "react";
 import { UserProviderdata } from "@/hooks/Provider";
+import { GetALLmess } from "@/hooks/MessData";
+import { calculateDistance } from "./components/Distance";
+import { useStateContex } from "@/context/State";
 const features = [
   {
     icon: <Search className="w-6 h-6" />,
     title: "Discover",
+    path: "mess",
     description: "Find nearby messes and tiffin services instantly",
   },
   {
     icon: <Calendar className="w-6 h-6" />,
     title: "Subscribe",
+    path: '/',
     description: "Choose monthly mess plans or order daily tiffins",
   },
   {
     icon: <QrCode className="w-6 h-6" />,
     title: "Scan & Dine",
+    path: "scan-qr",
     description: "Use your digital pass for hassle-free meals",
   },
 ];
@@ -119,7 +125,6 @@ const popularMesses = [
 const SkeletonBlock = ({ className }) => (
   <div className={`animate-pulse bg-slate-200 rounded-xl ${className}`} />
 );
-
 const MessSkeleton = ({ isLarge }) => (
   <div className={`rounded-[2.5rem] bg-slate-50 p-6 flex flex-col justify-end gap-3 border border-slate-100 overflow-hidden relative ${isLarge ? "col-span-2 aspect-[16/9]" : "col-span-2 md:col-span-1 aspect-square"}`}>
     <div className="absolute inset-0 bg-gradient-to-t from-slate-200/50 to-transparent animate-pulse" />
@@ -133,6 +138,7 @@ const Index = () => {
   const { Providerdata } = UserProviderdata()
   console.log(Providerdata)
 
+  const navigate = useNavigate()
   // 2 Second Loading Simulation
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -140,7 +146,8 @@ const Index = () => {
     }, 5000);
     return () => clearTimeout(timer);
   }, []);
-
+const {AllMESS} = GetALLmess()
+const {userlat,userlng} = useStateContex()
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -292,12 +299,13 @@ const Index = () => {
             {features.map((feature, index) => (
               <div
                 key={index}
-                className="group relative flex flex-col items-center text-center transition-all duration-500"
+                onClick={() => navigate(`/${feature.path}`)}
+                className="group relative cursor-pointer flex flex-col items-center text-center transition-all duration-500"
               >
                 <div className="relative mb-10">
 
                   <div className="w-28 h-28 rounded-[2.5rem] bg-card border border-border flex items-center justify-center text-primary shadow-2xl shadow-primary/5 group-hover:border-primary/50 group-hover:shadow-primary/20 group-hover:-translate-y-3 group-hover:rotate-6 transition-all duration-500 ease-out">
-                    <div className="scale-[1.35] group-hover:scale-110 transition-transform duration-500">
+                    <div className="scale-[1.35]  group-hover:scale-110 transition-transform duration-500">
                       {feature.icon}
                     </div>
                   </div>
@@ -373,9 +381,9 @@ const Index = () => {
                     <MessSkeleton isLarge={false} />
                   </>
                 ) : (
-                  popularMesses.map((mess, index) => (
+                  AllMESS?.map((mess, index) => (
                     <Card
-                      key={mess.id}
+                      key={mess._id}
                       className={`group overflow-hidden border-none shadow-2xl relative animate-in fade-in zoom-in duration-500 
             ${/* Mobile Logic: Card 1 is full width, others are half. 
                  Desktop Logic: Revert to your original 'index === 0' span */
@@ -389,26 +397,26 @@ const Index = () => {
           `}
                     >
                       <img
-                        src={mess.image}
-                        alt={mess.name}
+                        src={mess?.media?.cover}
+                        alt={mess.identity?.name}
                         className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/20 to-transparent" />
 
                       <div className="absolute bottom-3 left-3 right-3 md:bottom-6 md:left-6 md:right-6">
-                        <Badge className={`mb-2 ${mess.isVeg ? "bg-green-500/90" : "bg-red-500/90"} border-none text-white text-[10px] md:text-xs`}>
-                          {mess.isVeg ? "Pure Veg" : "Non-Veg Available"}
+                        <Badge className={`mb-2 ${mess?.identity?.dietaryType ? "bg-green-500/90" : "bg-red-500/90"} border-none text-white text-[10px] md:text-xs`}>
+                          {mess?.identity?.dietaryType ? "Pure Veg" : "Non-Veg Available"}
                         </Badge>
                         <h4 className="text-sm md:text-2xl font-black text-white mb-1 leading-tight line-clamp-1">
-                          {mess.name}
+                          {mess?.identity.name}
                         </h4>
                         <div className="flex items-center gap-2 md:gap-3 text-[10px] md:text-sm text-white/80">
                           <div className="flex items-center gap-1">
                             <Star className="w-3 h-3 md:w-4 md:h-4 fill-yellow-400 text-yellow-400" />
-                            <span className="font-bold text-white">{mess.rating}</span>
+                            <span className="font-bold text-white">4.2</span>
                           </div>
                           <span>•</span>
-                          <span className="font-medium">{mess.distance}</span>
+                          <span className="font-medium">{calculateDistance(userlat,userlng,mess.location.lat,mess.location.lng)} KM</span>
                         </div>
                       </div>
                     </Card>

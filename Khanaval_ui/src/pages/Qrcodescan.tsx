@@ -34,7 +34,7 @@ export default function NormalQRScanner() {
 
         setTimeout(() => {
           const cleanId = text.replace("MESS_QR:", "");
-          navigate(`/messsDetails/${cleanId}`);
+          navigate(`/messs/${cleanId}`);
         }, 500);
       },
       () => {}

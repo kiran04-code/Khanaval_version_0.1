@@ -157,7 +157,7 @@ export default function SubscriberCheckInQR() {
           <Button 
             onClick={downloadPoster}
             disabled={!qrBase64 || isGenerating}
-            className="w-full mt-8 h-16 bg-slate-900 hover:bg-black text-white rounded-2xl text-lg font-bold shadow-xl shadow-slate-200 transition-all active:scale-95 flex items-center justify-center"
+            className="w-full mt-8 h-16  bg-slate-900 hover:bg-black text-white rounded-2xl text-[12px] font-bold shadow-xl shadow-slate-200 transition-all active:scale-95 flex items-center justify-center"
           >
             {isGenerating ? (
               <>
@@ -166,7 +166,7 @@ export default function SubscriberCheckInQR() {
               </>
             ) : (
               <>
-                <Download className="mr-2 h-5 w-5" />
+                <Download className="mr-2 text-[12px]  h-5 w-5" />
                 Download Print Poster
               </>
             )}

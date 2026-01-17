@@ -39,7 +39,7 @@ const App = () => (
           <Route path="/provider" element={<ProviderDashboard />} />
           <Route path="/mess" element={<UserDashboard />} />
           <Route path="/provider/messsResgiter" element={<RegistrationFlow />} />
-          <Route path="/scan-qr" element={<QRScanner/>} />
+          <Route path="/scan-qr" element={<QRScanPages/>} />
           <Route path="/messsDetails/:messId" element={<MessDetails/>} />
           <Route path="/tiffin" element={<UserDashboard />} />
           <Route path="*" element={<NotFound />} />

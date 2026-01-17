@@ -73,6 +73,9 @@ const providerSchema = new mongoose.Schema({
     messVerified: {
         type: Boolean,
         default: false
+    },
+    MessQrcode: {
+        type: String,
     }
 }, { timestamps: true });
 const Mess = mongoose.model("MessSchema", providerSchema);

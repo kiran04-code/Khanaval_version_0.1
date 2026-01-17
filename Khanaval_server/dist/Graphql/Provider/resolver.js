@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import Mess from "../../model/Mess.js";
 import ProviderService from "../../services/Provider.js";
 import { Provider } from "../../model/Provider.js";
+import { Qrcodegenerator } from "./utils/QRCodeGenrator.js";
 const Query = {
     ProviderverficationOTP: async (parnet, { number }) => {
         return await ProviderService.PROVIDEROTPSEND(number);
@@ -46,12 +47,14 @@ const Query = {
             media: mess.media,
             location: mess.location,
             messVerified: mess.messVerified,
-            createdAt: mess.createdAt
+            createdAt: mess.createdAt,
+            MessQrcode: mess.MessQrcode
         };
     }
 };
 const Mutation = {
     CreateMessProvider: async (parent, { payload }, idx) => {
+        console.log(payload);
         try {
             if (!idx.user?._id)
                 throw Error("User is UnAuthrised");
@@ -85,6 +88,8 @@ const Mutation = {
                     fssaiNumber: payload.legal.fssaiNumber
                 }
             });
+            const qrcode = await Qrcodegenerator(data._id);
+            await Mess.findByIdAndUpdate(data._id, { MessQrcode: qrcode });
             await Provider.findByIdAndUpdate(idx.user._id, { MessRegister: true });
             return {
                 success: true,

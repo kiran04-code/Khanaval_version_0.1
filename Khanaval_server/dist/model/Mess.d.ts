@@ -29,6 +29,7 @@ declare const Mess: mongoose.Model<{
         landmark?: string | null;
         suburb?: string | null;
     } | null;
+    MessQrcode?: string | null;
 } & mongoose.DefaultTimestampProps, {}, {}, {
     id: string;
 }, mongoose.Document<unknown, {}, {
@@ -61,6 +62,7 @@ declare const Mess: mongoose.Model<{
         landmark?: string | null;
         suburb?: string | null;
     } | null;
+    MessQrcode?: string | null;
 } & mongoose.DefaultTimestampProps, {
     id: string;
 }, {
@@ -95,6 +97,7 @@ declare const Mess: mongoose.Model<{
         landmark?: string | null;
         suburb?: string | null;
     } | null;
+    MessQrcode?: string | null;
 } & mongoose.DefaultTimestampProps & {
     _id: mongoose.Types.ObjectId;
 } & {
@@ -133,6 +136,7 @@ declare const Mess: mongoose.Model<{
         landmark?: string | null;
         suburb?: string | null;
     } | null;
+    MessQrcode?: string | null;
 } & mongoose.DefaultTimestampProps, mongoose.Document<unknown, {}, {
     providerId: mongoose.Types.ObjectId;
     messVerified: boolean;
@@ -163,6 +167,7 @@ declare const Mess: mongoose.Model<{
         landmark?: string | null;
         suburb?: string | null;
     } | null;
+    MessQrcode?: string | null;
 } & mongoose.DefaultTimestampProps, {
     id: string;
 }, mongoose.ResolveSchemaOptions<{
@@ -197,6 +202,7 @@ declare const Mess: mongoose.Model<{
         landmark?: string | null;
         suburb?: string | null;
     } | null;
+    MessQrcode?: string | null;
 } & mongoose.DefaultTimestampProps & {
     _id: mongoose.Types.ObjectId;
 } & {
@@ -236,6 +242,7 @@ declare const Mess: mongoose.Model<{
             landmark?: string | null;
             suburb?: string | null;
         } | null;
+        MessQrcode?: string | null;
     } & mongoose.DefaultTimestampProps, {
         id: string;
     }, mongoose.ResolveSchemaOptions<{
@@ -270,6 +277,7 @@ declare const Mess: mongoose.Model<{
             landmark?: string | null;
             suburb?: string | null;
         } | null;
+        MessQrcode?: string | null;
     } & mongoose.DefaultTimestampProps & {
         _id: mongoose.Types.ObjectId;
     } & {
@@ -307,6 +315,7 @@ declare const Mess: mongoose.Model<{
         landmark?: string | null;
         suburb?: string | null;
     } | null;
+    MessQrcode?: string | null;
     createdAt: NativeDate;
     updatedAt: NativeDate;
 } & {
@@ -343,6 +352,7 @@ declare const Mess: mongoose.Model<{
         landmark?: string | null;
         suburb?: string | null;
     } | null;
+    MessQrcode?: string | null;
     createdAt: NativeDate;
     updatedAt: NativeDate;
 } & {

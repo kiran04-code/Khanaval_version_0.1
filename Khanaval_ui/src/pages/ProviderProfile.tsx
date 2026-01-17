@@ -123,7 +123,7 @@ export function ProviderProfile() {
                   <Card className="border-none shadow-sm rounded-xl">
                     <CardContent className="p-10 flex flex-col items-center text-center">
                        <div className="bg-slate-50 p-6 rounded-2xl border-2 border-slate-100 mb-6">
-                          <QrCode size={160} strokeWidth={1.5} className="text-slate-900" />
+                        <img src={messdata?.MessQrcode} className='w-25 h-30' alt="" />
                        </div>
                        <h3 className="text-lg font-bold text-slate-900">Your Menu Access QR</h3>
                        <p className="text-slate-500 text-sm max-w-xs mt-2">Print this QR and place it on your mess tables for students to scan.</p>

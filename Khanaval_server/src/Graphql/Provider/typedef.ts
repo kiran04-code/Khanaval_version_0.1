@@ -59,6 +59,7 @@ type  GetCurrentMess{
   location:Locations!
   messVerified:Boolean!
   createdAt:String!
+  MessQrcode:String!
 }
 type Locations {
 address: String!

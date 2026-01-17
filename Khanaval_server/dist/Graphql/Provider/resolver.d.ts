@@ -74,6 +74,7 @@ export declare const resolvers: {
             };
             messVerified: boolean;
             createdAt: NativeDate;
+            MessQrcode: string | null | undefined;
         } | null>;
     };
     Mutation: {

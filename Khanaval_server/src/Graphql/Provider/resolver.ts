@@ -4,6 +4,8 @@ import ProviderService from "../../services/Provider.js";
 import type { GraphqlContext } from "../user/types.js";
 import type { CreateMessPayload, Iprovider, IproviderlOGIN } from "./types.js";
 import { Provider } from "../../model/Provider.js";
+import { Qrcodegenerator } from "./utils/QRCodeGenrator.js";
+
 
 
 const Query = {
@@ -53,13 +55,15 @@ const Query = {
             media: mess.media,
             location: mess.location,
             messVerified:mess.messVerified,
-            createdAt:mess.createdAt
+            createdAt:mess.createdAt,
+            MessQrcode:mess.MessQrcode
         };
     }
 
 }
 const Mutation = {
     CreateMessProvider: async (parent: any, { payload }: { payload: CreateMessPayload }, idx: GraphqlContext) => {
+        console.log(payload)
         try {
             if (!idx.user?._id) throw Error("User is UnAuthrised")
             const user = await Provider.findById(idx.user?._id)
@@ -92,6 +96,8 @@ const Mutation = {
                     fssaiNumber: payload.legal.fssaiNumber
                 }
             })
+            const qrcode = await Qrcodegenerator(data._id)
+            await Mess.findByIdAndUpdate(data._id,{MessQrcode:qrcode})
             await Provider.findByIdAndUpdate(idx.user._id, { MessRegister: true })
             return {
                 success: true,

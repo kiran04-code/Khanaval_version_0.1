@@ -85,6 +85,7 @@ query GetcurentMessdata{
     }
     messVerified
     createdAt
+    MessQrcode
     }
   }
 

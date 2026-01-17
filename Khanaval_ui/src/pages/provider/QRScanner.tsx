@@ -1,312 +1,157 @@
-import { useState, useEffect, useRef } from "react";
-import { Html5Qrcode } from "html5-qrcode";
-import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
+import QRCode from "qrcode";
+import jsPDF from "jspdf";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import {
-  Camera,
-  CameraOff,
-  CheckCircle,
-  XCircle,
-  RefreshCw,
-  Clock,
-  User,
-  Calendar,
-} from "lucide-react";
-import { toast } from "@/hooks/use-toast";
+import { Button } from "@/components/ui/button";
+import { Download, CheckCircle2, UserCheck, ShieldCheck } from "lucide-react";
+import { Getmymess } from "@/hooks/PorviderMess";
 
-interface ScanResult {
-  userId: string;
-  userName: string;
-  plan: string;
-  validUntil: string;
-  mealsRemaining: number;
-  isValid: boolean;
-}
+export default function SubscriberCheckInQR() {
+  const [qrImage, setQrImage] = useState<string>("");
 
-// Mock validation function
-const validateQRCode = (data: string): ScanResult | null => {
-  try {
-    const parsed = JSON.parse(data);
-    // Simulate validation
-    const mockResults: Record<string, ScanResult> = {
-      "user-001": {
-        userId: "user-001",
-        userName: "Rahul Sharma",
-        plan: "Monthly Unlimited",
-        validUntil: "2026-01-31",
-        mealsRemaining: 24,
-        isValid: true,
-      },
-      "user-002": {
-        userId: "user-002",
-        userName: "Priya Patel",
-        plan: "Weekly Plan",
-        validUntil: "2025-12-28",
-        mealsRemaining: 0,
-        isValid: false,
-      },
-    };
-    return mockResults[parsed.userId] || null;
-  } catch {
-    return null;
-  }
-};
+  const brandColor = "#FF8C00"; 
+  const messName = "Shree Seva Mess";
 
-export default function QRScanner() {
-  const [isScanning, setIsScanning] = useState(false);
-  const [scanResult, setScanResult] = useState<ScanResult | null>(null);
-  const [recentScans, setRecentScans] = useState<(ScanResult & { scannedAt: Date })[]>([]);
-  const scannerRef = useRef<Html5Qrcode | null>(null);
-
-  const startScanner = async () => {
-    try {
-      const html5QrCode = new Html5Qrcode("qr-reader");
-      scannerRef.current = html5QrCode;
-
-      await html5QrCode.start(
-        { facingMode: "environment" },
-        {
-          fps: 10,
-          qrbox: { width: 250, height: 250 },
-        },
-        (decodedText) => {
-          handleScanSuccess(decodedText);
-        },
-        () => {
-          // Ignore scan errors
-        }
-      );
-      setIsScanning(true);
-    } catch (err) {
-      toast({
-        title: "Camera Error",
-        description: "Unable to access camera. Please check permissions.",
-        variant: "destructive",
-      });
-    }
+  // Data optimized for subscriber validation
+  const qrPayload = {
+    action: "MARK_ATTENDANCE",
+    messId: "MS-001",
+    location: "Main Branch",
+    timestamp: new Date().toISOString(),
   };
-
-  const stopScanner = async () => {
-    if (scannerRef.current) {
-      try {
-        await scannerRef.current.stop();
-        scannerRef.current = null;
-      } catch (err) {
-        console.error("Error stopping scanner:", err);
-      }
-    }
-    setIsScanning(false);
-  };
-
-  const handleScanSuccess = (decodedText: string) => {
-    stopScanner();
-
-    // For demo purposes, create mock data
-    const mockData = JSON.stringify({ userId: "user-001" });
-    const result = validateQRCode(mockData);
-
-    if (result) {
-      setScanResult(result);
-      setRecentScans((prev) => [{ ...result, scannedAt: new Date() }, ...prev.slice(0, 9)]);
-
-      toast({
-        title: result.isValid ? "Valid Pass" : "Invalid Pass",
-        description: result.isValid
-          ? `${result.userName} - Meal credit deducted`
-          : `${result.userName} - Pass expired or no credits`,
-        variant: result.isValid ? "default" : "destructive",
-      });
-    } else {
-      toast({
-        title: "Invalid QR Code",
-        description: "This QR code is not recognized",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const handleScanAnother = () => {
-    setScanResult(null);
-    startScanner();
-  };
-
+ const {messdata} = Getmymess()
   useEffect(() => {
-    return () => {
-      if (scannerRef.current) {
-        scannerRef.current.stop().catch(console.error);
-      }
-    };
+    QRCode.toDataURL(JSON.stringify(qrPayload), {
+      width: 800,
+      margin: 1,
+      color: {
+        dark: "#000000",
+        light: "#FFFFFF",
+      },
+    }).then(setQrImage);
   }, []);
 
+  const downloadPoster = () => {
+    const doc = new jsPDF("p", "mm", "a4");
+    const center = 105;
+
+    // Premium Border/Frame
+    doc.setDrawColor(255, 140, 0);
+    doc.setLineWidth(5);
+    doc.rect(5, 5, 200, 287); // Outer frame
+
+    // Branding Header
+    doc.setFillColor(255, 140, 0);
+    doc.rect(5, 5, 200, 45, "F");
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(36);
+    doc.setFont("helvetica", "bold");
+    doc.text("K H A N A V A L", center, 25, { align: "center" });
+    doc.setFontSize(14);
+    doc.setFont("helvetica", "normal");
+    doc.text("SUBSCRIBER CHECK-IN STATION", center, 35, { align: "center" });
+
+    // Mess Name Section
+    doc.setTextColor(40, 40, 40);
+    doc.setFontSize(22);
+    doc.setFont("helvetica", "bold");
+    doc.text(messdata?.name, center, 70, { align: "center" });
+
+    // Instructions
+    doc.setFontSize(16);
+    doc.setTextColor(100, 100, 100);
+    doc.text("Scan to mark your meal today", center, 85, { align: "center" });
+
+    // QR Code with "Scan Area" visual
+    doc.setDrawColor(230, 230, 230);
+    doc.setLineWidth(1);
+    doc.roundedRect(45, 100, 120, 120, 5, 5, "D");
+    doc.addImage(messdata?.MessQrcode, "PNG", 50, 105, 110, 110);
+
+    // Footer - Steps for UX
+    doc.setFillColor(245, 245, 245);
+    doc.roundedRect(20, 235, 170, 35, 5, 5, "F");
+    
+    doc.setFontSize(12);
+    doc.setTextColor(255, 140, 0);
+    doc.setFont("helvetica", "bold");
+    doc.text("HOW TO CHECK-IN:", 30, 245);
+    
+    doc.setTextColor(80, 80, 80);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(10);
+    doc.text("1. Open Khanaval App or Camera", 30, 252);
+    doc.text("2. Scan this QR Code", 30, 258);
+    doc.text("3. Show the 'Success' screen to the manager", 30, 264);
+
+    doc.save(`CheckIn-${messName}.pdf`);
+  };
+
   return (
-    <div className="space-y-6">
-      {/* Scanner Section */}
-      <Card variant="elevated">
-        <CardContent className="p-6">
-          <div className="text-center mb-6">
-            <h2 className="text-xl font-bold text-foreground mb-2">Scan Customer Pass</h2>
-            <p className="text-muted-foreground">Point the camera at customer's QR code</p>
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
+      <Card className="max-w-md w-full shadow-2xl border-none rounded-[2.5rem] overflow-hidden bg-white">
+        {/* Header Section */}
+        <div className="bg-orange-500 p-8 text-center text-white">
+          <div className="flex justify-center mb-3">
+            <ShieldCheck className="w-10 h-10 opacity-90" />
+          </div>
+          <h1 className="text-2xl font-black tracking-tighter">KHANAVAL</h1>
+          <p className="text-orange-100 text-sm font-medium">ATTENDANCE SYSTEM</p>
+        </div>
+
+        <CardContent className="p-8">
+          <div className="text-center mb-8">
+            <h2 className="text-xl font-bold text-gray-800">{messdata?.name}</h2>
+            <p className="text-gray-500 text-sm italic">Subscriber Daily Meal Entry</p>
           </div>
 
-          {!isScanning && !scanResult && (
-            <div className="flex flex-col items-center gap-4">
-              <div className="w-64 h-64 bg-muted rounded-2xl flex items-center justify-center border-2 border-dashed border-border">
-                <Camera className="w-16 h-16 text-muted-foreground" />
-              </div>
-              <Button onClick={startScanner} size="lg" className="gap-2">
-                <Camera className="w-5 h-5" />
-                Start Scanner
-              </Button>
+          {/* QR Scan Area UI */}
+          <div className="relative p-6 bg-slate-50 rounded-3xl border-2 border-dashed border-slate-200">
+            <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-white px-4 py-1 border border-slate-200 rounded-full flex items-center gap-2 shadow-sm">
+              <div className="w-2 h-2 bg-green-500 animate-pulse rounded-full" />
+              <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Live Scanner</span>
             </div>
-          )}
 
-          {isScanning && (
-            <div className="flex flex-col items-center gap-4">
-              <div className="relative w-64 h-64 mx-auto overflow-hidden rounded-2xl">
-                <div id="qr-reader" className="w-full h-full" />
-                <div className="absolute inset-0 pointer-events-none border-4 border-primary rounded-2xl">
-                  <div className="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-primary rounded-tl-xl" />
-                  <div className="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-primary rounded-tr-xl" />
-                  <div className="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-primary rounded-bl-xl" />
-                  <div className="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-primary rounded-br-xl" />
-                </div>
+            {qrImage ? (
+              <img src={messdata?.MessQrcode} alt="Attendance QR" className="w-full h-auto rounded-lg shadow-sm" />
+            ) : (
+              <div className="aspect-square bg-slate-100 animate-pulse rounded-lg" />
+            )}
+          </div>
+
+          {/* Feature List for User Experience */}
+          <div className="mt-8 space-y-4">
+            <div className="flex items-center gap-3 text-left">
+              <div className="bg-orange-100 p-2 rounded-lg">
+                <UserCheck className="w-5 h-5 text-orange-600" />
               </div>
-              <Button variant="outline" onClick={stopScanner} className="gap-2">
-                <CameraOff className="w-4 h-4" />
-                Stop Scanner
-              </Button>
-            </div>
-          )}
-
-          {scanResult && (
-            <div className="max-w-md mx-auto">
-              <div
-                className={`p-6 rounded-2xl border-2 ${
-                  scanResult.isValid
-                    ? "bg-accent/10 border-accent"
-                    : "bg-destructive/10 border-destructive"
-                }`}
-              >
-                <div className="flex items-center justify-center mb-4">
-                  {scanResult.isValid ? (
-                    <div className="w-16 h-16 rounded-full bg-accent/20 flex items-center justify-center">
-                      <CheckCircle className="w-10 h-10 text-accent" />
-                    </div>
-                  ) : (
-                    <div className="w-16 h-16 rounded-full bg-destructive/20 flex items-center justify-center">
-                      <XCircle className="w-10 h-10 text-destructive" />
-                    </div>
-                  )}
-                </div>
-
-                <h3
-                  className={`text-xl font-bold text-center mb-4 ${
-                    scanResult.isValid ? "text-accent" : "text-destructive"
-                  }`}
-                >
-                  {scanResult.isValid ? "Pass Valid" : "Pass Invalid"}
-                </h3>
-
-                <div className="space-y-3">
-                  <div className="flex items-center gap-3 p-3 bg-background rounded-lg">
-                    <User className="w-5 h-5 text-muted-foreground" />
-                    <div>
-                      <p className="text-xs text-muted-foreground">Customer</p>
-                      <p className="font-medium text-foreground">{scanResult.userName}</p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-3 p-3 bg-background rounded-lg">
-                    <Calendar className="w-5 h-5 text-muted-foreground" />
-                    <div>
-                      <p className="text-xs text-muted-foreground">Plan</p>
-                      <p className="font-medium text-foreground">{scanResult.plan}</p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-3 p-3 bg-background rounded-lg">
-                    <Clock className="w-5 h-5 text-muted-foreground" />
-                    <div>
-                      <p className="text-xs text-muted-foreground">Valid Until</p>
-                      <p className="font-medium text-foreground">{scanResult.validUntil}</p>
-                    </div>
-                  </div>
-
-                  {scanResult.isValid && (
-                    <div className="text-center p-3 bg-accent/10 rounded-lg">
-                      <p className="text-sm text-accent font-medium">
-                        ✓ 1 Meal Credit Deducted
-                      </p>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        {scanResult.mealsRemaining - 1} credits remaining
-                      </p>
-                    </div>
-                  )}
-
-                  {!scanResult.isValid && (
-                    <div className="text-center p-3 bg-destructive/10 rounded-lg">
-                      <p className="text-sm text-destructive font-medium">
-                        No credits remaining or pass expired
-                      </p>
-                    </div>
-                  )}
-                </div>
+              <div>
+                <p className="text-sm font-bold text-gray-700">Quick Check-in</p>
+                <p className="text-xs text-gray-500">Scan to mark today's attendance instantly.</p>
               </div>
-
-              <Button onClick={handleScanAnother} className="w-full mt-4 gap-2">
-                <RefreshCw className="w-4 h-4" />
-                Scan Another
-              </Button>
             </div>
-          )}
+            
+            <div className="flex items-center gap-3 text-left">
+              <div className="bg-green-100 p-2 rounded-lg">
+                <CheckCircle2 className="w-5 h-5 text-green-600" />
+              </div>
+              <div>
+                <p className="text-sm font-bold text-gray-700">Anti-Fraud</p>
+                <p className="text-xs text-gray-500">Secure encrypted entry for subscribers only.</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Action Button */}
+          <Button 
+            onClick={downloadPoster}
+            className="w-full mt-8 h-14 bg-gray-900 hover:bg-black text-white rounded-2xl transition-all hover:shadow-xl"
+          >
+            <Download className="mr-2 w-5 h-5" />
+            Download Entry Poster
+          </Button>
         </CardContent>
       </Card>
-
-      {/* Recent Scans */}
-      {recentScans.length > 0 && (
-        <Card variant="elevated">
-          <CardContent className="p-6">
-            <h3 className="font-bold text-foreground mb-4 flex items-center gap-2">
-              <Clock className="w-5 h-5 text-primary" />
-              Recent Scans
-            </h3>
-            <div className="space-y-2">
-              {recentScans.map((scan, i) => (
-                <div
-                  key={`${scan.userId}-${i}`}
-                  className="flex items-center justify-between p-3 bg-muted/50 rounded-lg"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center font-bold text-primary">
-                      {scan.userName[0]}
-                    </div>
-                    <div>
-                      <p className="font-medium text-foreground">{scan.userName}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {scan.scannedAt.toLocaleTimeString()}
-                      </p>
-                    </div>
-                  </div>
-                  <Badge variant={scan.isValid ? "success" : "destructive"}>
-                    {scan.isValid ? (
-                      <>
-                        <CheckCircle className="w-3 h-3 mr-1" />
-                        Valid
-                      </>
-                    ) : (
-                      <>
-                        <XCircle className="w-3 h-3 mr-1" />
-                        Invalid
-                      </>
-                    )}
-                  </Badge>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
     </div>
   );
 }

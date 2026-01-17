@@ -4,93 +4,84 @@ import { useNavigate } from "react-router-dom";
 import { X, CheckCircle } from "lucide-react";
 
 export default function QRScanPages() {
-  const navigate = useNavigate();
-  const qrRef = useRef<Html5Qrcode | null>(null);
-  const scanned = useRef(false);
-  const [success, setSuccess] = useState(false);
+    const navigate = useNavigate();
+    const qrRef = useRef<Html5Qrcode | null>(null);
+    const scanned = useRef(false);
+    const [success, setSuccess] = useState(false);
 
-  useEffect(() => {
-    const qr = new Html5Qrcode("qr-reader");
-    qrRef.current = qr;
+    useEffect(() => {
+        const qr = new Html5Qrcode("qr-reader");
+        qrRef.current = qr;
 
-    qr.start(
-      { facingMode: "environment" },
-      {
-        fps: 12,
-        qrbox: { width: 260, height: 260 },
-      },
-      async (text) => {
-        if (scanned.current) return;
-        scanned.current = true;
+        qr.start(
+            { facingMode: "environment" },
+            {
+                fps: 12,
+                qrbox: { width: 260, height: 260 },
+            },
+            async (text) => {
+                if (scanned.current) return;
+                scanned.current = true;
 
-        playBeep();
-        vibrate();
-        setSuccess(true);
+                playBeep();
+                vibrate();
+                setSuccess(true);
 
-        await qr.stop();
-        handleQr(text);
-      },
-      () => {}
-    ).catch(console.error);
+                await qr.stop();
+                handleQr(text);
+            },
+            () => { }
+        ).catch(console.error);
 
-    return () => {
-      qrRef.current?.stop().catch(() => {});
-    };
-  }, []);
+        return () => {
+            qrRef.current?.stop().catch(() => { });
+        };
+    }, []);
 
-  const handleQr = (text: string) => {
-    setTimeout(() => {
-      if (text.startsWith("MESS_QR:")) {
-        return navigate(`/attendance/verify?token=${text.replace("MESS_QR:", "")}`);
-      }
+    const handleQr = (text: string) => {
+        setTimeout(() => {
+            if (text.startsWith("MESS_QR:")) {
+                const messId = text.replace("MESS_QR:", "");
+                return navigate(`/messsDetails/${messId}`);
+            }
 
-      if (text.startsWith("ATTEND:")) {
-        return navigate(`/attendance/student?code=${text}`);
-      }
+        }, 700);
 
-      if (text.startsWith("http")) {
-        return navigate(`/external?url=${encodeURIComponent(text)}`);
-      }
+        return (
+            <div className="fixed inset-0 bg-black z-50 overflow-hidden">
 
-      navigate(`/qr/error?data=${encodeURIComponent(text)}`);
-    }, 700); // allow animation
-  };
+                {/* Back Button */}
+                <button
+                    onClick={() => navigate(-1)}
+                    className="absolute top-4 left-4 z-50 p-2 bg-black/50 rounded-full text-white"
+                >
+                    <X />
+                </button>
 
-  return (
-    <div className="fixed inset-0 bg-black z-50 overflow-hidden">
+                {/* CAMERA */}
+                <div
+                    id="qr-reader"
+                    className="w-full h-screen [&_video]:w-full [&_video]:h-full [&_video]:object-cover"
+                />
 
-      {/* Back Button */}
-      <button
-        onClick={() => navigate(-1)}
-        className="absolute top-4 left-4 z-50 p-2 bg-black/50 rounded-full text-white"
-      >
-        <X />
-      </button>
+                {/* Scanner Frame */}
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                    <div className="relative w-72 h-72 border-4 border-orange-500 rounded-2xl">
+                        <div className="absolute left-4 right-4 h-[2px] bg-orange-400 animate-scan" />
+                    </div>
+                </div>
 
-      {/* CAMERA */}
-      <div
-        id="qr-reader"
-        className="w-full h-screen [&_video]:w-full [&_video]:h-full [&_video]:object-cover"
-      />
+                {/* SUCCESS OVERLAY */}
+                {success && (
+                    <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center z-50 animate-fade-in">
+                        <CheckCircle className="w-20 h-20 text-green-400 mb-4 animate-scale-in" />
+                        <p className="text-white font-semibold text-lg">
+                            QR Scanned Successfully
+                        </p>
+                    </div>
+                )}
 
-      {/* Scanner Frame */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <div className="relative w-72 h-72 border-4 border-orange-500 rounded-2xl">
-          <div className="absolute left-4 right-4 h-[2px] bg-orange-400 animate-scan" />
-        </div>
-      </div>
-
-      {/* SUCCESS OVERLAY */}
-      {success && (
-        <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center z-50 animate-fade-in">
-          <CheckCircle className="w-20 h-20 text-green-400 mb-4 animate-scale-in" />
-          <p className="text-white font-semibold text-lg">
-            QR Scanned Successfully
-          </p>
-        </div>
-      )}
-
-      <style jsx global>{`
+                <style jsx global>{`
         @keyframes scan {
           0% { top: 0; }
           100% { top: 100%; }
@@ -113,30 +104,31 @@ export default function QRScanPages() {
           to { opacity: 1; }
         }
       `}</style>
-    </div>
-  );
-}
+            </div>
+        );
+    }
 
-/* 🔊 Beep */
-function playBeep() {
-  const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
-  const osc = ctx.createOscillator();
-  const gain = ctx.createGain();
+    /* 🔊 Beep */
+    function playBeep() {
+        const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
 
-  osc.frequency.value = 1000;
-  gain.gain.value = 0.1;
+        osc.frequency.value = 1000;
+        gain.gain.value = 0.1;
 
-  osc.connect(gain);
-  gain.connect(ctx.destination);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
 
-  osc.start();
-  setTimeout(() => {
-    osc.stop();
-    ctx.close();
-  }, 150);
-}
+        osc.start();
+        setTimeout(() => {
+            osc.stop();
+            ctx.close();
+        }, 150);
+    }
 
-/* 📳 Vibration */
-function vibrate() {
-  navigator.vibrate?.(120);
+    /* 📳 Vibration */
+    function vibrate() {
+        navigator.vibrate?.(120);
+    }
 }

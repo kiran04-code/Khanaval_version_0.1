@@ -63,7 +63,7 @@ export default function SubscriberCheckInQR() {
       doc.setTextColor(40, 40, 40);
       doc.setFontSize(26);
       doc.setFont("helvetica", "bold");
-      doc.text(messdata?.name.toUpperCase(), center, 75, { align: "center" });
+      doc.text(messdata?.identity?.name.toUpperCase(), center, 75, { align: "center" });
 
       // Instruction Text
       doc.setFontSize(16);

@@ -227,7 +227,7 @@ const navItems = [
   { id: "dashboard" as TabType, icon: LayoutDashboard, label: "Live Dashboard" },
   { id: "menu" as TabType, icon: Utensils, label: "Menu Planner" },
   { id: "subscribers" as TabType, icon: Users, label: "Student Register" },
-  { id: "scanner" as TabType, icon: QrCode, label: "Scan QR" },
+  { id: "scanner" as TabType, icon: QrCode, label: "QR Code" },
   { id: "earnings" as TabType, icon: Wallet, label: "Earnings" },
   { id: "Profile" as TabType, icon: Users2, label: "Settings" },
 ];

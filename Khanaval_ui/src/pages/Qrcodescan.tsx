@@ -61,34 +61,33 @@ export default function NormalQRScanner() {
       </div>
 
       {/* QR Scanner Container */}
-      <div className="relative flex-1 w-full h-full bg-black">
-        <div
-          id="qr-reader"
-          className="absolute inset-0 w-full h-full"
-        />
+ {/* QR Scanner Container */}
+<div className="relative flex-1 w-full bg-black flex items-center justify-center">
+  <div id="qr-reader" className="w-full h-full absolute inset-0" />
 
-        {/* Custom Overlay Frame - Centered */}
-        <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
-          <div className="w-64 h-64 md:w-80 md:h-80 relative">
-            {/* Corners */}
-            <div className="absolute top-0 left-0 w-10 h-10 border-t-4 border-l-4 border-orange-500 rounded-tl-2xl" />
-            <div className="absolute top-0 right-0 w-10 h-10 border-t-4 border-r-4 border-orange-500 rounded-tr-2xl" />
-            <div className="absolute bottom-0 left-0 w-10 h-10 border-b-4 border-l-4 border-orange-500 rounded-bl-2xl" />
-            <div className="absolute bottom-0 right-0 w-10 h-10 border-b-4 border-r-4 border-orange-500 rounded-br-2xl" />
+  {/* Custom Overlay Frame - Centered */}
+  <div className="absolute flex items-center justify-center z-10 pointer-events-none">
+    <div className="w-64 h-64 md:w-80 md:h-80 relative">
+      {/* Corners */}
+      <div className="absolute top-0 left-0 w-10 h-10 border-t-4 border-l-4 border-orange-500 rounded-tl-2xl" />
+      <div className="absolute top-0 right-0 w-10 h-10 border-t-4 border-r-4 border-orange-500 rounded-tr-2xl" />
+      <div className="absolute bottom-0 left-0 w-10 h-10 border-b-4 border-l-4 border-orange-500 rounded-bl-2xl" />
+      <div className="absolute bottom-0 right-0 w-10 h-10 border-b-4 border-r-4 border-orange-500 rounded-br-2xl" />
 
-            {/* Scanning Line */}
-            <div className="absolute left-4 right-4 h-0.5 bg-orange-400 shadow-[0_0_15px_rgba(251,146,60,0.8)] animate-scan-line" />
-          </div>
-        </div>
+      {/* Scanning Line */}
+      <div className="absolute left-4 right-4 h-0.5 bg-orange-400 shadow-[0_0_15px_rgba(251,146,60,0.8)] animate-scan-line" />
+    </div>
+  </div>
 
-        {/* Bottom Instruction */}
-        <div className="absolute bottom-20 left-0 right-0 z-10 flex justify-center">
-          <span className="bg-black/50 backdrop-blur-md text-white px-6 py-2 rounded-full border border-white/20 text-sm font-medium flex items-center gap-2">
-            <ShieldCheck className="w-4 h-4 text-orange-500" />
-            Align QR code inside the box
-          </span>
-        </div>
-      </div>
+  {/* Bottom Instruction */}
+  <div className="absolute bottom-20 left-0 right-0 z-10 flex justify-center">
+    <span className="bg-black/50 backdrop-blur-md text-white px-6 py-2 rounded-full border border-white/20 text-sm font-medium flex items-center gap-2">
+      <ShieldCheck className="w-4 h-4 text-orange-500" />
+      Align QR code inside the box
+    </span>
+  </div>
+</div>
+        
 
       {/* Success Overlay */}
       {success && (

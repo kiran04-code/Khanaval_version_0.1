@@ -41,11 +41,7 @@ export default function SubscriberCheckInQR() {
       const doc = new jsPDF("p", "mm", "a4");
       const center = 105;
 
-      // 1. Fetch the image as Base64 (Crucial for PDF generation)
-      const base64QR = await getBase64ImageFromURL(messdata.MessQrcode);
-
-      // --- PDF DESIGN START ---
-      // Outer Gradient-like Frame
+      const base64QR = await getBase64ImageFromURL(messdata?.MessQrcode);
       doc.setDrawColor(255, 140, 0);
       doc.setLineWidth(4);
       doc.rect(5, 5, 200, 287);
@@ -67,7 +63,7 @@ export default function SubscriberCheckInQR() {
       doc.setTextColor(40, 40, 40);
       doc.setFontSize(26);
       doc.setFont("helvetica", "bold");
-      doc.text(messName.toUpperCase(), center, 75, { align: "center" });
+      doc.text(messdata?.name.toUpperCase(), center, 75, { align: "center" });
 
       // Instruction Text
       doc.setFontSize(16);
@@ -165,7 +161,7 @@ export default function SubscriberCheckInQR() {
           <Button 
             onClick={downloadPoster}
             disabled={isGenerating || !messdata?.MessQrcode}
-            className="w-full mt-8 h-16 bg-gray-900 hover:bg-black text-white rounded-[1.25rem] transition-all flex items-center justify-center text-lg font-bold group shadow-xl hover:shadow-orange-200"
+            className="w-full mt-8 h-16  bg-gray-900 hover:bg-black text-white rounded-[1.25rem] transition-all flex items-center justify-center text-[12px] font-bold group shadow-xl hover:shadow-orange-200"
           >
             {isGenerating ? (
               <Loader2 className="mr-2 w-6 h-6 animate-spin" />

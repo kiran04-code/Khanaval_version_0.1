@@ -1,5 +1,5 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { Menu, X, Building2, LogOut, LayoutDashboard, ChevronRight, Info, UtensilsCrossed, Pizza, UserCircle } from "lucide-react";
+import { Menu, X, Building2, LogOut, LayoutDashboard, ChevronRight, Info, UtensilsCrossed, Pizza, UserCircle, ScanQrCode } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -40,7 +40,7 @@ export function Navbar() {
   const navLinks = [
     { name: "How It Works", path: "/how-it-works", icon: Info },
     { name: "Find Mess", path: "/mess", icon: UtensilsCrossed },
-    { name: "Order Tiffin", path: "/tiffin", icon: Pizza },
+    { name: "Scan QR", path: "/scan-qr", icon: ScanQrCode },
   ];
 
   return (

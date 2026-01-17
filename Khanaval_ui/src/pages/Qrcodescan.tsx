@@ -1,173 +1,143 @@
 import { Html5Qrcode } from "html5-qrcode";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { X, CheckCircle, Zap, ShieldCheck } from "lucide-react";
+import { X, CheckCircle, ShieldCheck } from "lucide-react";
 
-export default function QRScanPage() {
+export default function NormalQRScanner() {
   const navigate = useNavigate();
   const qrRef = useRef<Html5Qrcode | null>(null);
-  const scanned = useRef(false);
   const [success, setSuccess] = useState(false);
 
   useEffect(() => {
     const qr = new Html5Qrcode("qr-reader");
     qrRef.current = qr;
 
+    const config = {
+      fps: 20, // Slightly higher for smoother movement
+      qrbox: (viewPortWidth: number, viewPortHeight: number) => {
+        // Dynamic QR box size: 70% of the smallest dimension
+        const minEdge = Math.min(viewPortWidth, viewPortHeight);
+        const size = Math.floor(minEdge * 0.7);
+        return { width: size, height: size };
+      },
+      aspectRatio: 1.0, // Force square for the processing area if needed
+    };
+
     qr.start(
       { facingMode: "environment" },
-      {
-        fps: 20, // Increased for smoother detection
-        qrbox: { width: 260, height: 260 },
-      },
+      config,
       async (text) => {
-        if (scanned.current) return;
-        scanned.current = true;
-
-        playBeep();
-        vibrate();
+        navigator.vibrate?.(50);
         setSuccess(true);
-
         await qr.stop();
-        handleQr(text);
+
+        setTimeout(() => {
+          const cleanId = text.replace("MESS_QR:", "");
+          navigate(`/messsDetails/${cleanId}`);
+        }, 500);
       },
       () => {}
     ).catch(console.error);
 
     return () => {
-      qrRef.current?.stop().catch(() => {});
-    };
-  }, []);
-
-  const handleQr = (text: string) => {
-    setTimeout(() => {
-      if (text.startsWith("MESS_QR:")) {
-        const messId = text.replace("MESS_QR:", "");
-        navigate(`/messsDetails/${messId}`);
-      } else {
-        // Fallback for direct IDs or URLs
-        navigate(`/messsDetails/${text}`);
+      if (qrRef.current?.isScanning) {
+        qrRef.current.stop().catch(() => {});
       }
-    }, 800);
-  };
-
-  /* 🔊 Professional Audio Feedback */
-  function playBeep() {
-    const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.type = "sine";
-    osc.frequency.value = 880; 
-    gain.gain.setValueAtTime(0, ctx.currentTime);
-    gain.gain.linearRampToValueAtTime(0.2, ctx.currentTime + 0.05);
-    gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.15);
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.start();
-    setTimeout(() => { osc.stop(); ctx.close(); }, 200);
-  }
-
-  function vibrate() {
-    navigator.vibrate?.(100);
-  }
+    };
+  }, [navigate]);
 
   return (
-    <div className="fixed inset-0 bg-black z-50 overflow-hidden font-sans">
+    // Use h-screen and overflow-hidden to prevent bouncing on mobile
+    <div className="fixed inset-0 h-screen w-screen bg-black flex flex-col overflow-hidden font-sans">
       
-      {/* Top Branding Header */}
-      <div className="absolute top-0 left-0 right-0 z-50 p-6 flex items-center justify-between bg-gradient-to-b from-black/80 to-transparent">
-        <button
-          onClick={() => navigate(-1)}
-          className="p-2 bg-white/10 backdrop-blur-md rounded-full text-white hover:bg-white/20 transition-all"
-        >
-          <X className="w-6 h-6" />
+      {/* Header: Transparent overlay so video goes behind it if desired, 
+          or solid as per your original design */}
+      <div className="absolute top-0 left-0 right-0 z-20 flex items-center justify-between px-4 py-4 bg-gradient-to-b from-black/60 to-transparent">
+        <button onClick={() => navigate(-1)} className="p-2 text-white">
+          <X className="w-7 h-7" />
         </button>
-
-        <div className="flex flex-col items-center">
-          <h2 className="text-orange-500 font-black text-lg tracking-tighter">
-            KHANAVAL<span className="text-white">.COM</span>
-          </h2>
-          <p className="text-[10px] text-white/60 font-bold uppercase tracking-[0.2em]">Smart Scanner</p>
-        </div>
-
-        <button className="p-2 bg-white/10 backdrop-blur-md rounded-full text-white opacity-50">
-          <Zap className="w-5 h-5" />
-        </button>
+        <h1 className="text-orange-500 font-bold text-lg tracking-wider">KHANAVAL.COM</h1>
+        <div className="w-10" /> 
       </div>
 
-      {/* QR Reader Camera Background */}
-      <div
-        id="qr-reader"
-        className="w-full h-screen [&_video]:w-full [&_video]:h-full [&_video]:object-cover"
-      />
+      {/* QR Scanner Container */}
+      <div className="relative flex-1 w-full h-full bg-black">
+        <div
+          id="qr-reader"
+          className="absolute inset-0 w-full h-full"
+        />
 
-      {/* Modern UI Mask Overlay */}
-      <div className="absolute inset-0 pointer-events-none">
-        {/* Semi-transparent Backdrop with "Hole" for scanner */}
-        <div className="absolute inset-0 bg-black/40" style={{ clipPath: 'polygon(0% 0%, 0% 100%, 100% 100%, 100% 0%, 0% 0%, 50% 50%, 50% 50%, 50% 50%, 50% 50%)' }} />
-        
-        <div className="absolute inset-0 flex flex-col items-center justify-center">
-          {/* Scanning Box */}
-          <div className="relative w-64 h-64 md:w-72 md:h-72">
-            {/* Corner Accents */}
-            <div className="absolute -top-1 -left-1 w-10 h-10 border-t-4 border-l-4 border-orange-500 rounded-tl-2xl shadow-[0_0_15px_rgba(249,115,22,0.5)]" />
-            <div className="absolute -top-1 -right-1 w-10 h-10 border-t-4 border-r-4 border-orange-500 rounded-tr-2xl shadow-[0_0_15px_rgba(249,115,22,0.5)]" />
-            <div className="absolute -bottom-1 -left-1 w-10 h-10 border-b-4 border-l-4 border-orange-500 rounded-bl-2xl shadow-[0_0_15px_rgba(249,115,22,0.5)]" />
-            <div className="absolute -bottom-1 -right-1 w-10 h-10 border-b-4 border-r-4 border-orange-500 rounded-br-2xl shadow-[0_0_15px_rgba(249,115,22,0.5)]" />
-            
-            {/* Animated Laser Line */}
-            <div className="absolute left-2 right-2 h-[3px] bg-gradient-to-r from-transparent via-orange-400 to-transparent animate-scan shadow-[0_0_10px_rgba(251,146,60,0.8)]" />
-          </div>
+        {/* Custom Overlay Frame - Centered */}
+        <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
+          <div className="w-64 h-64 md:w-80 md:h-80 relative">
+            {/* Corners */}
+            <div className="absolute top-0 left-0 w-10 h-10 border-t-4 border-l-4 border-orange-500 rounded-tl-2xl" />
+            <div className="absolute top-0 right-0 w-10 h-10 border-t-4 border-r-4 border-orange-500 rounded-tr-2xl" />
+            <div className="absolute bottom-0 left-0 w-10 h-10 border-b-4 border-l-4 border-orange-500 rounded-bl-2xl" />
+            <div className="absolute bottom-0 right-0 w-10 h-10 border-b-4 border-r-4 border-orange-500 rounded-br-2xl" />
 
-          <div className="mt-12 bg-white/10 backdrop-blur-md px-6 py-2 rounded-2xl border border-white/20 shadow-xl">
-             <p className="text-white text-xs font-bold uppercase tracking-widest flex items-center gap-2">
-               <ShieldCheck className="w-4 h-4 text-orange-400" />
-               Align Mess QR Code
-             </p>
+            {/* Scanning Line */}
+            <div className="absolute left-4 right-4 h-0.5 bg-orange-400 shadow-[0_0_15px_rgba(251,146,60,0.8)] animate-scan-line" />
           </div>
+        </div>
+
+        {/* Bottom Instruction */}
+        <div className="absolute bottom-12 left-0 right-0 z-10 flex justify-center">
+          <span className="bg-black/50 backdrop-blur-md text-white px-6 py-2 rounded-full border border-white/20 text-sm font-medium flex items-center gap-2">
+            <ShieldCheck className="w-4 h-4 text-orange-500" />
+            Align QR code inside the box
+          </span>
         </div>
       </div>
 
       {/* Success Overlay */}
       {success && (
-        <div className="absolute inset-0 bg-slate-900/90 flex flex-col items-center justify-center z-[60] animate-fade-in">
-          <div className="bg-white p-8 rounded-[40px] shadow-2xl flex flex-col items-center scale-up">
-            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-4">
-              <CheckCircle className="w-12 h-12 text-green-500" />
-            </div>
-            <h3 className="text-slate-900 font-black text-xl tracking-tight">Verified!</h3>
-            <p className="text-slate-500 text-sm font-medium">Opening mess details...</p>
+        <div className="absolute inset-0 bg-white z-50 flex flex-col items-center justify-center animate-fade-in">
+          <div className="bg-orange-50 p-6 rounded-full mb-4">
+             <CheckCircle className="w-16 h-16 text-orange-600 animate-scale-in" />
           </div>
+          <p className="text-gray-900 font-bold text-xl">Scanned Successfully</p>
         </div>
       )}
 
-      {/* Bottom Hint */}
-      <div className="absolute bottom-10 left-0 right-0 text-center z-50">
-         <p className="text-white/40 text-[10px] font-black uppercase tracking-[0.3em]">Powered by Khanaval.com</p>
-      </div>
-
       <style jsx global>{`
+        /* 1. Force the video to fill the entire container */
+        #qr-reader video {
+          width: 100% !important;
+          height: 100% !important;
+          object-fit: cover !important;
+        }
+        
+        /* 2. Hide any default UI from the library */
+        #qr-reader__dashboard, #qr-reader__status_span {
+          display: none !important;
+        }
+        #qr-reader {
+          border: none !important;
+        }
+
         @keyframes scan {
           0% { top: 5%; opacity: 0; }
           20% { opacity: 1; }
           80% { opacity: 1; }
           100% { top: 95%; opacity: 0; }
         }
-        .animate-scan {
-          animation: scan 2.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        .animate-scan-line {
+          animation: scan 2.5s linear infinite;
+        }
+        @keyframes scaleIn {
+          from { transform: scale(0.5); opacity: 0; }
+          to { transform: scale(1); opacity: 1; }
+        }
+        .animate-scale-in {
+          animation: scaleIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
         }
         @keyframes fadeIn {
           from { opacity: 0; }
           to { opacity: 1; }
         }
         .animate-fade-in {
-          animation: fadeIn 0.3s ease-out;
-        }
-        @keyframes scaleUp {
-          from { transform: scale(0.8); opacity: 0; }
-          to { transform: scale(1); opacity: 1; }
-        }
-        .scale-up {
-          animation: scaleUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+          animation: fadeIn 0.3s ease-out forwards;
         }
       `}</style>
     </div>

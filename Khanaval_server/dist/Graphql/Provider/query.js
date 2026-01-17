@@ -5,5 +5,6 @@ ProviderverficationOTPLogin(number:String!):SignupResponseprovider
 ProviderverficationLogin(payload:loginpinputp!):SignupResponseOfverifed
 getProviderdata:provider
 getproviderMessData:GetCurrentMess
+getallMess:[GetCurrentMess]
 `;
 //# sourceMappingURL=query.js.map

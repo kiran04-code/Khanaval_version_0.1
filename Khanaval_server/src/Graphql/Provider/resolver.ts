@@ -37,7 +37,7 @@ const Query = {
         console.log(ctx.user?._id)
         const user = await Provider.findById(ctx.user?._id)
         if (!user?.MessRegister) {
-              throw Error("user Not Resgiter There Mess")
+            throw Error("user Not Resgiter There Mess")
         }
         const mess = await Mess.findOne({
             providerId: ctx.user._id,
@@ -54,12 +54,15 @@ const Query = {
             legal: mess.legal,
             media: mess.media,
             location: mess.location,
-            messVerified:mess.messVerified,
-            createdAt:mess.createdAt,
-            MessQrcode:mess.MessQrcode
+            messVerified: mess.messVerified,
+            createdAt: mess.createdAt,
+            MessQrcode: mess.MessQrcode
         };
+    },
+    getallMess: async () => {
+        const data = await Mess.find({ messVerified: true });
+        return data;
     }
-
 }
 const Mutation = {
     CreateMessProvider: async (parent: any, { payload }: { payload: CreateMessPayload }, idx: GraphqlContext) => {
@@ -97,7 +100,7 @@ const Mutation = {
                 }
             })
             const qrcode = await Qrcodegenerator(data._id)
-            await Mess.findByIdAndUpdate(data._id,{MessQrcode:qrcode})
+            await Mess.findByIdAndUpdate(data._id, { MessQrcode: qrcode })
             await Provider.findByIdAndUpdate(idx.user._id, { MessRegister: true })
             return {
                 success: true,

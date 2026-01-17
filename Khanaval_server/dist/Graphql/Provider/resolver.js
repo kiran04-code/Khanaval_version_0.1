@@ -50,6 +50,10 @@ const Query = {
             createdAt: mess.createdAt,
             MessQrcode: mess.MessQrcode
         };
+    },
+    getallMess: async () => {
+        const data = await Mess.find({ messVerified: true });
+        return data;
     }
 };
 const Mutation = {

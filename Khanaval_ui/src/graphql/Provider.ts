@@ -44,3 +44,48 @@ query GetCurrentData{
   }
 }
 `
+
+export const CREATE_MESS_FOR_PROVIDER = gql`
+mutation Createmesforprovider($payload:CreateMessdata!){
+    CreateMessProvider(payload:$payload){
+        success,
+        message
+    }
+}`
+export const GET_MY_MESS = gql `
+query GetcurentMessdata{
+     getproviderMessData {
+
+     identity {
+      name
+      startTime
+      endTime
+      dietaryType
+      operatingMode
+    }
+    legal {
+      fssaiNumber
+    }
+    media {
+      cover
+      kitchen
+      dining
+    }
+    location {
+      address
+      houseNo
+      society
+      landmark
+      suburb
+      city
+      state
+      postcode
+      lat
+      lng
+    }
+    messVerified
+    createdAt
+    }
+  }
+
+`

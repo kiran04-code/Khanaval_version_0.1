@@ -1,3 +1,3 @@
 export const mutation = `#graphql
-_dummys: Boolean
+CreateMessProvider(payload:CreateMessdata!):SignupResponseprovider!
 `;

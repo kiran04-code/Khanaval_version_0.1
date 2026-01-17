@@ -4,11 +4,15 @@ import {
     ChevronLeft, MapPin, ShieldCheck,
     Utensils, Smartphone, MessageCircle,
     Clock, Search, Check, Info, Lock, Loader2, Navigation,
-    Image as ImageIcon, UploadCloud, X, AlertCircle, MapPinned
+    Image as ImageIcon, UploadCloud, X, AlertCircle, MapPinned,
+    Building2, Hash
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from 'react-router-dom';
 import { UserProviderdata } from '@/hooks/Provider';
+import axios from 'axios';
+import { CreatemessForProvider } from '@/hooks/PorviderMess';
+import { CreateMessdata, Media } from 'src1/gql/graphql';
 
 export default function UpdishOnboarding() {
     const [step, setStep] = useState(1);
@@ -30,6 +34,10 @@ export default function UpdishOnboarding() {
         kitchen: null,
         dining: null
     });
+
+    // Store URLs returned from API
+        const [uploadedUrls, setUploadedUrls] = useState<Media>({ cover: "", kitchen: "", dining: "" });
+
     const fileInputRef = useRef(null);
     const [activeSlot, setActiveSlot] = useState(null);
     const { Providerdata } = UserProviderdata();
@@ -40,137 +48,133 @@ export default function UpdishOnboarding() {
         lng: null,
         address: "",
         city: "",
-        suburb:"",
+        suburb: "",
         state: "",
-        landmark:"",
-        accuracy:"",
+        landmark: "",
+        society: "",
+        houseNo: "",
         postcode: ""
     });
     const [locationStatus, setLocationStatus] = useState('idle');
-
+    const {mutate,isSuccess,data} = CreatemessForProvider()
     const showToast = (msg, type = "error") => {
         setToast({ show: true, message: msg, type });
         setTimeout(() => setToast({ show: false, message: "", type: "error" }), 3000);
     };
+    const [files, setFiles] = useState({
+        cover: null,
+        kitchen: null,
+        dining: null
+    });
+    // --- NEW: IMAGE UPLOAD API CALL ---
+    const uploadImages = async () => {
+        if (!files.cover || !files.kitchen) return showToast("Please select all required images");
+        setLoading(true);
+        const formData = new FormData();
+        if (previews.cover) formData.append("cover", files.cover);
+        if (previews.kitchen) formData.append("kitchen", files.kitchen);
+        if (previews.dining) formData.append("dining", files.dining);
 
- const detectLocation = () => {
-    if (!navigator.geolocation) {
-        return showToast("Your browser does not support GPS detection.");
-    }
-
-    setLocationStatus('detecting');
-
-    const options = {
-        enableHighAccuracy: true,
-        timeout: 15000,
-        maximumAge: 0
+        try {
+            const { data } = await axios.post("http://localhost:3003/api/provider/ImageUrl", formData,
+                {
+                    headers: { "Content-Type": "multipart/form-data" }
+                }
+            );
+            console.log(data)
+            if (data.success) {
+                setUploadedUrls(data.urls);
+                setStep(3);
+            }
+        } catch (error) {
+            console.log(error)
+            showToast("Image upload failed. Please try again.");
+            console.error(error);
+        } finally {
+            setLoading(false);
+        }
     };
 
-    navigator.geolocation.getCurrentPosition(
-        async (position) => {
-            const { latitude, longitude, accuracy } = position.coords;
+    const detectLocation = () => {
+        if (!navigator.geolocation) return showToast("Your browser does not support GPS detection.");
+        setLocationStatus('detecting');
+        const options = { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 };
 
-            try {
-                // We add &addressdetails=1 to ensure we get house numbers and landmarks
-                const response = await fetch(
-                    `https://us1.locationiq.com/v1/reverse.php?key=pk.91fc812339a9eec58d906360c5be50fc&lat=${latitude}&lon=${longitude}&format=json&addressdetails=1`
-                );
-                const data = await response.json();
-                const addr = data.address;
-                console.log(data)
-                // --- SMART LANDMARK LOGIC ---
-                // We check for shop name (amenity), house number, or building name
-                const buildingOrShop = addr.amenity || addr.house_name || addr.office || addr.shop || "";
-                const houseNumber = addr.house_number ? `House No. ${addr.house_number}, ` : "";
-                const road = addr.road || addr.pedestrian || "";
-                
-                // Combine them for a "Local Detail" field
-                const localDetail = buildingOrShop 
-                    ? `${buildingOrShop} (${road})` 
-                    : `${houseNumber}${road}`;
-
-                setLocationData({
-                    lat: latitude,
-                    lng: longitude,
-                    // The full detailed address
-                    address: data.display_name,
-                    // The specific shop/house/landmark
-                    landmark: buildingOrShop || "Near " + road,
-                    city: addr.city || addr.town || addr.village || "N/A",
-                    suburb: addr.suburb || addr.neighbourhood || "",
-                    state: addr.state,
-                    postcode: addr.postcode,
-                    accuracy: Math.round(accuracy) + "m"
-                });
-                
-                setLocationStatus('confirmed');
-                showToast("Shop/Mess Location Identified!", "success");
-            } catch (err) {
-                console.error("Geocoding error:", err);
-                setLocationData(prev => ({ ...prev, lat: latitude, lng: longitude }));
-                setLocationStatus('confirmed');
-                showToast("GPS captured, but address lookup failed.");
-            }
-        },
-        (error) => {
-            setLocationStatus('idle');
-            showToast("Please enable GPS/Location permissions.");
-        },
-        options
-    );
-};
-    const handleSubmit = () => {
-        if (!locationData.lat || !locationData.lng) {
-            return showToast("Please detect location before submitting.");
-        }
-        if (fssai.length < 14) {
-            return showToast("Please enter a valid 14-digit FSSAI number");
-        }
-
-        setLoading(true);
-        const finalData = {
-            id: Providerdata.id,
-            identity: { name: messName, startTime, endTime, dietaryType, operatingMode: selectedType },
-            media: { coverImage: previews.cover, kitchenImage: previews.kitchen, diningImage: previews.dining },
-            location: locationData,
-            legal: { fssaiNumber: fssai },
-            submittedAt: new Date().toISOString()
-        };
-
-        console.log("🚀 FINAL SUBMISSION DATA:", finalData);
-        setTimeout(() => {
-            setLoading(false);
-            setIsCompleted(true);
-        }, 2000);
+        navigator.geolocation.getCurrentPosition(
+            async (position) => {
+                const { latitude, longitude } = position.coords;
+                try {
+                    const response = await fetch(`https://us1.locationiq.com/v1/reverse.php?key=pk.91fc812339a9eec58d906360c5be50fc&lat=${latitude}&lon=${longitude}&format=json&addressdetails=1`);
+                    const data = await response.json();
+                    const addr = data.address;
+                    setLocationData(prev => ({
+                        ...prev, lat: latitude, lng: longitude, address: data.display_name,
+                        city: addr.city || addr.town || "N/A", suburb: addr.suburb || "",
+                        state: addr.state, postcode: addr.postcode, landmark: addr.building || ""
+                    }));
+                    setLocationStatus('confirmed');
+                    showToast("GPS Captured!", "success");
+                } catch (err) {
+                    setLocationData(prev => ({ ...prev, lat: latitude, lng: longitude }));
+                    setLocationStatus('confirmed');
+                }
+            },
+            () => { setLocationStatus('idle'); showToast("Please enable GPS permissions."); },
+            options
+        );
     };
 
     const handleNext = () => {
         if (step === 1 && !messName.trim()) return showToast("Mess name is required");
-        if (step === 2 && !previews.kitchen) return showToast("Please upload a kitchen photo");
-        if (step === 3 && locationStatus !== 'confirmed') return showToast("Please detect your GPS location first");
+        if (step === 2) {
+            if (!previews.kitchen) return showToast("Please upload a kitchen photo");
+            uploadImages(); 
+            return;
+        }
+
+        if (step === 3) {
+            if (locationStatus !== 'confirmed') return showToast("Please detect location first");
+            if (!locationData.society || !locationData.landmark) return showToast("Please enter Society and Landmark");
+        }
 
         if (step < 4) {
-            setLoading(true);
-            setTimeout(() => {
-                setLoading(false);
-                setStep(s => s + 1);
-            }, 800);
+            setStep(s => s + 1);
         } else {
             handleSubmit();
         }
+    };
+
+    const handleSubmit = () => {
+        setLoading(true);
+        const finalData:CreateMessdata = {
+            providerId: Providerdata?.id,
+            identity: { name: messName, startTime, endTime, dietaryType, operatingMode: selectedType },
+            media: uploadedUrls, 
+            location: locationData,
+            legal: { fssaiNumber: fssai },
+
+        };
+        console.log("🚀 SUBMISSION:", finalData);
+        mutate(finalData,{
+            onSuccess:()=>{
+                if(isSuccess){
+                     showToast("Mess is Created Please Wait for Verification in Profile");
+                 }
+            }
+        })
+        setTimeout(() => { setLoading(false); setIsCompleted(true); }, 2000);
     };
 
     const prevStep = () => setStep(s => s - 1);
     const triggerUpload = (slot) => { setActiveSlot(slot); fileInputRef.current.click(); };
     const handleImageChange = (e) => {
         const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setPreviews(prev => ({ ...prev, [activeSlot]: reader.result }));
-            };
-            reader.readAsDataURL(file);
-        }
+        if (!file) return;
+
+        setFiles(prev => ({ ...prev, [activeSlot]: file }));
+        const reader = new FileReader();
+        reader.onloadend = () => setPreviews(prev => ({ ...prev, [activeSlot]: reader.result }));
+        reader.readAsDataURL(file);
     };
 
     const UpdishLoader = () => (
@@ -224,7 +228,7 @@ export default function UpdishOnboarding() {
             {loading && <UpdishLoader />}
 
             {toast.show && (
-                <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[200] w-[90%] max-w-sm animate-in fade-in slide-in-from-top-4 duration-300">
+                <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[200] w-[90%] max-w-sm animate-in fade-in slide-in-from-top-4">
                     <div className="bg-slate-900 text-white p-4 rounded-2xl shadow-2xl flex items-center gap-3 border border-white/10">
                         <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center shrink-0">
                             <AlertCircle className="w-5 h-5 text-white" />
@@ -250,44 +254,33 @@ export default function UpdishOnboarding() {
                 <div className="h-full bg-orange-600 transition-all duration-500" style={{ width: `${(step / 4) * 100}%` }} />
             </div>
 
-            <main className="flex-1 p-6 flex flex-col">
+            <main className="flex-1 p-6 flex flex-col overflow-y-auto">
                 {step === 1 && (
                     <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
                         <div className="space-y-1">
                             <h1 className="text-xl font-bold text-gray-900">Kitchen Identity</h1>
-                            <p className="text-gray-500 text-sm">Configure your mess profile and timing</p>
+                            <p className="text-gray-500 text-sm">Configure your mess profile</p>
                         </div>
                         <div className="bg-white p-5 rounded-3xl shadow-sm border border-gray-100 space-y-5">
                             <div className="space-y-2">
                                 <label className="text-[11px] font-bold text-gray-400 uppercase">Mess Name</label>
-                                <input value={messName} onChange={(e) => setMessName(e.target.value)} className="w-full h-10 border-b border-gray-100 focus:border-orange-600 outline-none font-bold text-lg placeholder:text-gray-200" placeholder="e.g. Royal Kitchen" />
+                                <input value={messName} onChange={(e) => setMessName(e.target.value)} className="w-full h-10 border-b border-gray-100 focus:border-orange-600 outline-none font-bold text-lg" placeholder="e.g. Royal Kitchen" />
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <label className="text-[11px] font-bold text-gray-400 uppercase">Opening Time</label>
-                                    <input type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)} className="w-full h-12 bg-gray-50 rounded-xl px-4 font-bold text-slate-700 outline-none border border-transparent focus:border-orange-200" />
+                                    <label className="text-[11px] font-bold text-gray-400 uppercase">Opening</label>
+                                    <input type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)} className="w-full h-12 bg-gray-50 rounded-xl px-4 font-bold" />
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-[11px] font-bold text-gray-400 uppercase">Closing Time</label>
-                                    <input type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} className="w-full h-12 bg-gray-50 rounded-xl px-4 font-bold text-slate-700 outline-none border border-transparent focus:border-orange-200" />
+                                    <label className="text-[11px] font-bold text-gray-400 uppercase">Closing</label>
+                                    <input type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} className="w-full h-12 bg-gray-50 rounded-xl px-4 font-bold" />
                                 </div>
                             </div>
-                            <div className="space-y-3">
+                            <div className="space-y-2">
                                 <label className="text-[11px] font-bold text-gray-400 uppercase">Dietary Type</label>
                                 <div className="flex flex-wrap gap-2">
                                     {['Pure Veg', 'Pure Non-Veg', 'Hybrid'].map(diet => (
-                                        <button key={diet} onClick={() => setDietaryType(diet)} className={`px-4 py-2 rounded-full text-[11px] font-black uppercase tracking-wider border transition-all ${dietaryType === diet ? 'bg-orange-600 border-orange-600 text-white shadow-lg shadow-orange-100' : 'bg-white border-gray-100 text-gray-400'}`}>{diet}</button>
-                                    ))}
-                                </div>
-                            </div>
-                            <div className="space-y-2 pt-2">
-                                <label className="text-[11px] font-bold text-gray-400 uppercase">Operating Mode</label>
-                                <div className="grid grid-cols-1 gap-2">
-                                    {['Home-made', 'Commercial', 'Tiffin-only'].map(type => (
-                                        <button key={type} onClick={() => setSelectedType(type)} className={`flex items-center justify-between p-4 rounded-xl border transition-all ${selectedType === type ? 'border-orange-600 bg-orange-50/50 text-orange-600' : 'border-gray-50 bg-gray-50 text-gray-600'}`}>
-                                            <span className="font-bold">{type}</span>
-                                            {selectedType === type && <CheckCircle2 className="w-5 h-5" />}
-                                        </button>
+                                        <button key={diet} onClick={() => setDietaryType(diet)} className={`px-4 py-2 rounded-full text-[11px] font-black uppercase tracking-wider border transition-all ${dietaryType === diet ? 'bg-orange-600 border-orange-600 text-white' : 'bg-white text-gray-400'}`}>{diet}</button>
                                     ))}
                                 </div>
                             </div>
@@ -299,25 +292,25 @@ export default function UpdishOnboarding() {
                     <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
                         <div className="space-y-1">
                             <h2 className="text-xl font-bold text-gray-900">Visual Showcase</h2>
-                            <p className="text-gray-500 text-sm">Upload quality photos of your space</p>
+                            <p className="text-gray-500 text-sm">Upload quality photos</p>
                         </div>
                         <div className="space-y-4">
-                            <div onClick={() => triggerUpload('cover')} className="relative group overflow-hidden rounded-3xl border-2 border-dashed border-orange-200 bg-orange-50/30 cursor-pointer">
+                            <div onClick={() => triggerUpload('cover')} className="relative group overflow-hidden rounded-3xl border-2 border-dashed border-orange-200 cursor-pointer">
                                 <div className="aspect-[16/9] w-full relative">
-                                    <img src={previews.cover} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" alt="Cover" />
+                                    <img src={previews.cover} className="w-full h-full object-cover" alt="Cover" />
                                     <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
-                                        <div className="bg-white/90 px-4 py-2 rounded-2xl shadow-lg flex items-center gap-2"><Camera className="w-4 h-4 text-orange-600" /><span className="text-[10px] font-black uppercase tracking-tight">Main Thali Photo</span></div>
+                                        <div className="bg-white/90 px-4 py-2 rounded-2xl flex items-center gap-2"><Camera className="w-4 h-4 text-orange-600" /><span className="text-[10px] font-black uppercase">Main Thali Photo</span></div>
                                     </div>
                                 </div>
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 {['kitchen', 'dining'].map((slot) => (
-                                    <div key={slot} onClick={() => triggerUpload(slot)} className="relative aspect-square rounded-2xl overflow-hidden border-2 border-dashed border-gray-200 bg-white group cursor-pointer hover:border-orange-300 transition-all">
-                                        {previews[slot] ? <img src={previews[slot]} className="w-full h-full object-cover animate-in fade-in duration-300" alt={slot} /> :
-                                            <div className="flex flex-col items-center justify-center h-full gap-2 p-4 text-center">
-                                                <div className="w-10 h-10 bg-slate-50 rounded-full flex items-center justify-center group-hover:bg-orange-50 transition-colors"><Camera className="w-5 h-5 text-slate-300 group-hover:text-orange-500" /></div>
-                                                <span className="text-[9px] font-bold text-slate-400 uppercase">{slot === 'kitchen' ? '02. KITCHEN' : '03. Dining Area'}</span>
-                                            </div>
+                                    <div key={slot} onClick={() => triggerUpload(slot)} className="relative aspect-square rounded-2xl overflow-hidden border-2 border-dashed border-gray-200 bg-white flex flex-col items-center justify-center gap-2 p-4 text-center cursor-pointer">
+                                        {previews[slot] ? <img src={previews[slot]} className="w-full h-full object-cover absolute inset-0" alt={slot} /> :
+                                            <>
+                                                <div className="w-10 h-10 bg-slate-50 rounded-full flex items-center justify-center"><Camera className="w-5 h-5 text-slate-300" /></div>
+                                                <span className="text-[9px] font-bold text-slate-400 uppercase">{slot}</span>
+                                            </>
                                         }
                                     </div>
                                 ))}
@@ -325,101 +318,73 @@ export default function UpdishOnboarding() {
                         </div>
                     </div>
                 )}
-{step === 3 && (
-    <div className="space-y-6 animate-in fade-in flex-1 flex flex-col">
-        <div className="text-center space-y-1">
-            <h2 className="text-xl font-bold text-gray-900">Service Location</h2>
-            <p className="text-xs text-gray-500 italic">Precision GPS Verification</p>
-        </div>
 
-        <div className="flex-1 flex flex-col items-center justify-center">
-            {locationStatus === 'detecting' && (
-                <div className="absolute flex items-center justify-center">
-                    <div className="w-48 h-48 bg-orange-100 rounded-full animate-ping opacity-30" />
-                </div>
-            )}
-
-            <div className={`w-full max-w-sm bg-white p-6 rounded-[32px] border transition-all duration-500 flex flex-col items-center ${locationStatus === 'confirmed' ? 'border-emerald-100 shadow-xl bg-emerald-50/10' : 'border-gray-100 shadow-sm'}`}>
-                
-                {/* ICON SECTION */}
-                <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-6 transition-colors shadow-inner ${locationStatus === 'confirmed' ? 'bg-emerald-500 shadow-emerald-200' : 'bg-orange-50'}`}>
-                    {locationStatus === 'confirmed' ? <MapPinned className="text-white w-8 h-8" /> : <MapPin className="text-orange-600 w-8 h-8" />}
-                </div>
-
-                {locationStatus === 'idle' && (
-                    <div className="text-center">
-                        <h3 className="font-bold text-slate-900 mb-2">Enable Mess GPS</h3>
-                        <p className="text-xs text-slate-400 mb-6 px-4 leading-relaxed">We need your shop's exact location to show your menu to students within 1-2 km.</p>
-                        <Button onClick={detectLocation} className="rounded-xl bg-slate-900 px-8 h-12 text-[10px] font-black uppercase text-white shadow-lg active:scale-95">Verify My Location</Button>
-                    </div>
-                )}
-
-                {locationStatus === 'detecting' && (
-                    <div className="space-y-3 text-center">
-                        <Loader2 className="w-6 h-6 text-orange-600 animate-spin mx-auto" />
-                        <p className="text-[10px] font-black uppercase text-orange-600 tracking-widest">Pinpointing Address...</p>
-                    </div>
-                )}
-
-                {locationStatus === 'confirmed' && (
-                    <div className="animate-in zoom-in-95 duration-500 w-full space-y-4">
-                        <div className="flex items-center justify-center gap-2">
-                            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                            <span className="text-[9px] font-black text-emerald-600 uppercase tracking-widest">Location Match Found</span>
+                {step === 3 && (
+                    <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
+                        <div className="text-center space-y-1">
+                            <h2 className="text-xl font-bold text-gray-900">Service Location</h2>
+                            <p className="text-xs text-gray-500 italic">GPS & Building Details</p>
                         </div>
-                        
-                        {/* DETAILED ADDRESS CARD */}
-                        <div className="space-y-4 text-left bg-white p-5 rounded-2xl border border-emerald-100/50 shadow-sm">
-                            
-                            {/* LANDMARK / SHOP NAME */}
-                            <div className="pb-3 border-b border-slate-50">
-                                <p className="text-[9px] font-black text-orange-500 uppercase tracking-tighter mb-1">Mess Landmark / Building</p>
-                                <div className="flex items-start gap-2">
-                                    <div className="w-5 h-5 bg-orange-50 rounded flex items-center justify-center shrink-0 mt-0.5">
-                                        <Navigation className="w-3 h-3 text-orange-600" />
+
+                        {locationStatus !== 'confirmed' ? (
+                            <div className="flex flex-col items-center py-10 space-y-6">
+                                <div className={`w-20 h-20 rounded-full flex items-center justify-center ${locationStatus === 'detecting' ? 'bg-orange-100 animate-pulse' : 'bg-orange-50'}`}>
+                                    <MapPin className="text-orange-600 w-10 h-10" />
+                                </div>
+                                <div className="text-center">
+                                    <h3 className="font-bold text-slate-900">Enable Mess GPS</h3>
+                                    <p className="text-xs text-slate-400 mt-2 px-8">We use GPS to show your mess to students nearby.</p>
+                                </div>
+                                <Button onClick={detectLocation} disabled={locationStatus === 'detecting'} className="rounded-xl bg-slate-900 px-8 h-12 text-[10px] font-black uppercase text-white shadow-lg">
+                                    {locationStatus === 'detecting' ? <Loader2 className="animate-spin w-4 h-4" /> : "Verify Location"}
+                                </Button>
+                            </div>
+                        ) : (
+                            <div className="space-y-4 animate-in slide-in-from-bottom-4">
+                                <div className="bg-emerald-50/50 border border-emerald-100 p-4 rounded-2xl flex items-center gap-3">
+                                    <div className="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center shrink-0 shadow-lg shadow-emerald-100">
+                                        <MapPinned className="text-white w-5 h-5" />
                                     </div>
-                                    <p className="text-sm font-black text-slate-800 leading-tight">
-                                        {locationData.landmark || "Building Detected"}
-                                    </p>
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">GPS Verified</p>
+                                        <p className="text-[11px] text-slate-600 truncate font-medium">{locationData.address}</p>
+                                    </div>
+                                    <button onClick={detectLocation} className="text-[10px] font-bold text-orange-600 bg-white px-2 py-1 rounded-lg border border-orange-100">Retry</button>
                                 </div>
-                            </div>
 
-                            {/* AREA / SUBURB */}
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <p className="text-[9px] font-bold text-slate-400 uppercase mb-1">Locality/Area</p>
-                                    <p className="text-xs font-bold text-slate-700">{locationData.suburb || "Local Area"}</p>
-                                </div>
-                                <div>
-                                    <p className="text-[9px] font-bold text-slate-400 uppercase mb-1">City</p>
-                                    <p className="text-xs font-bold text-slate-700">{locationData.city}</p>
+                                <div className="bg-white p-5 rounded-3xl shadow-sm border border-gray-100 space-y-5">
+                                    <div className="space-y-2">
+                                        <label className="text-[11px] font-bold text-gray-400 uppercase flex items-center gap-2">
+                                            <Building2 className="w-3 h-3" /> Society / Building Name
+                                        </label>
+                                        <input value={locationData.society} onChange={(e) => setLocationData({ ...locationData, society: e.target.value })} className="w-full h-10 border-b border-gray-100 focus:border-orange-600 outline-none font-bold text-sm" placeholder="e.g. Gokuldham Society" />
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <label className="text-[11px] font-bold text-gray-400 uppercase flex items-center gap-2">
+                                                <Hash className="w-3 h-3" /> House/Shop No
+                                            </label>
+                                            <input value={locationData.houseNo} onChange={(e) => setLocationData({ ...locationData, houseNo: e.target.value })} className="w-full h-10 border-b border-gray-100 focus:border-orange-600 outline-none font-bold text-sm" placeholder="e.g. A-101" />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-[11px] font-bold text-gray-400 uppercase flex items-center gap-2">
+                                                <Navigation className="w-3 h-3" /> Landmark
+                                            </label>
+                                            <input value={locationData.landmark} onChange={(e) => setLocationData({ ...locationData, landmark: e.target.value })} className="w-full h-10 border-b border-gray-100 focus:border-orange-600 outline-none font-bold text-sm" placeholder="e.g. Near Metro Station" />
+                                        </div>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4 pt-2">
+                                        <div><p className="text-[9px] font-bold text-slate-400 uppercase">Area</p><p className="text-xs font-bold text-slate-700">{locationData.suburb || "Local"}</p></div>
+                                        <div><p className="text-[9px] font-bold text-slate-400 uppercase">City</p><p className="text-xs font-bold text-slate-700">{locationData.city}</p></div>
+                                    </div>
                                 </div>
                             </div>
-
-                            {/* FULL DISPLAY ADDRESS */}
-                            <div className="pt-2">
-                                <p className="text-[9px] font-bold text-slate-400 uppercase mb-1">Full Delivery Address</p>
-                                <p className="text-[11px] font-medium text-slate-500 line-clamp-2 leading-relaxed italic">
-                                    {locationData.address}
-                                </p>
-                            </div>
-                        </div>
-                        
-                        <button 
-                            onClick={detectLocation} 
-                            className="w-full py-2 text-[10px] font-black text-slate-400 hover:text-orange-600 transition-colors uppercase tracking-widest"
-                        >
-                            Refetch GPS Coordinates
-                        </button>
+                        )}
                     </div>
                 )}
-            </div>
-        </div>
-    </div>
-)}
 
                 {step === 4 && (
-                    <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
+                   <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
                         <h2 className="text-xl font-bold">Safety & Legal</h2>
                         <div className="bg-white p-6 rounded-2xl border border-gray-100 space-y-4 shadow-sm">
                             <div className="space-y-2">
@@ -445,8 +410,8 @@ export default function UpdishOnboarding() {
             </main>
 
             <footer className="p-6 bg-white border-t border-gray-100">
-                <Button onClick={handleNext} className={`w-full h-14 text-white rounded-2xl font-black text-xs uppercase tracking-widest flex items-center justify-center gap-2 transition-all bg-orange-600 hover:bg-orange-700 shadow-xl shadow-orange-100`}>
-                    {step === 4 ? 'Complete Registration' : 'Continue'}
+                <Button onClick={handleNext} className="w-full h-14 text-white rounded-2xl font-black text-xs uppercase tracking-widest flex items-center justify-center gap-2 bg-orange-600 shadow-xl shadow-orange-100">
+                    {step === 4 ? 'Complete' : 'Continue'}
                     <ArrowRight className="w-4 h-4" />
                 </Button>
             </footer>

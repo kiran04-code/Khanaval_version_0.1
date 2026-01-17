@@ -19,6 +19,8 @@ type Documents = {
     "\nquery ProviderverficationOTPQueryFORLogin($number: String!){\n    ProviderverficationOTPLogin(number: $number){\n        success,\n        message\n    }\n}\n": typeof types.ProviderverficationOtpQueryForLoginDocument,
     "\nquery ProviderverficationQueryFORLogin($payload: loginpinputp!){\n    ProviderverficationLogin(payload: $payload){\n        success,\n            message,\n            token\n    }\n}\n": typeof types.ProviderverficationQueryForLoginDocument,
     "\nquery GetCurrentData{\n    getProviderdata {\n    id,\n    OwnerName,\n    number,\n    MessRegister,\n  }\n}\n": typeof types.GetCurrentDataDocument,
+    "\nmutation Createmesforprovider($payload:CreateMessdata!){\n    CreateMessProvider(payload:$payload){\n        success,\n        message\n    }\n}": typeof types.CreatemesforproviderDocument,
+    "\nquery GetcurentMessdata{\n     getproviderMessData {\n\n     identity {\n      name\n      startTime\n      endTime\n      dietaryType\n      operatingMode\n    }\n    legal {\n      fssaiNumber\n    }\n    media {\n      cover\n      kitchen\n      dining\n    }\n    location {\n      address\n      houseNo\n      society\n      landmark\n      suburb\n      city\n      state\n      postcode\n      lat\n      lng\n    }\n    messVerified\n    createdAt\n    }\n  }\n\n": typeof types.GetcurentMessdataDocument,
     "\nquery VerifiedUserGoogle($payload: signupinput!) {\n  verifiedgoodtokenandnumberforSignup(payload: $payload) {\n    success\n    token\n    message\n  }\n  \n}\n": typeof types.VerifiedUserGoogleDocument,
     "\nquery VerifiedUsersigninGoogle($token: String!) {\n  verifiedgoodtokenandnumberforSignin(token: $token) {\n    success\n    token\n    message\n  }\n  \n}\n": typeof types.VerifiedUsersigninGoogleDocument,
     "\nquery GetcurrentUser{\n  getcurrentUser{\n    id,\n  number,\n  first_name,\n  last_name,\n  emailId,\n  imageUrl\n  }\n}\n\n": typeof types.GetcurrentUserDocument,
@@ -29,6 +31,8 @@ const documents: Documents = {
     "\nquery ProviderverficationOTPQueryFORLogin($number: String!){\n    ProviderverficationOTPLogin(number: $number){\n        success,\n        message\n    }\n}\n": types.ProviderverficationOtpQueryForLoginDocument,
     "\nquery ProviderverficationQueryFORLogin($payload: loginpinputp!){\n    ProviderverficationLogin(payload: $payload){\n        success,\n            message,\n            token\n    }\n}\n": types.ProviderverficationQueryForLoginDocument,
     "\nquery GetCurrentData{\n    getProviderdata {\n    id,\n    OwnerName,\n    number,\n    MessRegister,\n  }\n}\n": types.GetCurrentDataDocument,
+    "\nmutation Createmesforprovider($payload:CreateMessdata!){\n    CreateMessProvider(payload:$payload){\n        success,\n        message\n    }\n}": types.CreatemesforproviderDocument,
+    "\nquery GetcurentMessdata{\n     getproviderMessData {\n\n     identity {\n      name\n      startTime\n      endTime\n      dietaryType\n      operatingMode\n    }\n    legal {\n      fssaiNumber\n    }\n    media {\n      cover\n      kitchen\n      dining\n    }\n    location {\n      address\n      houseNo\n      society\n      landmark\n      suburb\n      city\n      state\n      postcode\n      lat\n      lng\n    }\n    messVerified\n    createdAt\n    }\n  }\n\n": types.GetcurentMessdataDocument,
     "\nquery VerifiedUserGoogle($payload: signupinput!) {\n  verifiedgoodtokenandnumberforSignup(payload: $payload) {\n    success\n    token\n    message\n  }\n  \n}\n": types.VerifiedUserGoogleDocument,
     "\nquery VerifiedUsersigninGoogle($token: String!) {\n  verifiedgoodtokenandnumberforSignin(token: $token) {\n    success\n    token\n    message\n  }\n  \n}\n": types.VerifiedUsersigninGoogleDocument,
     "\nquery GetcurrentUser{\n  getcurrentUser{\n    id,\n  number,\n  first_name,\n  last_name,\n  emailId,\n  imageUrl\n  }\n}\n\n": types.GetcurrentUserDocument,
@@ -68,6 +72,14 @@ export function graphql(source: "\nquery ProviderverficationQueryFORLogin($paylo
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\nquery GetCurrentData{\n    getProviderdata {\n    id,\n    OwnerName,\n    number,\n    MessRegister,\n  }\n}\n"): (typeof documents)["\nquery GetCurrentData{\n    getProviderdata {\n    id,\n    OwnerName,\n    number,\n    MessRegister,\n  }\n}\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\nmutation Createmesforprovider($payload:CreateMessdata!){\n    CreateMessProvider(payload:$payload){\n        success,\n        message\n    }\n}"): (typeof documents)["\nmutation Createmesforprovider($payload:CreateMessdata!){\n    CreateMessProvider(payload:$payload){\n        success,\n        message\n    }\n}"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\nquery GetcurentMessdata{\n     getproviderMessData {\n\n     identity {\n      name\n      startTime\n      endTime\n      dietaryType\n      operatingMode\n    }\n    legal {\n      fssaiNumber\n    }\n    media {\n      cover\n      kitchen\n      dining\n    }\n    location {\n      address\n      houseNo\n      society\n      landmark\n      suburb\n      city\n      state\n      postcode\n      lat\n      lng\n    }\n    messVerified\n    createdAt\n    }\n  }\n\n"): (typeof documents)["\nquery GetcurentMessdata{\n     getproviderMessData {\n\n     identity {\n      name\n      startTime\n      endTime\n      dietaryType\n      operatingMode\n    }\n    legal {\n      fssaiNumber\n    }\n    media {\n      cover\n      kitchen\n      dining\n    }\n    location {\n      address\n      houseNo\n      society\n      landmark\n      suburb\n      city\n      state\n      postcode\n      lat\n      lng\n    }\n    messVerified\n    createdAt\n    }\n  }\n\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

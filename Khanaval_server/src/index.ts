@@ -6,6 +6,7 @@ import {expressMiddleware} from "@as-integrations/express5"
 import StartGraphql from "./Graphql/index.js"
 import { MongoDbConnnection } from "./config/mongodb.js"
 import jwtService from "./services/JwtToken.js"
+import providerRoutes from "./routes/Provider.js"
 dotenv.config()
 const app = express()
 const PORT = process.env.PORT || 3002
@@ -14,8 +15,8 @@ app.use(cors({
     credentials: true,
     origin: "*"
 }))
-app.use(express.json())
-app.use(express.urlencoded({extended:true }))
+app.use(express.json({limit:"50mb"}))
+app.use(express.urlencoded({extended:true,limit:"50mb" }))
 app.use((req, res, next) => {
     res.setHeader('Cross-Origin-Opener-Policy', 'same-origin-allow-popups');
     next();
@@ -50,6 +51,7 @@ console.log("Mongodb is Connected.")
 }).catch((err)=>{
 console.log("Mongo_error",err)
 })
+app.use("/api",providerRoutes)
 // Server IS Listing
 app.listen(PORT, () => {
     console.log(`server is runing on Port http://localhost:${PORT}`)

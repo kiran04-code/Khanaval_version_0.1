@@ -182,7 +182,7 @@ export default function UserDashboard() {
       {/* MOBILE BOTTOM NAVIGATION */}
       <nav className="fixed bottom-0 left-0 right-0 z-[100] bg-white/90 backdrop-blur-xl border-t border-slate-100 px-8 py-4 md:hidden flex justify-between items-center">
         <button className="flex flex-col items-center gap-1 text-orange-500 font-bold"><Home className="w-6 h-6" /><span className="text-[10px]">Explore</span></button>
-        <div className="relative -top-8 bg-slate-900 p-4 rounded-full shadow-2xl shadow-orange-500/40 border-4 border-white active:scale-95 transition-transform"><QrCode className="w-6 h-6 text-white" /></div>
+        <button onClick={()=>navigate("/scan-qr")} className="relative -top-8 bg-slate-900 p-4 rounded-full shadow-2xl shadow-orange-500/40 border-4 border-white active:scale-95 transition-transform"><QrCode className="w-6 h-6 text-white" /></button>
         <button onClick={()=>navigate("/profile")} className="flex flex-col items-center gap-1 text-slate-400 font-bold"><User className="w-6 h-6" /><span className="text-[10px]" >Profile</span></button>
       </nav>
     </div>

@@ -1,198 +1,181 @@
 import React from 'react';
 import { 
   MapPin, Phone, Clock, ShieldCheck, Utensils, 
-  Edit3, Share2, ExternalLink, LogOut, PlusCircle, LayoutDashboard
+  Edit3, Share2, LogOut, PlusCircle, LayoutDashboard,
+  QrCode, Download, Info
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { UserProviderdata } from '@/hooks/Provider';
 import { Link } from 'react-router-dom';
+import { Getmymess } from '@/hooks/PorviderMess';
 
 export function ProviderProfile() {
   const { Providerdata } = UserProviderdata();
-  const { 
-    id, 
-    OwnerName, 
-    number, 
-    MessRegistered 
-  } = Providerdata || {};
-
+  const { id, OwnerName, number } = Providerdata || {};
+  const { messdata, isLoading } = Getmymess();
+  const hasMess = messdata && messdata.identity?.name;
   return (
-    <div className="min-h-screen bg-slate-50/50 pb-12">
-      <div className="container mx-auto px-3 md:px-6">
-        
-        {/* HEADER SECTION */}
-        <div className="relative mb-20 md:mb-12">
-          {/* Banner */}
-          <div className="h-40 md:h-60 w-full bg-gradient-to-r from-orange-500 to-orange-600 rounded-[24px] md:rounded-[32px] shadow-lg overflow-hidden relative">
-            <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/food.png')]"></div>
+    <div className="min-h-screen bg-slate-50 pb-12 font-sans">
+      <div className="h-32 md:h-40 bg-orange-500 w-full rounded-t-[15px]" />
+      <div className="container mx-auto px-4">
+        <div className="relative -mt-12 mb-8 flex flex-col md:flex-row items-center md:items-end gap-6">
+          <Avatar className="w-24 h-24 md:w-32 md:h-32  border-2 border-black">
+            <AvatarFallback className="bg-slate-100 text-slate-600 font-bold text-2xl">
+              {OwnerName?.[0]}
+            </AvatarFallback>
+          </Avatar>
+
+          <div className="flex-1 text-center md:text-left pb-2">
+            <h1 className="text-2xl md:text-3xl font-bold text-slate-900">{OwnerName}</h1>
+            <div className="flex items-center justify-center md:justify-start gap-3 mt-1 text-slate-500">
+              <span className="flex items-center gap-1 text-sm"><Phone className="w-3.5 h-3.5" /> {number}</span>
+              <span className="text-xs bg-slate-200 px-2 py-0.5 rounded text-slate-700">ID: {id?.toString().slice(-5)}</span>
+            </div>
           </div>
 
-          {/* Profile Stats Card - Responsive adjustments for stacking on mobile */}
-          <div className="absolute -bottom-16 md:-bottom-16 left-2 right-2 md:left-8 md:right-8 bg-white rounded-2xl md:rounded-3xl shadow-xl border border-slate-100 p-4 md:p-6 flex flex-col md:flex-row items-center gap-4 md:gap-6">
-            
-            <div className="relative shrink-0">
-              <Avatar className="w-20 h-20 md:w-32 md:h-32 border-4 border-white shadow-lg -mt-10 md:-mt-20">
-                <AvatarFallback className="bg-orange-100 text-orange-600 font-black text-xl md:text-2xl">
-                  {OwnerName?.[0] || "P"}
-                </AvatarFallback>
-              </Avatar>
-              <div className="absolute bottom-0 right-0 bg-green-500 p-1 md:p-1.5 rounded-full border-2 md:border-4 border-white">
-                <ShieldCheck className="w-3 h-3 md:w-4 md:h-4 text-white" />
-              </div>
-            </div>
-
-            <div className="flex-1 text-center md:text-left space-y-1">
-              <div className="flex flex-col md:flex-row items-center gap-2 mb-1">
-                <h1 className="text-xl md:text-3xl font-black text-slate-900 leading-tight">{OwnerName}</h1>
-                <Badge className="bg-slate-100 text-slate-500 border-none px-2 py-0.5 font-bold text-[9px] uppercase tracking-widest hidden md:inline-flex">
-                  ID: {id}
-                </Badge>
-              </div>
-              <p className="text-slate-500 text-sm font-medium flex items-center justify-center md:justify-start gap-1.5">
-                <Phone className="w-3.5 h-3.5 text-orange-500" /> {number}
-              </p>
-            </div>
-
-            {/* Actions: Stacks on mobile, inline on desktop */}
-            <div className="flex w-full md:w-auto gap-2 md:gap-3">
-              <Button 
-                variant="outline" 
-                className="flex-1 md:flex-none rounded-xl font-bold text-red-500 border-red-50 hover:bg-red-50 h-10 md:h-11 px-3"
-              >
-                <LogOut className="w-4 h-4 md:mr-2" /> 
-                <span className="hidden md:inline">Logout</span>
-              </Button>
-              <Button className="flex-[2] md:flex-none bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-black h-10 md:h-11 px-6 shadow-lg text-xs md:text-sm">
-                <Edit3 className="w-4 h-4 mr-2" /> Edit Info
-              </Button>
-            </div>
+          <div className="flex gap-2 pb-2">
+            <Button variant="outline" className="rounded-lg border-slate-300">
+              <Share2 className="w-4 h-4 mr-2" /> Share
+            </Button>
+            <Button className="rounded-lg bg-orange-600 hover:bg-orange-700 text-white font-semibold">
+              <Edit3 className="w-4 h-4 mr-2" /> Edit Profile
+            </Button>
           </div>
         </div>
-
-        {/* MAIN CONTENT GRID */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8 mt-20 md:mt-24">
-          
-          {/* SIDEBAR */}
-          <div className="space-y-6 order-2 lg:order-1">
-            <Card className="rounded-[24px] border-none shadow-sm bg-white overflow-hidden">
-              <CardHeader className="border-b border-slate-50 pb-4 py-4">
-                <CardTitle className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Account Details</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4 pt-4 text-sm px-5">
-                {[
-                  { label: "Provider", value: OwnerName },
-                  { label: "Contact", value: number },
-                  { label: "Member Since", value: "Jan 2024" }
-                ].map((item, idx) => (
-                  <div key={idx} className="flex items-center justify-between border-b border-slate-50 last:border-0 pb-3 last:pb-0">
-                    <span className="text-slate-400 font-medium italic">{item.label}</span>
-                    <span className="font-black text-slate-800">{item.value}</span>
-                  </div>
-                ))}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <div className="lg:col-span-4 space-y-6">
+            <Card className="border-none shadow-sm rounded-xl">
+              <CardContent className="p-5">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-4">Account Details</h3>
+                <div className="space-y-3">
+                  <DetailRow label="Member Since" value="Jan 2024" isVerified={undefined} />
+                  <DetailRow label="Type" value="Mess Provider" isVerified={undefined} />
+                  <DetailRow label="Status" value="Verified" isVerified />
+                </div>
+                <hr className="my-4 border-slate-100" />
+                <Button variant="ghost" className="w-full justify-start text-red-600 hover:bg-red-50 hover:text-red-700 p-0">
+                  <LogOut className="w-4 h-4 mr-2" /> Logout
+                </Button>
               </CardContent>
             </Card>
 
-            <Card className="rounded-[24px] border-none shadow-sm bg-slate-900 text-white overflow-hidden">
-               <div className="p-5">
-                <h3 className="font-black text-orange-500 uppercase text-[9px] tracking-[0.2em] mb-4">Quick Shortcuts</h3>
-                <div className="grid grid-cols-2 lg:grid-cols-1 gap-2">
-                  <Button variant="ghost" className="justify-start hover:bg-white/10 text-white font-bold h-11 rounded-xl text-xs px-3">
-                    <LayoutDashboard className="w-4 h-4 mr-2 text-orange-500" /> Dashboard
-                  </Button>
-                  <Button variant="ghost" className="justify-start hover:bg-white/10 text-white font-bold h-11 rounded-xl text-xs px-3">
-                    <Share2 className="w-4 h-4 mr-2 text-orange-500" /> Share
-                  </Button>
-                </div>
-               </div>
-            </Card>
+            <Button className="w-full justify-between h-12 bg-slate-800 rounded-xl">
+              <span className="flex items-center"><LayoutDashboard className="w-4 h-4 mr-2 text-orange-400" /> Merchant Dashboard</span>
+              <Info className="w-4 h-4 opacity-50" />
+            </Button>
           </div>
 
-          {/* DYNAMIC CONTENT */}
-          <div className="lg:col-span-2 order-1 lg:order-2">
-            {MessRegistered ? (
-              <Tabs defaultValue="menu" className="w-full">
-                <TabsList className="bg-white p-1 rounded-xl md:rounded-2xl border border-slate-200 h-12 md:h-14 w-full justify-start overflow-x-auto no-scrollbar gap-1 mb-4">
-                  {['menu', 'gallery', 'settings'].map((tab) => (
-                    <TabsTrigger 
-                      key={tab}
-                      value={tab} 
-                      className="flex-1 md:flex-none rounded-lg md:rounded-xl px-4 md:px-8 font-black text-[10px] md:text-xs uppercase data-[state=active]:bg-orange-600 data-[state=active]:text-white transition-all"
-                    >
-                      {tab === 'settings' ? 'Info' : tab}
-                    </TabsTrigger>
-                  ))}
+          <div className="lg:col-span-8">
+            {!hasMess && !isLoading ? (
+              <EmptyState />
+            ) : (
+              <Tabs defaultValue="overview" className="w-full">
+                <TabsList className="bg-transparent border-b border-slate-200 w-full justify-start rounded-none h-auto p-0 mb-6 gap-8">
+                  <TabsTrigger value="overview" className="data-[state=active]:border-orange-600 data-[state=active]:text-orange-600 border-b-2 border-transparent rounded-none bg-transparent px-0 py-2 font-bold shadow-none">Overview</TabsTrigger>
+                  <TabsTrigger value="qr" className="data-[state=active]:border-orange-600 data-[state=active]:text-orange-600 border-b-2 border-transparent rounded-none bg-transparent px-0 py-2 font-bold shadow-none">Mess QR</TabsTrigger>
+                  <TabsTrigger value="photos" className="data-[state=active]:border-orange-600 data-[state=active]:text-orange-600 border-b-2 border-transparent rounded-none bg-transparent px-0 py-2 font-bold shadow-none">Photos</TabsTrigger>
                 </TabsList>
 
-                <TabsContent value="menu" className="animate-in fade-in slide-in-from-bottom-2">
-                  <Card className="rounded-[24px] md:rounded-[32px] border-none shadow-sm p-5 md:p-8 bg-white">
-                    <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6 md:mb-8">
-                      <div>
-                        <h2 className="text-xl md:text-2xl font-black text-slate-900 italic">Annapurna Home Mess</h2>
-                        <p className="text-slate-400 font-bold text-[10px] uppercase tracking-tighter mt-1 flex items-center gap-2">
-                          <MapPin className="w-3 h-3 text-orange-500" /> Kothrud, Pune
-                        </p>
+                <TabsContent value="overview" className="space-y-6 outline-none">
+                  <Card className="border-none shadow-sm rounded-xl overflow-hidden">
+                    <div className="p-6">
+                      <div className="flex justify-between items-start mb-6">
+                        <div>
+                          <h2 className="text-2xl font-bold text-slate-900">{messdata?.identity?.name}</h2>
+                          <p className="text-slate-500 text-sm flex items-center gap-1 mt-1">
+                            <MapPin className="w-3.5 h-3.5" /> {messdata?.location?.address}
+                          </p>
+                        </div>
+                        <Badge className="bg-green-100 text-green-700 border-none px-3">{messdata?.identity?.operatingMode}</Badge>
                       </div>
-                      <Badge className="w-fit bg-green-100 text-green-700 border-none font-black px-4 py-1.5 rounded-lg text-xs">OPEN</Badge>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="bg-slate-50 p-4 rounded-lg border border-slate-100">
+                          <p className="text-[10px] font-bold text-slate-400 uppercase">Cuisine Type</p>
+                          <p className="font-semibold text-slate-800">{messdata?.identity?.dietaryType}</p>
+                        </div>
+                        <div className="bg-slate-50 p-4 rounded-lg border border-slate-100">
+                          <p className="text-[10px] font-bold text-slate-400 uppercase">Service Hours</p>
+                          <p className="font-semibold text-slate-800">{messdata?.identity?.startTime} - {messdata?.identity?.endTime}</p>
+                        </div>
+                      </div>
                     </div>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-                      <MenuCard title="Afternoon Lunch" dish="Panner Masala + 3 Chapati + Rice" price="80" icon={<Utensils />} active />
-                      <MenuCard title="Dinner Service" dish="Veg Kolhapuri + Dal Tadka + Rice" price="75" icon={<Clock />} />
+                  </Card>
+                  <div className="flex items-center justify-between p-4 bg-white border border-slate-200 rounded-xl">
+                    <div className="flex items-center gap-4">
+                      <div className="bg-slate-100 p-2 rounded-lg">
+                        <QrCode className="w-8 h-8 text-slate-700" />
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-slate-900 text-sm">Mess Menu QR</h4>
+                        <p className="text-xs text-slate-500">Show this to students for the digital menu.</p>
+                      </div>
                     </div>
+                    <Button variant="outline" size="sm" className="font-bold">View QR</Button>
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="qr" className="outline-none">
+                  <Card className="border-none shadow-sm rounded-xl">
+                    <CardContent className="p-10 flex flex-col items-center text-center">
+                       <div className="bg-slate-50 p-6 rounded-2xl border-2 border-slate-100 mb-6">
+                          <QrCode size={160} strokeWidth={1.5} className="text-slate-900" />
+                       </div>
+                       <h3 className="text-lg font-bold text-slate-900">Your Menu Access QR</h3>
+                       <p className="text-slate-500 text-sm max-w-xs mt-2">Print this QR and place it on your mess tables for students to scan.</p>
+                       <div className="flex gap-3 mt-8 w-full max-w-xs">
+                          <Button variant="outline" className="flex-1 rounded-lg"><Download className="w-4 h-4 mr-2" /> Download</Button>
+                          <Button className="flex-1 rounded-lg bg-slate-900 text-white"><Share2 className="w-4 h-4 mr-2" /> Share</Button>
+                       </div>
+                    </CardContent>
                   </Card>
                 </TabsContent>
                 
-                <TabsContent value="gallery">
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
-                    {[1, 2, 3].map(i => (
-                      <div key={i} className="aspect-square md:aspect-video bg-slate-200 rounded-2xl overflow-hidden shadow-sm hover:ring-4 ring-orange-500/20 transition-all">
-                        <img src={`https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=400`} className="w-full h-full object-cover" />
+                <TabsContent value="photos">
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    {Object.values(messdata?.media || {}).filter(url => typeof url === 'string').map((url, i) => (
+                      <div key={i} className="aspect-square bg-slate-200 rounded-xl overflow-hidden border border-slate-100">
+                        <img src={url} className="w-full h-full object-cover" alt="Mess Interior" />
                       </div>
                     ))}
                   </div>
                 </TabsContent>
               </Tabs>
-            ) : (
-              <EmptyState />
             )}
           </div>
-
         </div>
       </div>
     </div>
   );
 }
 
-// Sub-components for cleaner responsive management
-function MenuCard({ title, dish, price, icon, active = false }) {
+function DetailRow({ label, value, isVerified }) {
   return (
-    <div className={`p-5 rounded-[20px] md:rounded-[24px] border relative group overflow-hidden ${active ? 'bg-orange-50/50 border-orange-100' : 'bg-slate-50 border-slate-100'}`}>
-      <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
-        {React.cloneElement(icon, { className: "w-10 h-10 md:w-12 md:h-12" })}
-      </div>
-      <p className={`text-[9px] font-black uppercase mb-1.5 ${active ? 'text-orange-600' : 'text-slate-500'}`}>{title}</p>
-      <p className="font-black text-slate-800 text-sm md:text-base leading-snug">{dish}</p>
-      <p className={`mt-4 font-black text-lg md:text-xl ${active ? 'text-orange-700' : 'text-slate-900'}`}>₹{price}</p>
+    <div className="flex justify-between items-center">
+      <span className="text-sm text-slate-500">{label}</span>
+      {isVerified ? (
+        <span className="text-[10px] font-bold uppercase text-green-600 bg-green-50 px-2 py-0.5 rounded">Verified</span>
+      ) : (
+        <span className="text-sm font-semibold text-slate-800">{value}</span>
+      )}
     </div>
   );
 }
 
 function EmptyState() {
   return (
-    <div className="bg-white border-2 border-dashed border-slate-200 rounded-[30px] md:rounded-[40px] p-8 md:p-12 text-center flex flex-col items-center justify-center space-y-6 min-h-[350px]">
-      <div className="w-16 h-16 md:w-20 md:h-20 bg-orange-50 rounded-full flex items-center justify-center text-orange-600 shadow-inner">
-        <PlusCircle className="w-8 h-8 md:w-10 md:h-10" />
+    <div className="bg-white rounded-xl border-2 border-dashed border-slate-200 p-12 text-center">
+      <div className="w-16 h-16 bg-slate-50 text-slate-400 rounded-full flex items-center justify-center mx-auto mb-4">
+        <PlusCircle className="w-8 h-8" />
       </div>
-      <div className="max-w-xs">
-        <h3 className="text-xl md:text-2xl font-black text-slate-900">Setup Your Mess</h3>
-        <p className="text-slate-500 text-xs md:text-sm font-medium mt-2">Create your digital menu and start receiving student orders today.</p>
-      </div>
-      <Link to="/provider/messsResgiter" className="w-full md:w-auto bg-orange-600 hover:bg-orange-700 text-white h-12 md:h-14 px-8 rounded-xl md:rounded-2xl font-black shadow-xl shadow-orange-100 uppercase tracking-widest text-[10px] transition-all flex items-center justify-center">
-        Register My Mess Now
+      <h3 className="text-lg font-bold text-slate-900">No Mess Found</h3>
+      <p className="text-slate-500 text-sm mb-6">Register your mess to get your QR code and dashboard.</p>
+      <Link to="/provider/messsResgiter">
+        <Button className="bg-orange-600 hover:bg-orange-700 font-bold px-8">Register Now</Button>
       </Link>
     </div>
   );

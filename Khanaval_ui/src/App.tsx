@@ -17,6 +17,8 @@ import {ReactQueryDevtools} from "@tanstack/react-query-devtools"
 import { PublicRoute } from "./components/PublicRoutes";
 import {ProtectedRoutes} from "./components/Routes1";
 import RegistrationFlow from "./pages/MessResgisation";
+import QRScanner from "./pages/provider/QRScanner";
+import QRScanPages from "./pages/Qrcodescan";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -36,6 +38,7 @@ const App = () => (
           <Route path="/provider" element={<ProviderDashboard />} />
           <Route path="/mess" element={<UserDashboard />} />
           <Route path="/provider/messsResgiter" element={<RegistrationFlow />} />
+          <Route path="/scan-qr" element={<QRScanPages />} />
           <Route path="/tiffin" element={<UserDashboard />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

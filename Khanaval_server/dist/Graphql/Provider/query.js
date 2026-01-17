@@ -4,5 +4,6 @@ Providerverfication(payload:signupinputp!):SignupResponseOfverifed
 ProviderverficationOTPLogin(number:String!):SignupResponseprovider
 ProviderverficationLogin(payload:loginpinputp!):SignupResponseOfverifed
 getProviderdata:provider
+getproviderMessData:GetCurrentMess
 `;
 //# sourceMappingURL=query.js.map

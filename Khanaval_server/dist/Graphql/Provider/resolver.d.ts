@@ -1,5 +1,6 @@
+import mongoose from "mongoose";
 import type { GraphqlContext } from "../user/types.js";
-import type { Iprovider, IproviderlOGIN } from "./types.js";
+import type { CreateMessPayload, Iprovider, IproviderlOGIN } from "./types.js";
 export declare const resolvers: {
     Query: {
         ProviderverficationOTP: (parnet: any, { number }: {
@@ -36,16 +37,52 @@ export declare const resolvers: {
             message: string;
             token: string;
         }>;
-        getProviderdata: (parent: any, {}: {}, ctx: GraphqlContext) => Promise<(import("mongoose").Document<unknown, {}, import("../../model/types.js").IProvider, {}, import("mongoose").DefaultSchemaOptions> & import("../../model/types.js").IProvider & {
-            _id: import("mongoose").Types.ObjectId;
+        getProviderdata: (parent: any, {}: {}, ctx: GraphqlContext) => Promise<(mongoose.Document<unknown, {}, import("../../model/types.js").IProvider, {}, mongoose.DefaultSchemaOptions> & import("../../model/types.js").IProvider & {
+            _id: mongoose.Types.ObjectId;
         } & {
             __v: number;
         } & {
             id: string;
         }) | null>;
+        getproviderMessData: (parent: any, {}: {}, ctx: GraphqlContext) => Promise<{
+            identity: {
+                name: string;
+                startTime?: string | null;
+                endTime?: string | null;
+                dietaryType?: "Pure Veg" | "Pure Non-Veg" | "Hybrid" | null;
+                operatingMode?: "Home-made" | "Commercial" | "tifin-only" | null;
+            };
+            legal: {
+                fssaiNumber: string;
+            };
+            media: {
+                cover: string;
+                kitchen: string;
+                dining: string;
+            };
+            location: {
+                address: string;
+                city: string;
+                state: string;
+                postcode: string;
+                lat: number;
+                lng: number;
+                houseNo?: string | null;
+                society?: string | null;
+                landmark?: string | null;
+                suburb?: string | null;
+            };
+            messVerified: boolean;
+            createdAt: NativeDate;
+        } | null>;
     };
     Mutation: {
-        _dummy: () => boolean;
+        CreateMessProvider: (parent: any, { payload }: {
+            payload: CreateMessPayload;
+        }, idx: GraphqlContext) => Promise<{
+            success: boolean;
+            message: string;
+        } | undefined>;
     };
 };
 //# sourceMappingURL=resolver.d.ts.map

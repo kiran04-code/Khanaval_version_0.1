@@ -44,9 +44,45 @@ export declare const Provider: {
             } & {
                 id: string;
             }) | null>;
+            getproviderMessData: (parent: any, {}: {}, ctx: import("../user/types.js").GraphqlContext) => Promise<{
+                identity: {
+                    name: string;
+                    startTime?: string | null;
+                    endTime?: string | null;
+                    dietaryType?: "Pure Veg" | "Pure Non-Veg" | "Hybrid" | null;
+                    operatingMode?: "Home-made" | "Commercial" | "tifin-only" | null;
+                };
+                legal: {
+                    fssaiNumber: string;
+                };
+                media: {
+                    cover: string;
+                    kitchen: string;
+                    dining: string;
+                };
+                location: {
+                    address: string;
+                    city: string;
+                    state: string;
+                    postcode: string;
+                    lat: number;
+                    lng: number;
+                    houseNo?: string | null;
+                    society?: string | null;
+                    landmark?: string | null;
+                    suburb?: string | null;
+                };
+                messVerified: boolean;
+                createdAt: NativeDate;
+            } | null>;
         };
         Mutation: {
-            _dummy: () => boolean;
+            CreateMessProvider: (parent: any, { payload }: {
+                payload: import("./types.js").CreateMessPayload;
+            }, idx: import("../user/types.js").GraphqlContext) => Promise<{
+                success: boolean;
+                message: string;
+            } | undefined>;
         };
     };
     typeDefs: string;

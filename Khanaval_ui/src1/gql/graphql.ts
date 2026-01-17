@@ -20,10 +20,99 @@ export type Scalars = {
   Float: { input: number; output: number; }
 };
 
+export type CreateMessdata = {
+  identity?: InputMaybe<Identity>;
+  legal: Legal;
+  location: Location;
+  media: Media;
+  providerId: Scalars['String']['input'];
+};
+
+export type GetCurrentMess = {
+  __typename?: 'GetCurrentMess';
+  createdAt: Scalars['String']['output'];
+  identity: Identitys;
+  legal: Legals;
+  location: Locations;
+  media: Medias;
+  messVerified: Scalars['Boolean']['output'];
+};
+
+export type Identity = {
+  dietaryType: Scalars['String']['input'];
+  endTime: Scalars['String']['input'];
+  name: Scalars['String']['input'];
+  operatingMode?: InputMaybe<Scalars['String']['input']>;
+  startTime: Scalars['String']['input'];
+};
+
+export type Identitys = {
+  __typename?: 'Identitys';
+  dietaryType: Scalars['String']['output'];
+  endTime: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  operatingMode?: Maybe<Scalars['String']['output']>;
+  startTime: Scalars['String']['output'];
+};
+
+export type Legal = {
+  fssaiNumber: Scalars['String']['input'];
+};
+
+export type Legals = {
+  __typename?: 'Legals';
+  fssaiNumber: Scalars['String']['output'];
+};
+
+export type Location = {
+  address: Scalars['String']['input'];
+  city: Scalars['String']['input'];
+  houseNo: Scalars['String']['input'];
+  landmark: Scalars['String']['input'];
+  lat: Scalars['Float']['input'];
+  lng: Scalars['Float']['input'];
+  postcode: Scalars['String']['input'];
+  society: Scalars['String']['input'];
+  state: Scalars['String']['input'];
+  suburb?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type Locations = {
+  __typename?: 'Locations';
+  address: Scalars['String']['output'];
+  city: Scalars['String']['output'];
+  houseNo: Scalars['String']['output'];
+  landmark: Scalars['String']['output'];
+  lat: Scalars['Float']['output'];
+  lng: Scalars['Float']['output'];
+  postcode: Scalars['String']['output'];
+  society: Scalars['String']['output'];
+  state: Scalars['String']['output'];
+  suburb?: Maybe<Scalars['String']['output']>;
+};
+
+export type Media = {
+  cover: Scalars['String']['input'];
+  dining: Scalars['String']['input'];
+  kitchen: Scalars['String']['input'];
+};
+
+export type Medias = {
+  __typename?: 'Medias';
+  cover: Scalars['String']['output'];
+  dining: Scalars['String']['output'];
+  kitchen: Scalars['String']['output'];
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
+  CreateMessProvider: SignupResponseprovider;
   _dummy?: Maybe<Scalars['Boolean']['output']>;
-  _dummys?: Maybe<Scalars['Boolean']['output']>;
+};
+
+
+export type MutationCreateMessProviderArgs = {
+  payload: CreateMessdata;
 };
 
 export type Query = {
@@ -34,6 +123,7 @@ export type Query = {
   ProviderverficationOTPLogin?: Maybe<SignupResponseprovider>;
   getProviderdata?: Maybe<Provider>;
   getcurrentUser?: Maybe<User>;
+  getproviderMessData?: Maybe<GetCurrentMess>;
   verifiedgoodtokenandnumberforSignin?: Maybe<SignupResponse>;
   verifiedgoodtokenandnumberforSignup?: Maybe<SignupResponse>;
 };
@@ -104,7 +194,6 @@ export type Loginpinputp = {
 };
 
 export type Provider = {
-  getProviderdata: any;
   __typename?: 'provider';
   MessRegister?: Maybe<Scalars['String']['output']>;
   OwnerName: Scalars['String']['output'];
@@ -156,6 +245,18 @@ export type GetCurrentDataQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetCurrentDataQuery = { __typename?: 'Query', getProviderdata?: { __typename?: 'provider', id: string, OwnerName: string, number: string, MessRegister?: string | null } | null };
+
+export type CreatemesforproviderMutationVariables = Exact<{
+  payload: CreateMessdata;
+}>;
+
+
+export type CreatemesforproviderMutation = { __typename?: 'Mutation', CreateMessProvider: { __typename?: 'SignupResponseprovider', success: boolean, message?: string | null } };
+
+export type GetcurentMessdataQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetcurentMessdataQuery = { __typename?: 'Query', getproviderMessData?: { __typename?: 'GetCurrentMess', messVerified: boolean, createdAt: string, identity: { __typename?: 'Identitys', name: string, startTime: string, endTime: string, dietaryType: string, operatingMode?: string | null }, legal: { __typename?: 'Legals', fssaiNumber: string }, media: { __typename?: 'Medias', cover: string, kitchen: string, dining: string }, location: { __typename?: 'Locations', address: string, houseNo: string, society: string, landmark: string, suburb?: string | null, city: string, state: string, postcode: string, lat: number, lng: number } } | null };
 
 export type VerifiedUserGoogleQueryVariables = Exact<{
   payload: Signupinput;
@@ -182,6 +283,8 @@ export const ProviderverficationQueryDocument = {"kind":"Document","definitions"
 export const ProviderverficationOtpQueryForLoginDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ProviderverficationOTPQueryFORLogin"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"number"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ProviderverficationOTPLogin"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"number"},"value":{"kind":"Variable","name":{"kind":"Name","value":"number"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}},{"kind":"Field","name":{"kind":"Name","value":"message"}}]}}]}}]} as unknown as DocumentNode<ProviderverficationOtpQueryForLoginQuery, ProviderverficationOtpQueryForLoginQueryVariables>;
 export const ProviderverficationQueryForLoginDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ProviderverficationQueryFORLogin"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"payload"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"loginpinputp"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ProviderverficationLogin"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"payload"},"value":{"kind":"Variable","name":{"kind":"Name","value":"payload"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}},{"kind":"Field","name":{"kind":"Name","value":"message"}},{"kind":"Field","name":{"kind":"Name","value":"token"}}]}}]}}]} as unknown as DocumentNode<ProviderverficationQueryForLoginQuery, ProviderverficationQueryForLoginQueryVariables>;
 export const GetCurrentDataDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetCurrentData"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getProviderdata"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"OwnerName"}},{"kind":"Field","name":{"kind":"Name","value":"number"}},{"kind":"Field","name":{"kind":"Name","value":"MessRegister"}}]}}]}}]} as unknown as DocumentNode<GetCurrentDataQuery, GetCurrentDataQueryVariables>;
+export const CreatemesforproviderDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"Createmesforprovider"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"payload"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateMessdata"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"CreateMessProvider"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"payload"},"value":{"kind":"Variable","name":{"kind":"Name","value":"payload"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}},{"kind":"Field","name":{"kind":"Name","value":"message"}}]}}]}}]} as unknown as DocumentNode<CreatemesforproviderMutation, CreatemesforproviderMutationVariables>;
+export const GetcurentMessdataDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetcurentMessdata"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getproviderMessData"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"identity"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"startTime"}},{"kind":"Field","name":{"kind":"Name","value":"endTime"}},{"kind":"Field","name":{"kind":"Name","value":"dietaryType"}},{"kind":"Field","name":{"kind":"Name","value":"operatingMode"}}]}},{"kind":"Field","name":{"kind":"Name","value":"legal"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fssaiNumber"}}]}},{"kind":"Field","name":{"kind":"Name","value":"media"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"cover"}},{"kind":"Field","name":{"kind":"Name","value":"kitchen"}},{"kind":"Field","name":{"kind":"Name","value":"dining"}}]}},{"kind":"Field","name":{"kind":"Name","value":"location"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"address"}},{"kind":"Field","name":{"kind":"Name","value":"houseNo"}},{"kind":"Field","name":{"kind":"Name","value":"society"}},{"kind":"Field","name":{"kind":"Name","value":"landmark"}},{"kind":"Field","name":{"kind":"Name","value":"suburb"}},{"kind":"Field","name":{"kind":"Name","value":"city"}},{"kind":"Field","name":{"kind":"Name","value":"state"}},{"kind":"Field","name":{"kind":"Name","value":"postcode"}},{"kind":"Field","name":{"kind":"Name","value":"lat"}},{"kind":"Field","name":{"kind":"Name","value":"lng"}}]}},{"kind":"Field","name":{"kind":"Name","value":"messVerified"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]}}]} as unknown as DocumentNode<GetcurentMessdataQuery, GetcurentMessdataQueryVariables>;
 export const VerifiedUserGoogleDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"VerifiedUserGoogle"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"payload"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"signupinput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"verifiedgoodtokenandnumberforSignup"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"payload"},"value":{"kind":"Variable","name":{"kind":"Name","value":"payload"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}},{"kind":"Field","name":{"kind":"Name","value":"token"}},{"kind":"Field","name":{"kind":"Name","value":"message"}}]}}]}}]} as unknown as DocumentNode<VerifiedUserGoogleQuery, VerifiedUserGoogleQueryVariables>;
 export const VerifiedUsersigninGoogleDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"VerifiedUsersigninGoogle"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"token"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"verifiedgoodtokenandnumberforSignin"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"token"},"value":{"kind":"Variable","name":{"kind":"Name","value":"token"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}},{"kind":"Field","name":{"kind":"Name","value":"token"}},{"kind":"Field","name":{"kind":"Name","value":"message"}}]}}]}}]} as unknown as DocumentNode<VerifiedUsersigninGoogleQuery, VerifiedUsersigninGoogleQueryVariables>;
 export const GetcurrentUserDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetcurrentUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getcurrentUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"number"}},{"kind":"Field","name":{"kind":"Name","value":"first_name"}},{"kind":"Field","name":{"kind":"Name","value":"last_name"}},{"kind":"Field","name":{"kind":"Name","value":"emailId"}},{"kind":"Field","name":{"kind":"Name","value":"imageUrl"}}]}}]}}]} as unknown as DocumentNode<GetcurrentUserQuery, GetcurrentUserQueryVariables>;
@@ -194,10 +297,99 @@ export type Scalars = {
   Float: { input: number; output: number; }
 };
 
+export type CreateMessdata = {
+  identity?: InputMaybe<Identity>;
+  legal: Legal;
+  location: Location;
+  media: Media;
+  providerId: Scalars['String']['input'];
+};
+
+export type GetCurrentMess = {
+  __typename?: 'GetCurrentMess';
+  createdAt: Scalars['String']['output'];
+  identity: Identitys;
+  legal: Legals;
+  location: Locations;
+  media: Medias;
+  messVerified: Scalars['Boolean']['output'];
+};
+
+export type Identity = {
+  dietaryType: Scalars['String']['input'];
+  endTime: Scalars['String']['input'];
+  name: Scalars['String']['input'];
+  operatingMode?: InputMaybe<Scalars['String']['input']>;
+  startTime: Scalars['String']['input'];
+};
+
+export type Identitys = {
+  __typename?: 'Identitys';
+  dietaryType: Scalars['String']['output'];
+  endTime: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  operatingMode?: Maybe<Scalars['String']['output']>;
+  startTime: Scalars['String']['output'];
+};
+
+export type Legal = {
+  fssaiNumber: Scalars['String']['input'];
+};
+
+export type Legals = {
+  __typename?: 'Legals';
+  fssaiNumber: Scalars['String']['output'];
+};
+
+export type Location = {
+  address: Scalars['String']['input'];
+  city: Scalars['String']['input'];
+  houseNo: Scalars['String']['input'];
+  landmark: Scalars['String']['input'];
+  lat: Scalars['Float']['input'];
+  lng: Scalars['Float']['input'];
+  postcode: Scalars['String']['input'];
+  society: Scalars['String']['input'];
+  state: Scalars['String']['input'];
+  suburb?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type Locations = {
+  __typename?: 'Locations';
+  address: Scalars['String']['output'];
+  city: Scalars['String']['output'];
+  houseNo: Scalars['String']['output'];
+  landmark: Scalars['String']['output'];
+  lat: Scalars['Float']['output'];
+  lng: Scalars['Float']['output'];
+  postcode: Scalars['String']['output'];
+  society: Scalars['String']['output'];
+  state: Scalars['String']['output'];
+  suburb?: Maybe<Scalars['String']['output']>;
+};
+
+export type Media = {
+  cover: Scalars['String']['input'];
+  dining: Scalars['String']['input'];
+  kitchen: Scalars['String']['input'];
+};
+
+export type Medias = {
+  __typename?: 'Medias';
+  cover: Scalars['String']['output'];
+  dining: Scalars['String']['output'];
+  kitchen: Scalars['String']['output'];
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
+  CreateMessProvider: SignupResponseprovider;
   _dummy?: Maybe<Scalars['Boolean']['output']>;
-  _dummys?: Maybe<Scalars['Boolean']['output']>;
+};
+
+
+export type MutationCreateMessProviderArgs = {
+  payload: CreateMessdata;
 };
 
 export type Query = {
@@ -208,6 +400,7 @@ export type Query = {
   ProviderverficationOTPLogin?: Maybe<SignupResponseprovider>;
   getProviderdata?: Maybe<Provider>;
   getcurrentUser?: Maybe<User>;
+  getproviderMessData?: Maybe<GetCurrentMess>;
   verifiedgoodtokenandnumberforSignin?: Maybe<SignupResponse>;
   verifiedgoodtokenandnumberforSignup?: Maybe<SignupResponse>;
 };
@@ -329,6 +522,18 @@ export type GetCurrentDataQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetCurrentDataQuery = { __typename?: 'Query', getProviderdata?: { __typename?: 'provider', id: string, OwnerName: string, number: string, MessRegister?: string | null } | null };
+
+export type CreatemesforproviderMutationVariables = Exact<{
+  payload: CreateMessdata;
+}>;
+
+
+export type CreatemesforproviderMutation = { __typename?: 'Mutation', CreateMessProvider: { __typename?: 'SignupResponseprovider', success: boolean, message?: string | null } };
+
+export type GetcurentMessdataQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetcurentMessdataQuery = { __typename?: 'Query', getproviderMessData?: { __typename?: 'GetCurrentMess', messVerified: boolean, createdAt: string, identity: { __typename?: 'Identitys', name: string, startTime: string, endTime: string, dietaryType: string, operatingMode?: string | null }, legal: { __typename?: 'Legals', fssaiNumber: string }, media: { __typename?: 'Medias', cover: string, kitchen: string, dining: string }, location: { __typename?: 'Locations', address: string, houseNo: string, society: string, landmark: string, suburb?: string | null, city: string, state: string, postcode: string, lat: number, lng: number } } | null };
 
 export type VerifiedUserGoogleQueryVariables = Exact<{
   payload: Signupinput;
@@ -573,6 +778,110 @@ export type GetCurrentDataQueryHookResult = ReturnType<typeof useGetCurrentDataQ
 export type GetCurrentDataLazyQueryHookResult = ReturnType<typeof useGetCurrentDataLazyQuery>;
 export type GetCurrentDataSuspenseQueryHookResult = ReturnType<typeof useGetCurrentDataSuspenseQuery>;
 export type GetCurrentDataQueryResult = Apollo.QueryResult<GetCurrentDataQuery, GetCurrentDataQueryVariables>;
+export const CreatemesforproviderDocument = gql`
+    mutation Createmesforprovider($payload: CreateMessdata!) {
+  CreateMessProvider(payload: $payload) {
+    success
+    message
+  }
+}
+    `;
+export type CreatemesforproviderMutationFn = Apollo.MutationFunction<CreatemesforproviderMutation, CreatemesforproviderMutationVariables>;
+
+/**
+ * __useCreatemesforproviderMutation__
+ *
+ * To run a mutation, you first call `useCreatemesforproviderMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreatemesforproviderMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createmesforproviderMutation, { data, loading, error }] = useCreatemesforproviderMutation({
+ *   variables: {
+ *      payload: // value for 'payload'
+ *   },
+ * });
+ */
+export function useCreatemesforproviderMutation(baseOptions?: Apollo.MutationHookOptions<CreatemesforproviderMutation, CreatemesforproviderMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreatemesforproviderMutation, CreatemesforproviderMutationVariables>(CreatemesforproviderDocument, options);
+      }
+export type CreatemesforproviderMutationHookResult = ReturnType<typeof useCreatemesforproviderMutation>;
+export type CreatemesforproviderMutationResult = Apollo.MutationResult<CreatemesforproviderMutation>;
+export type CreatemesforproviderMutationOptions = Apollo.BaseMutationOptions<CreatemesforproviderMutation, CreatemesforproviderMutationVariables>;
+export const GetcurentMessdataDocument = gql`
+    query GetcurentMessdata {
+  getproviderMessData {
+    identity {
+      name
+      startTime
+      endTime
+      dietaryType
+      operatingMode
+    }
+    legal {
+      fssaiNumber
+    }
+    media {
+      cover
+      kitchen
+      dining
+    }
+    location {
+      address
+      houseNo
+      society
+      landmark
+      suburb
+      city
+      state
+      postcode
+      lat
+      lng
+    }
+    messVerified
+    createdAt
+  }
+}
+    `;
+
+/**
+ * __useGetcurentMessdataQuery__
+ *
+ * To run a query within a React component, call `useGetcurentMessdataQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetcurentMessdataQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetcurentMessdataQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetcurentMessdataQuery(baseOptions?: Apollo.QueryHookOptions<GetcurentMessdataQuery, GetcurentMessdataQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetcurentMessdataQuery, GetcurentMessdataQueryVariables>(GetcurentMessdataDocument, options);
+      }
+export function useGetcurentMessdataLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetcurentMessdataQuery, GetcurentMessdataQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetcurentMessdataQuery, GetcurentMessdataQueryVariables>(GetcurentMessdataDocument, options);
+        }
+// @ts-ignore
+export function useGetcurentMessdataSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<GetcurentMessdataQuery, GetcurentMessdataQueryVariables>): Apollo.UseSuspenseQueryResult<GetcurentMessdataQuery, GetcurentMessdataQueryVariables>;
+export function useGetcurentMessdataSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetcurentMessdataQuery, GetcurentMessdataQueryVariables>): Apollo.UseSuspenseQueryResult<GetcurentMessdataQuery | undefined, GetcurentMessdataQueryVariables>;
+export function useGetcurentMessdataSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetcurentMessdataQuery, GetcurentMessdataQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetcurentMessdataQuery, GetcurentMessdataQueryVariables>(GetcurentMessdataDocument, options);
+        }
+export type GetcurentMessdataQueryHookResult = ReturnType<typeof useGetcurentMessdataQuery>;
+export type GetcurentMessdataLazyQueryHookResult = ReturnType<typeof useGetcurentMessdataLazyQuery>;
+export type GetcurentMessdataSuspenseQueryHookResult = ReturnType<typeof useGetcurentMessdataSuspenseQuery>;
+export type GetcurentMessdataQueryResult = Apollo.QueryResult<GetcurentMessdataQuery, GetcurentMessdataQueryVariables>;
 export const VerifiedUserGoogleDocument = gql`
     query VerifiedUserGoogle($payload: signupinput!) {
   verifiedgoodtokenandnumberforSignup(payload: $payload) {

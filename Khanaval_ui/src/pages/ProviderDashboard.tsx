@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -8,7 +8,11 @@ import MenuManagement from "./provider/MenuManagement";
 import QRScanner from "./provider/QRScanner";
 import EarningsDashboard from "./provider/EarningsDashboard";
 import SubscriberManagement from "./provider/SubscriberManagement";
-
+import {
+  ShieldCheck,
+  Building2, Home, Hash, Timer,
+  CheckCircle2, Info, Eye
+} from "lucide-react";
 import {
   LayoutDashboard,
   Utensils,
@@ -24,36 +28,42 @@ import {
   CalendarCheck,
   ShieldAlert,
   PlusCircle,
-  BookOpen
+  BookOpen,
+  AlertCircle,
+  MapPin
 } from "lucide-react";
 import { UserProviderdata } from "@/hooks/Provider";
 import { ProviderProfile } from "./ProviderProfile";
 import UpdishOnboarding from "./MessResgisation";
+import { Getmymess } from "@/hooks/PorviderMess";
+import { useQueryClient } from "@tanstack/react-query";
+import Unverfied from "./components/Unverfied";
 
 type TabType = "dashboard" | "menu" | "subscribers" | "scanner" | "earnings" | "Profile";
 
 export default function ProviderDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<TabType>("dashboard");
-  
-  const { Providerdata } = UserProviderdata();
-  
-  // Logic: Check if Mess is registered
-  const isRegistered = Providerdata?.MessRegister !== "false";
 
+  const { Providerdata } = UserProviderdata();
+
+  const isRegistered = Providerdata?.MessRegister !== "false";
   const handleNavClick = (tabId: TabType) => {
     setActiveTab(tabId);
     setSidebarOpen(false);
   };
-
+  const { messdata } = Getmymess()
+  const queryclinet = useQueryClient()
   const getPageTitle = () => {
     const item = navItems.find((i) => i.id === activeTab);
     return item?.label || "Dashboard";
   };
   const navigate = useNavigate()
-   return (
+  if (messdata && messdata?.messVerified === false) {
+    return <Unverfied />
+  }
+  return (
     <div className="min-h-screen bg-[#F8FAFC] flex">
-      {/* --- SIDEBAR --- */}
       <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-slate-200 transform transition-transform duration-300 lg:translate-x-0 lg:static ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}>
         <div className="p-6 border-b border-slate-100 flex items-center justify-between">
           <Link to="/" className="md:w-[170px] w-[200px] md:h-fit">
@@ -63,17 +73,16 @@ export default function ProviderDashboard() {
             <X className="w-5 h-5" />
           </button>
         </div>
-        
+
         <nav className="p-4 space-y-2">
           {navItems.map((item) => (
             <button
               key={item.id}
               onClick={() => handleNavClick(item.id)}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${
-                activeTab === item.id
-                  ? "bg-orange-50 text-orange-600 shadow-sm shadow-orange-100"
-                  : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
-              }`}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${activeTab === item.id
+                ? "bg-orange-50 text-orange-600 shadow-sm shadow-orange-100"
+                : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
+                }`}
             >
               <item.icon className={`w-5 h-5 ${activeTab === item.id ? "text-orange-600" : "text-slate-400"}`} />
               {item.label}
@@ -82,7 +91,6 @@ export default function ProviderDashboard() {
         </nav>
       </aside>
 
-      {/* --- MAIN CONTENT --- */}
       <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
         <header className="sticky top-0 bg-white/80 backdrop-blur-md border-b border-slate-200 p-4 flex items-center justify-between z-30">
           <div className="flex items-center gap-4">
@@ -102,8 +110,7 @@ export default function ProviderDashboard() {
         </header>
 
         <div className="p-4 md:p-8 overflow-y-auto">
-          
-          {/* --- NOT REGISTERED BANNER --- */}
+
           {!isRegistered && (
             <div className="mb-8 animate-in slide-in-from-top-4 duration-700">
               <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-[32px] p-8 text-white relative overflow-hidden shadow-2xl">
@@ -120,8 +127,8 @@ export default function ProviderDashboard() {
                       Join Kahanval.com to add monthly subscribers, track daily attendance via QR, and manage payments in one digital register.
                     </p>
                     <div className="flex flex-wrap gap-3 pt-2">
-                      <Button 
-                        onClick={() => navigate("/provider/messsResgiter")} 
+                      <Button
+                        onClick={() => navigate("/provider/messsResgiter")}
                         className="bg-orange-600 hover:bg-orange-700 text-white font-black px-8 py-6 rounded-2xl shadow-lg shadow-orange-900/20"
                       >
                         <PlusCircle className="w-5 h-5 mr-2" /> REGISTER YOUR MESS
@@ -149,8 +156,7 @@ export default function ProviderDashboard() {
             </div>
           )}
 
-          {/* --- MAIN DASHBOARD AREA --- */}
-          {activeTab === "dashboard"  && isRegistered &&  (
+          {activeTab === "dashboard" && isRegistered && (
             <div className={`space-y-8 transition-all duration-700 ${!isRegistered ? "opacity-30 blur-[2px] pointer-events-none select-none" : ""}`}>
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                 {stats.map((stat, i) => (
@@ -185,11 +191,11 @@ export default function ProviderDashboard() {
                 </Card>
 
                 <div className="space-y-4">
-                   <Card className="p-6 rounded-3xl border-none shadow-sm bg-orange-600 text-white">
-                      <h3 className="font-bold mb-1">Today's Menu</h3>
-                      <p className="text-xs text-orange-100 mb-4">Visible to all your students</p>
-                      <Button variant="secondary" className="w-full rounded-xl font-bold bg-white text-orange-600">Edit Menu</Button>
-                   </Card>
+                  <Card className="p-6 rounded-3xl border-none shadow-sm bg-orange-600 text-white">
+                    <h3 className="font-bold mb-1">Today's Menu</h3>
+                    <p className="text-xs text-orange-100 mb-4">Visible to all your students</p>
+                    <Button variant="secondary" className="w-full rounded-xl font-bold bg-white text-orange-600">Edit Menu</Button>
+                  </Card>
                 </div>
               </div>
             </div>
@@ -199,7 +205,7 @@ export default function ProviderDashboard() {
           <div className="mt-4">
             {!isRegistered && activeTab !== "dashboard" ? (
               <div className="max-w-2xl mx-auto">
-                
+
               </div>
             ) : (
               <>

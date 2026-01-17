@@ -17,6 +17,77 @@ type SignupResponseOfverifed {
   message:String,
   token:String
 }
+
+input  CreateMessdata {
+  providerId:String!
+  identity:Identity
+  legal:Legal!
+  media:Media!
+  location:Location!
+}
+input Location {
+address: String!
+city: String!
+houseNo:String!
+landmark:String!
+lat: Float!
+lng:Float!
+postcode:String!
+society: String!
+state:String!
+suburb: String
+}
+input Media {
+  cover:String!
+  kitchen:String!
+  dining:String!
+}
+input Legal{
+  fssaiNumber:String!
+}
+input Identity {
+  name:String!,
+  startTime:String!,
+  endTime:String!
+  dietaryType:String!
+  operatingMode:String
+}
+type  GetCurrentMess{
+  identity:Identitys!
+  legal:Legals!
+  media:Medias!
+  location:Locations!
+  messVerified:Boolean!
+  createdAt:String!
+}
+type Locations {
+address: String!
+city: String!
+houseNo:String!
+landmark:String!
+lat: Float!
+lng:Float!
+postcode:String!
+society: String!
+state:String!
+suburb: String
+}
+type Medias {
+  cover:String!
+  kitchen:String!
+  dining:String!
+}
+type Legals{
+  fssaiNumber:String!
+}
+type Identitys {
+  name:String!,
+  startTime:String!,
+  endTime:String!
+  dietaryType:String!
+  operatingMode:String
+}
+
 type provider {
     id:ID!
     OwnerName:String!,

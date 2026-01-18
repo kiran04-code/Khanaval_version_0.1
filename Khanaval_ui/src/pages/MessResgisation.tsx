@@ -77,9 +77,7 @@ export default function UpdishOnboarding() {
 
         try {
             const { data } = await axios.post("http://localhost:3003/api/provider/ImageUrl", formData,
-                {
-                    headers: { "Content-Type": "multipart/form-data" }
-                }
+               
             );
             console.log(data)
             if (data.success) {
@@ -89,7 +87,6 @@ export default function UpdishOnboarding() {
         } catch (error) {
             console.log(error)
             showToast("Image upload failed. Please try again.");
-            console.error(error);
         } finally {
             setLoading(false);
         }

@@ -128,12 +128,28 @@ export function Navbar() {
           </div>
 
           {/* MOBILE TOGGLE */}
-          <button 
-            className="lg:hidden p-2 rounded-xl border-2 border-orange-100 bg-orange-50 text-orange-600 shadow-sm" 
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          >
-            {mobileMenuOpen ? <X className="w-7 h-7" /> : <Menu className="w-7 h-7" />}
-          </button>
+         <button 
+  onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+  className="
+    group relative lg:hidden p-2.5 rounded-xl transition-all duration-300 ease-out
+    bg-white hover:bg-orange-50/50
+    border border-orange-100/80
+    shadow-[0_4px_12px_-2px_rgba(251,146,60,0.12),0_2px_4px_-1px_rgba(251,146,60,0.08)]
+    active:scale-90 active:shadow-inner
+    overflow-hidden
+  "
+>
+  {/* Subtle Shine Reflection Effect */}
+  <div className="absolute inset-0 bg-gradient-to-tr from-orange-400/0 via-orange-400/5 to-orange-400/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+  
+  <div className="relative flex items-center justify-center">
+    {mobileMenuOpen ? (
+      <X className="w-6 h-6 text-orange-600 transition-transform duration-300 rotate-0 scale-100" />
+    ) : (
+      <Menu className="w-6 h-6 text-orange-500 group-hover:text-orange-600 transition-transform duration-300" />
+    )}
+  </div>
+</button>
         </div>
 
         {/* MOBILE MENU */}

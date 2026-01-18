@@ -190,14 +190,6 @@ const {userlat,userlng} = useStateContex()
                     </div>
                     <span className="text-sm font-bold text-slate-700 uppercase tracking-tight">Real-time Menus</span>
                   </div>
-
-                  <div className="flex items-center gap-3 p-3 rounded-2xl bg-white border border-slate-100 shadow-sm hover:border-orange-200 transition-colors">
-                    <div className="bg-orange-100 p-2 rounded-xl text-orange-600">
-                      <User className="w-5 h-5" />
-                    </div>
-                    <span className="text-sm font-bold text-slate-700 uppercase tracking-tight">No Middlemen</span>
-                  </div>
-
                   <div className="flex items-center gap-3 p-3 rounded-2xl bg-white border border-slate-100 shadow-sm hover:border-orange-200 transition-colors">
                     <div className="bg-orange-100 p-2 rounded-xl text-orange-600">
                       <Utensils className="w-5 h-5" />

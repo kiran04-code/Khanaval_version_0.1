@@ -18,7 +18,7 @@ export function Navbar() {
   const token = localStorage.getItem("_user_Token__");
   const { user } = useCurrentUser();
   const { Providerdata } = UserProviderdata();
-  
+
   const isLoggedIn = Boolean(token);
   const isProvider = Boolean(Providerdata);
 
@@ -32,7 +32,7 @@ export function Navbar() {
     localStorage.removeItem("_user_Token__");
     queryClient.invalidateQueries({ queryKey: ["provider-data"] });
     queryClient.invalidateQueries({ queryKey: ["current_user"] });
-       queryClient.clear();
+    queryClient.clear();
     setMobileMenuOpen(false);
     navigate("/");
   };
@@ -46,30 +46,30 @@ export function Navbar() {
   return (
     <nav className={cn(
       "fixed top-0 left-0 right-0 z-50 transition-all duration-300 ",
-      scrolled 
-        ? " backdrop-blur-md py-3 shadow-lg border-orange-600" 
+      scrolled
+        ? " backdrop-blur-md py-3 shadow-lg border-orange-600"
         : " py-2 "
     )}>
       <div className="container mx-auto px-6">
         <div className="flex items-center justify-between">
-          
+
           <Link to="/" className="md:w-[170px] w-[150px] md:h-fit">
             <img src="/logo.png" alt="logo" className="w-full h-auto" />
           </Link>
 
           {/* DESKTOP ACTIONS */}
           <div className="hidden lg:flex items-center gap-5">
-            
+
             {/* PILL NAVIGATION */}
             <div className="flex items-center bg-orange-50 p-1 rounded-full border border-orange-100 shadow-inner">
               {navLinks.map((link) => (
-                <Link 
+                <Link
                   key={link.path}
-                  to={link.path} 
+                  to={link.path}
                   className={cn(
                     "px-5 py-2 rounded-full text-xs font-extrabold transition-all duration-200",
-                    location.pathname === link.path 
-                      ? "bg-orange-600 text-white shadow-md scale-105" 
+                    location.pathname === link.path
+                      ? "bg-orange-600 text-white shadow-md scale-105"
                       : "text-slate-600 hover:text-orange-600"
                   )}
                 >
@@ -82,7 +82,7 @@ export function Navbar() {
 
             {isLoggedIn ? (
               <div className="flex items-center gap-3 bg-white border border-slate-200 p-1 rounded-full shadow-sm">
-                
+
                 {/* ROLE-BASED BUTTONS */}
                 {isProvider ? (
                   <Link to="/provider">
@@ -128,63 +128,61 @@ export function Navbar() {
           </div>
 
           {/* MOBILE TOGGLE */}
-         <button 
-  onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-  className="
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="
     group relative lg:hidden p-2.5 rounded-xl transition-all duration-300 ease-out
     bg-white hover:bg-orange-50/50
     border border-orange-100/80
-    shadow-[0_4px_12px_-2px_rgba(251,146,60,0.12),0_2px_4px_-1px_rgba(251,146,60,0.08)]
-    active:scale-90 active:shadow-inner
     overflow-hidden
   "
->
-  {/* Subtle Shine Reflection Effect */}
-  <div className="absolute inset-0 bg-gradient-to-tr from-orange-400/0 via-orange-400/5 to-orange-400/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-  
-  <div className="relative flex items-center justify-center">
-    {mobileMenuOpen ? (
-      <X className="w-6 h-6 text-orange-600 transition-transform duration-300 rotate-0 scale-100" />
-    ) : (
-      <Menu className="w-6 h-6 text-orange-500 group-hover:text-orange-600 transition-transform duration-300" />
-    )}
-  </div>
-</button>
+          >
+            {/* Subtle Shine Reflection Effect */}
+            <div className="absolute inset-0 bg-gradient-to-tr from-orange-400/0 via-orange-400/5 to-orange-400/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+            <div className="relative flex items-center justify-center">
+              {mobileMenuOpen ? (
+                <X className="w-6 h-6 text-orange-600 transition-transform duration-300 rotate-0 scale-100" />
+              ) : (
+                <Menu className="w-6 h-6 text-orange-500 g transition-transform duration-300" />
+              )}
+            </div>
+          </button>
         </div>
 
         {/* MOBILE MENU */}
         {mobileMenuOpen && (
           <div className="lg:hidden fixed inset-x-0 top-[78px] bg-white border-b-4 border-orange-600 shadow-2xl p-6 space-y-6 animate-in slide-in-from-top duration-300 z-50">
-             
-             {isLoggedIn && (
-               <div className="flex items-center gap-4 p-4 bg-orange-50 rounded-3xl border border-orange-100">
-                 <Avatar className="w-14 h-14 border-4 border-white shadow-md">
-                   <AvatarImage src={isProvider ? Providerdata?.imageUrl : user?.imageUrl} />
-                   <AvatarFallback className="bg-orange-600 text-white font-bold text-xl">
-                      {(isProvider ? Providerdata?.OwnerName?.[0] : user?.first_name?.[0])}
-                    </AvatarFallback>
-                 </Avatar>
-                 <div>
-                   <p className="font-black text-slate-900 text-lg uppercase leading-none mb-1">
-                     {isProvider ? Providerdata?.OwnerName : user?.first_name}
-                   </p>
-                   <p className="text-[10px] font-bold text-orange-600 uppercase tracking-widest">
-                     {isProvider ? "Verified Provider" : "Customer Profile"}
-                   </p>
-                 </div>
-               </div>
-             )}
+
+            {isLoggedIn && (
+              <div className="flex items-center gap-4 p-4 bg-orange-50 rounded-3xl border border-orange-100">
+                <Avatar className="w-14 h-14 border-4 border-white shadow-md">
+                  <AvatarImage src={isProvider ? Providerdata?.imageUrl : user?.imageUrl} />
+                  <AvatarFallback className="bg-orange-600 text-white font-bold text-xl">
+                    {(isProvider ? Providerdata?.OwnerName?.[0] : user?.first_name?.[0])}
+                  </AvatarFallback>
+                </Avatar>
+                <div>
+                  <p className="font-black text-slate-900 text-lg uppercase leading-none mb-1">
+                    {isProvider ? Providerdata?.OwnerName : user?.first_name}
+                  </p>
+                  <p className="text-[10px] font-bold text-orange-600 uppercase tracking-widest">
+                    {isProvider ? "Verified Provider" : "Customer Profile"}
+                  </p>
+                </div>
+              </div>
+            )}
 
             <div className="flex flex-col gap-3">
               {navLinks.map((link) => (
-                <Link 
+                <Link
                   key={link.path}
-                  to={link.path} 
+                  to={link.path}
                   onClick={() => setMobileMenuOpen(false)}
                   className={cn(
                     "flex items-center gap-4 p-4 font-black rounded-2xl transition-all",
-                    location.pathname === link.path 
-                      ? "bg-orange-600 text-white shadow-lg" 
+                    location.pathname === link.path
+                      ? "bg-orange-600 text-white shadow-lg"
                       : "bg-slate-50 text-slate-700"
                   )}
                 >
@@ -192,11 +190,11 @@ export function Navbar() {
                   {link.name.toUpperCase()}
                 </Link>
               ))}
-              
+
               {/* MOBILE ACTION BUTTON */}
               {isLoggedIn && (
-                <Link 
-                  to={isProvider ? "/provider" : "/profile"} 
+                <Link
+                  to={isProvider ? "/provider" : "/profile"}
                   onClick={() => setMobileMenuOpen(false)}
                   className="flex items-center justify-between p-5 font-black text-white bg-slate-900 rounded-2xl mt-4 shadow-xl"
                 >
@@ -217,8 +215,8 @@ export function Navbar() {
             )}
 
             {isLoggedIn && (
-              <button 
-                onClick={handleLogout} 
+              <button
+                onClick={handleLogout}
                 className="w-full flex items-center justify-center gap-2 p-4 text-red-600 font-black border-t border-slate-100 pt-6 mt-2"
               >
                 <LogOut className="w-5 h-5" /> LOGOUT

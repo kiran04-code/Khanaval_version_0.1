@@ -143,6 +143,7 @@ export default function MessDetailPage() {
               <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
                 <Card className="rounded-[32px] border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-7 space-y-5 bg-white">
+                  
                   <div className="flex items-center justify-between">
                     <h4 className="font-black text-slate-800 flex items-center gap-2 tracking-tight">
                       <MapPin className="w-5 h-5 text-orange-500" /> Location Details
@@ -175,6 +176,12 @@ export default function MessDetailPage() {
                           {mess?.location?.address}
                         </p>
                       </div>
+                    </div>
+                    <div className="flex  items-center ">
+                        <div className="w-1.5 h-1.5 rounded-full bg-orange-400  shrink-0" />
+                        <p className="text-[12px] px-2 font-medium text-orange-400 leading-tight">
+                          {calculateDistance(userlat,userlng,mess?.location.lat,mess.location?.lng)} KM AWAY
+                        </p>
                     </div>
                   </div>
                 </Card>

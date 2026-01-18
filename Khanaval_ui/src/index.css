@@ -256,3 +256,24 @@
 .photo-grid-item {
   transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
+@layer utilities {
+  /* Hide scrollbar but keep functionality */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    /* Enable smooth momentum scrolling on iOS */
+    -webkit-overflow-scrolling: touch; 
+  }
+
+  /* Snap Logic */
+  .snap-x-mandatory {
+    scroll-snap-type: x mandatory;
+  }
+  .snap-center {
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
+  }
+}

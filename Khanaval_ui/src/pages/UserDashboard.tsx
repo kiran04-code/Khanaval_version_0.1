@@ -95,19 +95,22 @@ export default function UserDashboard() {
           <QuickActionBadge icon={Clock} label="Fastest" active={activeTab === "fast"} onClick={() => setActiveTab("fast")} />
           <QuickActionBadge icon={Wallet} label="Budget" active={activeTab === "budget"} onClick={() => setActiveTab("budget")} />
         </div>
-
-        {/* MESS CARDS: Horizontal on Mobile, Grid on Desktop */}
-        <div className="
+          <div className="
           flex overflow-x-auto gap-5 pb-10 -mx-4 px-4 no-scrollbar
-          md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:gap-10 md:mx-0 md:px-0 md:overflow-visible
+          snap-x-mandatory scroll-smooth
+          md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:gap-10 md:mx-0 md:px-0 md:overflow-visible md:snap-none
         ">
           {loading ? (
             Array(4).fill(0).map((_, i) => (
-              <Skeleton key={i} className="min-w-[280px] h-[400px] md:w-full rounded-[2.5rem] shrink-0" />
+              <Skeleton key={i} className="min-w-[280px] h-[400px] md:w-full rounded-[2.5rem] shrink-0 snap-center" />
             ))
           ) : (
             AllMESS?.map((mess, idx) => (
-              <div key={idx} className="min-w-[290px] mt-5 sm:min-w-[320px] md:min-w-0 shrink-0">
+              /* Added snap-center and smooth transition wrapper */
+              <div 
+                key={idx} 
+                className="min-w-[85vw] sm:min-w-[320px] md:min-w-0 shrink-0 snap-center transition-transform duration-500 ease-out"
+              >
                 <Suspense fallback={<Skeleton className="h-[400px] w-full rounded-[2.5rem]" />}>
                   <MessCard {...mess} />
                 </Suspense>

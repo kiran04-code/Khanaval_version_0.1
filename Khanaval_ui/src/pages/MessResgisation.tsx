@@ -36,7 +36,7 @@ export default function UpdishOnboarding() {
     });
 
     // Store URLs returned from API
-    const [uploadedUrls, setUploadedUrls] = useState<Media>({ cover: "", kitchen: "", dining: "" });
+        const [uploadedUrls, setUploadedUrls] = useState<Media>({ cover: "", kitchen: "", dining: "" });
 
     const fileInputRef = useRef(null);
     const [activeSlot, setActiveSlot] = useState(null);
@@ -56,7 +56,7 @@ export default function UpdishOnboarding() {
         postcode: ""
     });
     const [locationStatus, setLocationStatus] = useState('idle');
-    const { mutate, isSuccess, data } = CreatemessForProvider()
+    const {mutate,isSuccess,data} = CreatemessForProvider()
     const showToast = (msg, type = "error") => {
         setToast({ show: true, message: msg, type });
         setTimeout(() => setToast({ show: false, message: "", type: "error" }), 3000);
@@ -71,13 +71,15 @@ export default function UpdishOnboarding() {
         if (!files.cover || !files.kitchen) return showToast("Please select all required images");
         setLoading(true);
         const formData = new FormData();
-        formData.append("cover", files.cover);
-        formData.append("kitchen", files.kitchen);
-        if (files.dining) formData.append("dining", files.dining);
+        if (previews.cover) formData.append("cover", files.cover);
+        if (previews.kitchen) formData.append("kitchen", files.kitchen);
+        if (previews.dining) formData.append("dining", files.dining);
 
         try {
-            const { data } = await axios.post("http://localhost:3003/api/provider/ImageUrl", formData,
-               
+            const { data } = await axios.post(`${import.meta.env.VITE_BACKEND_API}/api/provider/ImageUrl`, formData,
+                {
+                    headers: { "Content-Type": "multipart/form-data" }
+                }
             );
             console.log(data)
             if (data.success) {
@@ -87,6 +89,7 @@ export default function UpdishOnboarding() {
         } catch (error) {
             console.log(error)
             showToast("Image upload failed. Please try again.");
+            console.error(error);
         } finally {
             setLoading(false);
         }
@@ -125,7 +128,7 @@ export default function UpdishOnboarding() {
         if (step === 1 && !messName.trim()) return showToast("Mess name is required");
         if (step === 2) {
             if (!previews.kitchen) return showToast("Please upload a kitchen photo");
-            uploadImages();
+            uploadImages(); 
             return;
         }
 
@@ -143,20 +146,20 @@ export default function UpdishOnboarding() {
 
     const handleSubmit = () => {
         setLoading(true);
-        const finalData: CreateMessdata = {
+        const finalData:CreateMessdata = {
             providerId: Providerdata?.id,
             identity: { name: messName, startTime, endTime, dietaryType, operatingMode: selectedType },
-            media: uploadedUrls,
+            media: uploadedUrls, 
             location: locationData,
             legal: { fssaiNumber: fssai },
 
         };
         console.log("🚀 SUBMISSION:", finalData);
-        mutate(finalData, {
-            onSuccess: () => {
-                if (isSuccess) {
-                    showToast("Mess is Created Please Wait for Verification in Profile");
-                }
+        mutate(finalData,{
+            onSuccess:()=>{
+                if(isSuccess){
+                     showToast("Mess is Created Please Wait for Verification in Profile");
+                 }
             }
         })
         setTimeout(() => { setLoading(false); setIsCompleted(true); }, 2000);
@@ -172,7 +175,6 @@ export default function UpdishOnboarding() {
         const reader = new FileReader();
         reader.onloadend = () => setPreviews(prev => ({ ...prev, [activeSlot]: reader.result }));
         reader.readAsDataURL(file);
-        e.target.value = "";
     };
 
     const UpdishLoader = () => (
@@ -382,7 +384,7 @@ export default function UpdishOnboarding() {
                 )}
 
                 {step === 4 && (
-                    <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
+                   <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
                         <h2 className="text-xl font-bold">Safety & Legal</h2>
                         <div className="bg-white p-6 rounded-2xl border border-gray-100 space-y-4 shadow-sm">
                             <div className="space-y-2">

@@ -53,7 +53,7 @@ export function Navbar() {
       <div className="container mx-auto px-6">
         <div className="flex items-center justify-between">
           
-          <Link to="/" className="md:w-[170px] w-[200px] md:h-fit">
+          <Link to="/" className="md:w-[170px] w-[15px] md:h-fit">
             <img src="/logo.png" alt="logo" className="w-full h-auto" />
           </Link>
 

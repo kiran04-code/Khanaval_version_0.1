@@ -5,6 +5,7 @@ import type { GraphqlContext } from "../user/types.js";
 import type { CreateMessPayload, Iprovider, IproviderlOGIN } from "./types.js";
 import { Provider } from "../../model/Provider.js";
 import { Qrcodegenerator } from "./utils/QRCodeGenrator.js";
+import { redisclient } from "../../config/redis.js";
 
 
 
@@ -34,7 +35,6 @@ const Query = {
         if (!ctx.user?._id) {
             throw Error("user Not Authenticated")
         }
-        console.log(ctx.user?._id)
         const user = await Provider.findById(ctx.user?._id)
         if (!user?.MessRegister) {
             throw Error("user Not Resgiter There Mess")
@@ -98,6 +98,8 @@ const Mutation = {
             const qrcode = await Qrcodegenerator(data._id)
             await Mess.findByIdAndUpdate(data._id, { MessQrcode: qrcode })
             await Provider.findByIdAndUpdate(idx.user._id, { MessRegister: true })
+            const cachekey = "AllMESS"
+            await redisclient.del(cachekey)
             return {
                 success: true,
                 message: "mess create Successfull"

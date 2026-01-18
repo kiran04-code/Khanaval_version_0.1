@@ -11,11 +11,10 @@ import { Skeleton } from "@/components/common/Skeleton";
 import { GetALLmess } from "@/hooks/MessData";
 
 const MessCard = React.lazy(() => import("./components/MessCard"));
-
 const QuickActionBadge = ({ icon: Icon, label, active, onClick }) => (
   <button 
-    onClick={onClick}
-    className={cn(
+  onClick={onClick}
+  className={cn(
       "flex items-center gap-2 px-5 py-2.5 rounded-2xl text-sm font-bold transition-all duration-300 whitespace-nowrap border-2 shrink-0",
       active
         ? "bg-orange-500 border-orange-500 text-white shadow-lg shadow-orange-200 scale-105"
@@ -33,11 +32,12 @@ export default function UserDashboard() {
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
   const { AllMESS } = GetALLmess();
-
+  
   useEffect(() => {
     setTimeout(() => setLoading(false), 1500);
   }, []);
 
+  console.log(AllMESS)
   return (
     <div className="min-h-screen bg-[#FDFDFF] pb-24 md:pb-12">
       {/* DESKTOP HEADER */}

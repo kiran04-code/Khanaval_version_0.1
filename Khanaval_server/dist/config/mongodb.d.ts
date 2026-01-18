@@ -1,3 +1,2 @@
-import mongoose from "mongoose";
-export declare const MongoDbConnnection: (url: string) => Promise<typeof mongoose>;
+export declare function connectDB(): Promise<any>;
 //# sourceMappingURL=mongodb.d.ts.map

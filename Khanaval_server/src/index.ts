@@ -4,7 +4,7 @@ import cors from "cors"
 import dotenv from "dotenv"
 import {expressMiddleware} from "@as-integrations/express5"
 import StartGraphql from "./Graphql/index.js"
-import { MongoDbConnnection } from "./config/mongodb.js"
+import { connectDB } from "./config/mongodb.js"
 import jwtService from "./services/JwtToken.js"
 import providerRoutes from "./routes/Provider.js"
 dotenv.config()
@@ -49,12 +49,8 @@ app.use("/graphql", expressMiddleware(await StartGraphql(),{
     }
 }) 
 )
-// db Connection
-MongoDbConnnection(`${process.env.MONGODB_URI}`).then(()=>{
-console.log("Mongodb is Connected.")
-}).catch((err)=>{
-console.log("Mongo_error",err)
-})
+
+await connectDB();
 app.use("/api",providerRoutes)
 // Server IS Listing
 app.listen(PORT, () => {

@@ -62,6 +62,7 @@ export default function HybridAuthPage() {
         setUserMode("signup");
       }
     } catch (err) {
+      console.log(err)
       toast({ title: "Login failed", variant: "destructive" });
     }
     setIsLoading(false);

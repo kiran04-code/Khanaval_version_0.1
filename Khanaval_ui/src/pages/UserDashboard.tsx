@@ -36,8 +36,6 @@ export default function UserDashboard() {
   useEffect(() => {
     setTimeout(() => setLoading(false), 1500);
   }, []);
-
-  console.log(AllMESS)
   return (
     <div className="min-h-screen bg-[#FDFDFF] pb-24 md:pb-12">
       {/* DESKTOP HEADER */}

@@ -136,10 +136,7 @@ const MessSkeleton = ({ isLarge }) => (
 const Index = () => {
   const [isLoading, setIsLoading] = useState(true);
   const { Providerdata } = UserProviderdata()
-  console.log(Providerdata)
-
   const navigate = useNavigate()
-  // 2 Second Loading Simulation
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false);

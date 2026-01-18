@@ -12,7 +12,10 @@ const PORT = process.env.PORT || 3002;
 // MIIDDLEWARE
 app.use(cors({
     credentials: true,
-    origin: ["https://khanaval-version-0-1-5tyc.vercel.app", "http://localhost:8080"]
+    origin: [
+        "https://khanaval-version-0-1-5tyc.vercel.app",
+        "http://localhost:8080"
+    ]
 }));
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));

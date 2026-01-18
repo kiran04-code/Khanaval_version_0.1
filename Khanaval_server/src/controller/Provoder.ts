@@ -6,7 +6,8 @@ interface MulterFiles {
     [fieldname: string]: Express.Multer.File[];
 }
 export const BufferimagetoURlimage = async (req: Request, res: Response): Promise<Response> => {
-    if (!req.files) {
+try {
+        if (!req.files) {
         return res.status(400).json({ success: false, message: "No files uploaded" });
     }
 
@@ -44,6 +45,12 @@ export const BufferimagetoURlimage = async (req: Request, res: Response): Promis
             dining: diningUrl
         }
     });
+} catch (error) {
+      return res.json({
+        success: false,
+        urls: null,
+    });
+}
 }
 
 export const getAllDATA = async (req: Request, res: Response): Promise<Response> => {

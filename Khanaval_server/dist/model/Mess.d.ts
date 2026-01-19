@@ -30,7 +30,10 @@ declare const Mess: mongoose.Model<{
         suburb?: string | null;
     } | null;
     Menu?: {
-        menuIMages: string;
+        createdAt: NativeDate;
+        types?: "breakfast" | "dinner" | null;
+        imageUrl?: string | null;
+        menuDate?: NativeDate | null;
     } | null;
     MessQrcode?: string | null;
 } & mongoose.DefaultTimestampProps, {}, {}, {
@@ -66,7 +69,10 @@ declare const Mess: mongoose.Model<{
         suburb?: string | null;
     } | null;
     Menu?: {
-        menuIMages: string;
+        createdAt: NativeDate;
+        types?: "breakfast" | "dinner" | null;
+        imageUrl?: string | null;
+        menuDate?: NativeDate | null;
     } | null;
     MessQrcode?: string | null;
 } & mongoose.DefaultTimestampProps, {
@@ -104,7 +110,10 @@ declare const Mess: mongoose.Model<{
         suburb?: string | null;
     } | null;
     Menu?: {
-        menuIMages: string;
+        createdAt: NativeDate;
+        types?: "breakfast" | "dinner" | null;
+        imageUrl?: string | null;
+        menuDate?: NativeDate | null;
     } | null;
     MessQrcode?: string | null;
 } & mongoose.DefaultTimestampProps & {
@@ -146,7 +155,10 @@ declare const Mess: mongoose.Model<{
         suburb?: string | null;
     } | null;
     Menu?: {
-        menuIMages: string;
+        createdAt: NativeDate;
+        types?: "breakfast" | "dinner" | null;
+        imageUrl?: string | null;
+        menuDate?: NativeDate | null;
     } | null;
     MessQrcode?: string | null;
 } & mongoose.DefaultTimestampProps, mongoose.Document<unknown, {}, {
@@ -180,7 +192,10 @@ declare const Mess: mongoose.Model<{
         suburb?: string | null;
     } | null;
     Menu?: {
-        menuIMages: string;
+        createdAt: NativeDate;
+        types?: "breakfast" | "dinner" | null;
+        imageUrl?: string | null;
+        menuDate?: NativeDate | null;
     } | null;
     MessQrcode?: string | null;
 } & mongoose.DefaultTimestampProps, {
@@ -218,7 +233,10 @@ declare const Mess: mongoose.Model<{
         suburb?: string | null;
     } | null;
     Menu?: {
-        menuIMages: string;
+        createdAt: NativeDate;
+        types?: "breakfast" | "dinner" | null;
+        imageUrl?: string | null;
+        menuDate?: NativeDate | null;
     } | null;
     MessQrcode?: string | null;
 } & mongoose.DefaultTimestampProps & {
@@ -261,7 +279,10 @@ declare const Mess: mongoose.Model<{
             suburb?: string | null;
         } | null;
         Menu?: {
-            menuIMages: string;
+            createdAt: NativeDate;
+            types?: "breakfast" | "dinner" | null;
+            imageUrl?: string | null;
+            menuDate?: NativeDate | null;
         } | null;
         MessQrcode?: string | null;
     } & mongoose.DefaultTimestampProps, {
@@ -299,7 +320,10 @@ declare const Mess: mongoose.Model<{
             suburb?: string | null;
         } | null;
         Menu?: {
-            menuIMages: string;
+            createdAt: NativeDate;
+            types?: "breakfast" | "dinner" | null;
+            imageUrl?: string | null;
+            menuDate?: NativeDate | null;
         } | null;
         MessQrcode?: string | null;
     } & mongoose.DefaultTimestampProps & {
@@ -340,7 +364,10 @@ declare const Mess: mongoose.Model<{
         suburb?: string | null;
     } | null;
     Menu?: {
-        menuIMages: string;
+        createdAt: NativeDate;
+        types?: "breakfast" | "dinner" | null;
+        imageUrl?: string | null;
+        menuDate?: NativeDate | null;
     } | null;
     MessQrcode?: string | null;
     createdAt: NativeDate;
@@ -380,7 +407,10 @@ declare const Mess: mongoose.Model<{
         suburb?: string | null;
     } | null;
     Menu?: {
-        menuIMages: string;
+        createdAt: NativeDate;
+        types?: "breakfast" | "dinner" | null;
+        imageUrl?: string | null;
+        menuDate?: NativeDate | null;
     } | null;
     MessQrcode?: string | null;
     createdAt: NativeDate;

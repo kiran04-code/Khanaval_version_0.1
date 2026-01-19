@@ -6,7 +6,9 @@ import { Badge } from "@/components/ui/badge";
 import {
   ArrowLeft, Star, MapPin, Clock, Phone,
   CheckCircle, ChevronRight, Share2, Heart, Navigation,
-  UserCheck, ShieldCheck, Utensils, Image as ImageIcon, Info
+  UserCheck, ShieldCheck, Utensils, Image as ImageIcon, Info,
+  Coffee,
+  Moon
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { GetALLmess } from "@/hooks/MessData";
@@ -254,22 +256,69 @@ export default function MessDetailPage() {
             </div>
           )}
 
-          {activeTab === "menu" && (
-            <div className="space-y-6 animate-in zoom-in-95 duration-500">
-              <h3 className="text-2xl font-black text-slate-800">Available Menu</h3>
-              {/* Static Example - Map your actual menu items here */}
-              <Card className="rounded-3xl border-slate-50 shadow-sm overflow-hidden p-4">
-                <div className="flex gap-4">
-                  <div className="w-24 h-24 rounded-2xl bg-slate-100 overflow-hidden"><img src={mess?.media?.cover} className="w-full h-full object-cover" /></div>
-                  <div className="flex-1">
-                    <Badge className="bg-emerald-100 text-emerald-700 border-none text-[9px] font-black uppercase mb-1">Veg Special</Badge>
-                    <h5 className="font-black text-slate-800 text-lg">Daily Unlimited Thali</h5>
-                    <p className="text-orange-600 font-black text-xl">₹150</p>
-                  </div>
+{activeTab === "menu" && (
+  <div className="space-y-6 animate-in fade-in duration-500">
+    <div className="flex items-center justify-between px-2">
+      <h3 className="text-2xl font-black text-slate-900 tracking-tight">Today's Menu</h3>
+      <div className="flex items-center gap-1.5 bg-emerald-50 px-3 py-1 rounded-full">
+        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+        <span className="text-[10px] font-black text-emerald-600 uppercase">Live</span>
+      </div>
+    </div>
+
+    {mess?.Menu && mess.Menu.length > 0 ? (
+      <div className="columns-1 md:columns-2 gap-4 space-y-4">
+        {mess.Menu.map((item, index) => (
+          <div key={index} className="break-inside-avoid mb-4">
+            <Card className="rounded-[2rem] border-none shadow-sm hover:shadow-md transition-shadow overflow-hidden bg-white">
+              
+              {/* Header Label inside Card */}
+              <div className="px-5 py-4 flex items-center justify-between border-b border-slate-50">
+                <div className="flex items-center gap-2">
+                  {item.types === "breakfast" ? 
+                    <Coffee className="w-4 h-4 text-orange-500" /> : 
+                    <Moon className="w-4 h-4 text-indigo-500" />
+                  }
+                  <span className="text-sm font-black text-slate-800 uppercase tracking-wide">
+                    {item.types}
+                  </span>
                 </div>
-              </Card>
-            </div>
-          )}
+              </div>
+
+              {/* The Image - No cropping, no black bars */}
+              <div className="w-full h-auto bg-slate-50">
+                {item.imageUrl ? (
+                  <img 
+                    src={item.imageUrl} 
+                    className="w-full h-auto block" // h-auto ensures full height is shown
+                    alt={item.types} 
+                    loading="lazy"
+                  />
+                ) : (
+                  <div className="py-20 flex flex-col items-center justify-center">
+                    <ImageIcon className="w-10 h-10 text-slate-200" />
+                  </div>
+                )}
+              </div>
+
+              {/* Footer - Subtle Action */}
+              <div className="p-4 bg-slate-50/50 flex justify-center">
+                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                   Tap image to zoom
+                 </p>
+              </div>
+            </Card>
+          </div>
+        ))}
+      </div>
+    ) : (
+      <div className="py-20 flex flex-col items-center justify-center bg-white rounded-[3rem] border border-slate-100 shadow-inner">
+        <Utensils className="w-10 h-10 text-slate-100 mb-4" />
+        <p className="text-slate-400 font-bold text-sm uppercase tracking-widest">Menu is empty</p>
+      </div>
+    )}
+  </div>
+)}
         </div>
       </div>
 

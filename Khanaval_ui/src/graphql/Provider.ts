@@ -55,7 +55,7 @@ mutation Createmesforprovider($payload:CreateMessdata!){
 export const GET_MY_MESS = gql `
 query GetcurentMessdata{
      getproviderMessData {
-
+     id,
      identity {
       name
       startTime
@@ -86,6 +86,11 @@ query GetcurentMessdata{
     messVerified
     createdAt
     MessQrcode
+    Menu {
+      types
+      imageUrl
+      CreateAt
+    }
     }
   }
 

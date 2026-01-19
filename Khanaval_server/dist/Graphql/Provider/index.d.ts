@@ -45,6 +45,7 @@ export declare const Provider: {
                 id: string;
             }) | null>;
             getproviderMessData: (parent: any, {}: {}, ctx: import("../user/types.js").GraphqlContext) => Promise<{
+                id: string;
                 identity: {
                     name: string;
                     startTime?: string | null;
@@ -75,6 +76,12 @@ export declare const Provider: {
                 messVerified: boolean;
                 createdAt: NativeDate;
                 MessQrcode: string | null | undefined;
+                Menu: {
+                    createdAt: NativeDate;
+                    types?: "breakfast" | "dinner" | null;
+                    imageUrl?: string | null;
+                    menuDate?: NativeDate | null;
+                };
             } | null>;
         };
         Mutation: {

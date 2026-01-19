@@ -8,6 +8,6 @@ providerRoutes.post("/provider/ImageUrl", upload.fields([
     { name: "dining", maxCount: 1 }
 ]), BufferimagetoURlimage);
 providerRoutes.get("/getallMess", getAllDATA);
-providerRoutes.post("/addmenu", Addmenus);
+providerRoutes.post("/addmenu", upload.single("image"), Addmenus);
 export default providerRoutes;
 //# sourceMappingURL=Provider.js.map

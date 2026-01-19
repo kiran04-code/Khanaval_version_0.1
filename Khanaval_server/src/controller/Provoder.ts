@@ -6,51 +6,51 @@ interface MulterFiles {
     [fieldname: string]: Express.Multer.File[];
 }
 export const BufferimagetoURlimage = async (req: Request, res: Response): Promise<Response> => {
-try {
+    try {
         if (!req.files) {
-        return res.status(400).json({ success: false, message: "No files uploaded" });
-    }
-
-    const files = req.files as MulterFiles;
-    if (!files || !files.cover || !files.kitchen) {
-        return res.status(400).json({ success: false, message: "Missing files" });
-    }
-    const streamUpload = (buffer: Buffer) => {
-        return new Promise<string>((resolve, reject) => {
-            const stream = cloudinary.uploader.upload_stream(
-                { folder: "MessImages" },
-                (err, result) => {
-                    if (err) reject(err);
-                    else resolve(result!.secure_url);
-                }
-            );
-            stream.end(buffer);
-
-        });
-    };
-
-    const coverFile = files.cover?.[0];
-    const kitchenFile = files.kitchen?.[0];
-    const diningFile = files.dining?.[0];
-
-    const coverUrl = coverFile ? await streamUpload(coverFile.buffer) : null;
-    const kitchenUrl = kitchenFile ? await streamUpload(kitchenFile.buffer) : null;
-    const diningUrl = diningFile ? await streamUpload(diningFile.buffer) : null;
-
-    return res.json({
-        success: true,
-        urls: {
-            cover: coverUrl,
-            kitchen: kitchenUrl,
-            dining: diningUrl
+            return res.status(400).json({ success: false, message: "No files uploaded" });
         }
-    });
-} catch (error) {
-      return res.json({
-        success: false,
-        urls: null,
-    });
-}
+
+        const files = req.files as MulterFiles;
+        if (!files || !files.cover || !files.kitchen) {
+            return res.status(400).json({ success: false, message: "Missing files" });
+        }
+        const streamUpload = (buffer: Buffer) => {
+            return new Promise<string>((resolve, reject) => {
+                const stream = cloudinary.uploader.upload_stream(
+                    { folder: "MessImages" },
+                    (err, result) => {
+                        if (err) reject(err);
+                        else resolve(result!.secure_url);
+                    }
+                );
+                stream.end(buffer);
+
+            });
+        };
+
+        const coverFile = files.cover?.[0];
+        const kitchenFile = files.kitchen?.[0];
+        const diningFile = files.dining?.[0];
+
+        const coverUrl = coverFile ? await streamUpload(coverFile.buffer) : null;
+        const kitchenUrl = kitchenFile ? await streamUpload(kitchenFile.buffer) : null;
+        const diningUrl = diningFile ? await streamUpload(diningFile.buffer) : null;
+
+        return res.json({
+            success: true,
+            urls: {
+                cover: coverUrl,
+                kitchen: kitchenUrl,
+                dining: diningUrl
+            }
+        });
+    } catch (error) {
+        return res.json({
+            success: false,
+            urls: null,
+        });
+    }
 }
 
 export const getAllDATA = async (req: Request, res: Response): Promise<Response> => {
@@ -67,8 +67,40 @@ export const getAllDATA = async (req: Request, res: Response): Promise<Response>
 }
 
 export const Addmenus = async (req: Request, res: Response): Promise<Response> => {
- return res.json({
-    success:false,
-    message:"Menu Updated Sucessfully"
- });
+    try {
+        if (!req.file) {
+            return res.json({
+                success: false,
+                message: "image not Uploaded yet"
+            })
+        }
+        const bufferToDataURI = (file: Express.Multer.File) =>
+            `data:${file.mimetype};base64,${file.buffer.toString("base64")}`;
+        const fileDataURI = bufferToDataURI(req.file);
+
+        const result: any = await cloudinary.uploader.upload(fileDataURI, {
+            folder: "menus",
+        });
+        await Mess.findByIdAndUpdate(req.body?.id,
+            {
+                $push: {
+                    Menu: {
+                        types: req.body.type,
+                        imageUrl: result?.secure_url,
+                        menuDate: result?.date
+                    }
+                }
+            })
+        const cachekey = "AllMESS"
+        await redisclient.del(cachekey)
+        return res.json({
+            success: true,
+            message: "Menu Updated Sucessfully"
+        });
+    } catch (error) {
+        return res.json({
+            success: false,
+            message: "Server Error"
+        })
+    }
 }

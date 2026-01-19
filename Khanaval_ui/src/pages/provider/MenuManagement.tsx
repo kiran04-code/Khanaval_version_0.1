@@ -1,13 +1,10 @@
 import { useState, useEffect } from "react";
 import { format, parseISO, isSameDay } from "date-fns";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
-  DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import {
@@ -23,16 +20,17 @@ import {
   Clock
 } from "lucide-react";
 import { Getmymess } from "@/hooks/PorviderMess";
-import axios from "axios";
 import { useStateContex } from "@/context/State";
+import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "@/hooks/use-toast";
 
-type MealType = "breakfast" | "dinner";
-
+// Interface updated to match your backend response
 interface MenuItem {
-  id: string;
-  type: MealType;
-  time: string;
-  image?: string;
+  _id?: string;
+  types: string;    // from your backend "types"
+  imageUrl: string; // from your backend "imageUrl"
+  CreateAt?: string | null;
+  time?: string;
 }
 
 interface DayMenu {
@@ -44,19 +42,24 @@ export default function MenuManagement() {
   const todayStr = format(new Date(), "yyyy-MM-dd");
   const [menuData, setMenuData] = useState<DayMenu[]>([]);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [newItem, setNewItem] = useState({ name: "", isVeg: true });
+  const [imageData, setImageData] = useState<File | null>(null);
   const [isBreakfastOpen, setIsBreakfastOpen] = useState(false);
   const [isDinnerOpen, setIsDinnerOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
   const { messdata } = Getmymess();
- const {axioseInstace} = useStateContex()
+  const { axioseInstace } = useStateContex();
+  const queryClient = useQueryClient();
+
   useEffect(() => {
-    setMenuData((prev) =>
-      prev.filter((day) => isSameDay(parseISO(day.date), new Date()))
-    );
-  }, []);
+    if (messdata?.Menu && Array.isArray(messdata.Menu)) {
+      setMenuData([{ date: todayStr, items: messdata.Menu }]);
+    }
+  }, [messdata, todayStr]);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+    const file = e.target.files?.[0] || null;
+    setImageData(file);
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => setImagePreview(reader.result as string);
@@ -64,63 +67,64 @@ export default function MenuManagement() {
     }
   };
 
-  const handleSaveItem = async (type: MealType) => {
-    const apiPayload = {
-      id: messdata?.id,
-      date: todayStr,
-      type: type,
-      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      image: imagePreview
-    };
+  const handleSaveItem = async (type: string) => {
+    if (!imageData) {
+      return toast({ title: "Please Upload Menu Image First", variant: "destructive" });
+    }
+   const isDuplicate = messdata?.Menu?.some((item: any) => item.types === type);
 
-    const localEntry: MenuItem = {
-      id: Date.now().toString(),
-      ...apiPayload
-    };
-
-    setMenuData((prev) => {
-      const todayEntry = prev.find(d => d.date === todayStr);
-      if (todayEntry) {
-        return prev.map(d => d.date === todayStr ? { ...d, items: [...d.items, localEntry] } : d);
-      }
-      return [{ date: todayStr, items: [localEntry] }];
+  if (isDuplicate) {
+    return toast({ 
+      title: "Menu Already Exists", 
+      description: `You have already added a ${type} menu. Please delete the current one to upload a new version.`,
+      variant: "destructive" 
     });
+  }
+    setIsLoading(true);
+    const formData = new FormData();
+    formData.append("id", messdata?.id);
+    formData.append("date", todayStr);
+    formData.append("type", type);
+    formData.append("time", new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+    formData.append("image", imageData);
 
     try {
-      const response = await axioseInstace.post("/addmenu", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(apiPayload),
-      });
-      if (!response.ok) throw new Error("Sync Error");
+      const { data } = await axioseInstace.post("/api/addmenu", formData);
+      
+      if (data.success) {
+        toast({ title: `${type.toUpperCase()} Menu Updated Successfully` });
+        setIsBreakfastOpen(false);
+        setIsDinnerOpen(false);
+        setImagePreview(null);
+        setImageData(null);
+        queryClient.invalidateQueries({ queryKey: ["get-mess"] });
+      } else {
+        toast({ title: "Server Error", description: data.message, variant: "destructive" });
+      }
     } catch (err) {
       console.error("❌ Failed to sync:", err);
+      toast({ title: "Upload Failed", variant: "destructive" });
+    } finally {
+      setIsLoading(false);
     }
-
-    setImagePreview(null);
-    setIsBreakfastOpen(false);
-    setIsDinnerOpen(false);
   };
 
-  const handleDelete = (id: string) => {
-    setMenuData(prev => prev.map(d => ({
-      ...d,
-      items: d.items.filter(i => i.id !== id)
-    })));
+  const handleDelete = async (id: string) => {
+    toast({ title: "Delete functionality not yet connected" });
+    queryClient.invalidateQueries({ queryKey: ["get-mess"] });
   };
 
-  const todaysItems = menuData.find(d => d.date === todayStr)?.items || [];
+  const todaysItems = menuData[0]?.items || [];
 
   return (
     <div className="max-w-5xl mx-auto p-4 space-y-6">
-      {/* Header Section */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="md:col-span-2 bg-slate-900 text-white p-6 rounded-3xl shadow-xl flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-black">Today's Menu</h1>
+            <h1 className="text-2xl font-black text-white">Today's Menu</h1>
             <p className="text-slate-400 text-sm font-medium">{format(new Date(), "EEEE, MMM do")}</p>
           </div>
-          <Utensils className="h-10 w-10 text-slate-800" />
+          <Utensils className="h-10 w-10 text-slate-700" />
         </div>
         <div className="bg-blue-50 border border-blue-100 p-6 rounded-3xl flex flex-col justify-center">
           <h3 className="text-blue-900 font-bold text-sm flex items-center gap-1"><Lock className="h-3 w-3" /> Auto-Clean</h3>
@@ -129,8 +133,8 @@ export default function MenuManagement() {
       </div>
 
       <div className="grid md:grid-cols-2 gap-8">
-        <MenuCard 
-          title="Breakfast" 
+        <MenuCard
+          title="Breakfast"
           type="breakfast"
           icon={<Coffee className="w-5 h-5 text-white" />}
           colorClass="bg-orange-500"
@@ -138,13 +142,13 @@ export default function MenuManagement() {
           borderColor="border-orange-100"
           isOpen={isBreakfastOpen}
           setIsOpen={setIsBreakfastOpen}
-          items={todaysItems.filter(i => i.type === "breakfast")}
+          items={todaysItems.filter(i => i.types === "breakfast")}
           onDelete={handleDelete}
-          formProps={{ onSave: handleSaveItem, imagePreview, handleImageChange }}
+          formProps={{ onSave: handleSaveItem, imagePreview, handleImageChange, isLoading }}
         />
 
-        <MenuCard 
-          title="Dinner" 
+        <MenuCard
+          title="Dinner"
           type="dinner"
           icon={<Moon className="w-5 h-5 text-white" />}
           colorClass="bg-indigo-600"
@@ -152,9 +156,9 @@ export default function MenuManagement() {
           borderColor="border-indigo-100"
           isOpen={isDinnerOpen}
           setIsOpen={setIsDinnerOpen}
-          items={todaysItems.filter(i => i.type === "dinner")}
+          items={todaysItems.filter(i => i.types === "dinner")}
           onDelete={handleDelete}
-          formProps={{ onSave: handleSaveItem, imagePreview, handleImageChange }}
+          formProps={{ onSave: handleSaveItem, imagePreview, handleImageChange, isLoading }}
         />
       </div>
     </div>
@@ -171,16 +175,22 @@ function MenuCard({ title, type, icon, colorClass, headerBg, borderColor, isOpen
         </div>
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
           <DialogTrigger asChild>
-            <Button size="sm" className={`${colorClass} hover:opacity-90 rounded-xl  text-[10px] font-bold text-white`}>
+            <Button size="sm" className={`${colorClass} hover:opacity-90 rounded-xl text-[10px] font-bold text-white`}>
               <Plus className="w-3 h-3 mr-1" /> ADD MENU
             </Button>
           </DialogTrigger>
-          <DialogContent className="rounded-[2.5rem] sm:max-w-[400px] w-[320px] p-0 overflow-hidden border-none">
-            <MenuAddForm type={type} onSave={() => formProps.onSave(type)} imagePreview={formProps.imagePreview} handleImageChange={formProps.handleImageChange} />
+          <DialogContent className="rounded-[2.5rem] sm:max-w-[400px] w-[90vw] p-0 overflow-hidden border-none shadow-2xl">
+            <MenuAddForm 
+               type={type} 
+               onSave={() => formProps.onSave(type)} 
+               imagePreview={formProps.imagePreview} 
+               handleImageChange={formProps.handleImageChange}
+               isLoading={formProps.isLoading}
+            />
           </DialogContent>
         </Dialog>
       </div>
-      <CardContent className="p-4">
+      <CardContent className="p-4 px-5">
         <MealDisplay items={items} onDelete={onDelete} />
       </CardContent>
     </Card>
@@ -194,53 +204,51 @@ function MealDisplay({ items, onDelete }: { items: MenuItem[], onDelete: (id: st
     </div>
   );
 
-  const mainDish = items[items.length - 1]; 
+  const mainDish = items[items.length - 1];
 
   return (
     <div className="space-y-4">
       <div className="relative group">
-        <div className="w-full h-64 rounded-[1.5rem] bg-slate-100 overflow-hidden shadow-md">
-          {mainDish.image ? (
-            <img src={mainDish.image} className="w-full h-full object-cover" alt="Today's Menu" />
+        <div className="w-full h-74 rounded-[1.5rem] bg-slate-100 overflow-hidden shadow-md">
+          {mainDish.imageUrl ? (
+            <img 
+              src={mainDish.imageUrl} 
+              className="w-full h-full object-cover" 
+              alt="Today's Menu"
+            />
           ) : (
             <div className="w-full h-full flex items-center justify-center"><ImageIcon className="w-12 h-12 text-slate-300" /></div>
           )}
         </div>
-        
+
         <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full flex items-center gap-2 shadow-sm">
-           <Clock className="w-3 h-3 text-slate-600" />
-           <span className="text-[10px] font-bold text-slate-700">{mainDish.time}</span>
+          <Clock className="w-3 h-3 text-slate-600" />
+          <span className="text-[10px] font-bold text-slate-700">LIVE</span>
         </div>
 
-        <Button 
-          variant="destructive" 
-          size="icon" 
+        <Button
+          variant="destructive"
+          size="icon"
           className="absolute top-3 right-3 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-          onClick={() => onDelete(mainDish.id)}
+          onClick={() => onDelete(mainDish._id || "")}
         >
           <Trash2 className="w-4 h-4" />
         </Button>
       </div>
-      
-      {items.length > 1 && (
-        <div className="text-center">
-          <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Previous updates are hidden</p>
-        </div>
-      )}
     </div>
   );
 }
 
-function MenuAddForm({ type, onSave, imagePreview, handleImageChange }: any) {
+function MenuAddForm({ type, onSave, imagePreview, handleImageChange, isLoading }: any) {
   return (
     <div className="bg-white px-6 py-8">
-      <h3 className="text-xl font-black text-slate-900 mb-5">Update {type} Menu</h3>
+      <h3 className="text-xl font-black text-slate-900 mb-5 text-center">Update {type} Menu</h3>
       <div className="space-y-6">
         <div className="relative h-56 w-full bg-slate-50 border-2 border-dashed border-slate-200 rounded-[2rem] flex flex-col items-center justify-center overflow-hidden transition-all hover:bg-slate-100 group">
           {imagePreview ? (
             <img src={imagePreview} className="h-full w-full object-cover" alt="Preview" />
           ) : (
-            <label className="cursor-pointer flex flex-col items-center text-slate-400">
+            <label className="cursor-pointer flex flex-col items-center text-slate-400 p-4 text-center">
               <div className="bg-white p-4 rounded-2xl shadow-sm mb-3">
                 <Upload className="h-6 w-6 text-indigo-500" />
               </div>
@@ -249,11 +257,13 @@ function MenuAddForm({ type, onSave, imagePreview, handleImageChange }: any) {
             </label>
           )}
         </div>
-        <Button 
-          className="w-full h-14 bg-slate-900 hover:bg-black text-white rounded-2xl font-black text-sm shadow-xl transition-transform active:scale-95" 
+        <Button
+          disabled={isLoading}
+          className="w-full h-14 bg-slate-900 hover:bg-black text-white rounded-2xl font-black text-sm shadow-xl transition-transform active:scale-95 disabled:opacity-50"
           onClick={onSave}
         >
-          POST {type.toUpperCase()} MENU <ChevronRight className="ml-1 h-4 w-4" />
+          {isLoading ? "UPLOADING..." : `POST ${type.toUpperCase()} MENU`} 
+          {!isLoading && <ChevronRight className="ml-1 h-4 w-4" />}
         </Button>
       </div>
     </div>

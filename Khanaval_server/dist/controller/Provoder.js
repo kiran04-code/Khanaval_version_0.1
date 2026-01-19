@@ -58,9 +58,39 @@ export const getAllDATA = async (req, res) => {
     });
 };
 export const Addmenus = async (req, res) => {
-    return res.json({
-        success: false,
-        message: "Menu Updated Sucessfully"
-    });
+    try {
+        if (!req.file) {
+            return res.json({
+                success: false,
+                message: "image not Uploaded yet"
+            });
+        }
+        const bufferToDataURI = (file) => `data:${file.mimetype};base64,${file.buffer.toString("base64")}`;
+        const fileDataURI = bufferToDataURI(req.file);
+        const result = await cloudinary.uploader.upload(fileDataURI, {
+            folder: "menus",
+        });
+        await Mess.findByIdAndUpdate(req.body?.id, {
+            $push: {
+                Menu: {
+                    types: req.body.type,
+                    imageUrl: result?.secure_url,
+                    menuDate: result?.date
+                }
+            }
+        });
+        const cachekey = "AllMESS";
+        await redisclient.del(cachekey);
+        return res.json({
+            success: true,
+            message: "Menu Updated Sucessfully"
+        });
+    }
+    catch (error) {
+        return res.json({
+            success: false,
+            message: "Server Error"
+        });
+    }
 };
 //# sourceMappingURL=Provoder.js.map

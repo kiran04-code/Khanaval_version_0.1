@@ -53,6 +53,7 @@ input Identity {
   operatingMode:String
 }
 type  GetCurrentMess{
+  id:ID!
   identity:Identitys!
   legal:Legals!
   media:Medias!
@@ -60,6 +61,7 @@ type  GetCurrentMess{
   messVerified:Boolean!
   createdAt:String!
   MessQrcode:String!
+  Menu:[menu]!
 }
 type Locations {
 address: String!
@@ -72,6 +74,11 @@ postcode:String!
 society: String!
 state:String!
 suburb: String
+}
+type menu {
+  types:String
+  imageUrl:String
+  CreateAt:String
 }
 type Medias {
   cover:String!

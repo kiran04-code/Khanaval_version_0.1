@@ -13,5 +13,5 @@ providerRoutes.post(
     BufferimagetoURlimage
 );
 providerRoutes.get("/getallMess",getAllDATA)
-providerRoutes.post("/addmenu",Addmenus)
+providerRoutes.post("/addmenu", upload.single("image"),Addmenus)
 export  default providerRoutes;

@@ -11,12 +11,14 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { calculateDistance } from "./Distance";
 import { useStateContex } from "@/context/State";
+import { Getmymess } from "@/hooks/PorviderMess";
+import { UserProviderdata } from "@/hooks/Provider";
 
 const MessCard = ({ _id, identity, media, rating, location, messVerified, legal, providerId }) => {
     const { userlat, userlng } = useStateContex();
     const navigate = useNavigate();
     const { user } = useCurrentUser();
-
+    const {Providerdata} = UserProviderdata()
     const distance = calculateDistance(userlat, userlng, location.lat, location.lng);
 
     return (
@@ -99,7 +101,7 @@ const MessCard = ({ _id, identity, media, rating, location, messVerified, legal,
                         <span className="text-sm font-black text-slate-800">₹3,500</span>
                     </div>
                     <Button
-                        onClick={() => navigate(user ? `/mess/${_id}` : `/auth`)}
+                        onClick={() => navigate(user || Providerdata ? `/mess/${_id}` : `/auth`)}
                         className="flex-1 rounded-xl bg-slate-900 h-10 font-black text-[10px] text-white hover:bg-orange-500 transition-all shadow-lg group/btn"
                     >
                         VIEW MENU

@@ -71,15 +71,15 @@ export default function MenuManagement() {
     if (!imageData) {
       return toast({ title: "Please Upload Menu Image First", variant: "destructive" });
     }
-   const isDuplicate = messdata?.Menu?.some((item: any) => item.types === type);
+    const isDuplicate = messdata?.Menu?.some((item: any) => item.types === type);
 
-  if (isDuplicate) {
-    return toast({ 
-      title: "Menu Already Exists", 
-      description: `You have already added a ${type} menu. Please delete the current one to upload a new version.`,
-      variant: "destructive" 
-    });
-  }
+    if (isDuplicate) {
+      return toast({
+        title: "Menu Already Exists",
+        description: `You have already added a ${type} menu. Please delete the current one to upload a new version.`,
+        variant: "destructive"
+      });
+    }
     setIsLoading(true);
     const formData = new FormData();
     formData.append("id", messdata?.id);
@@ -90,7 +90,7 @@ export default function MenuManagement() {
 
     try {
       const { data } = await axioseInstace.post("/api/addmenu", formData);
-      
+
       if (data.success) {
         toast({ title: `${type.toUpperCase()} Menu Updated Successfully` });
         setIsBreakfastOpen(false);
@@ -109,18 +109,21 @@ export default function MenuManagement() {
     }
   };
 
-  const handleDelete = async (menuId:string) => {
-    const { data } = await axioseInstace.post("/api/deleteMenu",{
-      id:messdata.id,
-      types:menuId
+  const handleDelete = async (menuId: string) => {
+    const { data } = await axioseInstace.post("/api/deleteMenu", {
+      id: messdata.id,
+      types: menuId
     });
-    if(data.success){
-        toast({ title: "MenuDeleted Successfully,Please Updated the New Menu" });
-        queryClient.invalidateQueries({ queryKey: ["get-mess"] });
-      }
-      else{
-        toast({ title: `${data.message}`,variant:"destructive" } );
-      }
+    if (data.success) {
+      toast({
+        title: "Menu deleted successfully. Please update with the new menu."
+      });
+
+      queryClient.invalidateQueries({ queryKey: ["get-mess"] });
+    }
+    else {
+      toast({ title: `${data.message}`, variant: "destructive" });
+    }
   };
 
   const todaysItems = menuData[0]?.items || [];
@@ -189,12 +192,12 @@ function MenuCard({ title, type, icon, colorClass, headerBg, borderColor, isOpen
             </Button>
           </DialogTrigger>
           <DialogContent className="rounded-[2.5rem] sm:max-w-[400px] w-[90vw] p-0 overflow-hidden border-none shadow-2xl">
-            <MenuAddForm 
-               type={type} 
-               onSave={() => formProps.onSave(type)} 
-               imagePreview={formProps.imagePreview} 
-               handleImageChange={formProps.handleImageChange}
-               isLoading={formProps.isLoading}
+            <MenuAddForm
+              type={type}
+              onSave={() => formProps.onSave(type)}
+              imagePreview={formProps.imagePreview}
+              handleImageChange={formProps.handleImageChange}
+              isLoading={formProps.isLoading}
             />
           </DialogContent>
         </Dialog>
@@ -220,9 +223,9 @@ function MealDisplay({ items, onDelete }: { items: MenuItem[], onDelete: (id: st
       <div className="relative group">
         <div className="w-full h-74 rounded-[1.5rem] bg-slate-100 overflow-hidden shadow-md">
           {mainDish.imageUrl ? (
-            <img 
-              src={mainDish.imageUrl} 
-              className="w-full h-full object-cover" 
+            <img
+              src={mainDish.imageUrl}
+              className="w-full h-full object-cover"
               alt="Today's Menu"
             />
           ) : (
@@ -271,7 +274,7 @@ function MenuAddForm({ type, onSave, imagePreview, handleImageChange, isLoading 
           className="w-full h-14 bg-slate-900 hover:bg-black text-white rounded-2xl font-black text-sm shadow-xl transition-transform active:scale-95 disabled:opacity-50"
           onClick={onSave}
         >
-          {isLoading ? "UPLOADING..." : `POST ${type.toUpperCase()} MENU`} 
+          {isLoading ? "UPLOADING..." : `POST ${type.toUpperCase()} MENU`}
           {!isLoading && <ChevronRight className="ml-1 h-4 w-4" />}
         </Button>
       </div>

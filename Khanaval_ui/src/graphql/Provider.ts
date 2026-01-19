@@ -87,6 +87,7 @@ query GetcurentMessdata{
     createdAt
     MessQrcode
     Menu {
+        _id
       types
       imageUrl
       CreateAt

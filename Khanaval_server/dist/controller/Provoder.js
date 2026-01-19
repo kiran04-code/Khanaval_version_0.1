@@ -75,7 +75,6 @@ export const Addmenus = async (req, res) => {
                 Menu: {
                     types: req.body.type,
                     imageUrl: result?.secure_url,
-                    menuDate: result?.date
                 }
             }
         });
@@ -87,7 +86,37 @@ export const Addmenus = async (req, res) => {
         });
     }
     catch (error) {
+        console.log(error);
         return res.json({
+            success: false,
+            message: "Server Error"
+        });
+    }
+};
+export const DeletetheMenu = async (req, res) => {
+    try {
+        const { id, types } = req.body;
+        const mess = await Mess.findById(id);
+        if (!mess)
+            return res.status(404).json({ error: "Mess not found" });
+        const menuItem = mess.Menu.id(types);
+        if (!menuItem)
+            return res.status(404).json({ error: "Menu not found" });
+        if (menuItem.imageUrl) {
+            await cloudinary.uploader.destroy(menuItem.imageUrl);
+        }
+        await menuItem.deleteOne();
+        await mess.save();
+        const cachekey = "AllMESS";
+        await redisclient.del(cachekey);
+        return res.status(200).json({
+            success: true,
+            message: "server not resonsing"
+        });
+    }
+    catch (error) {
+        console.log(error);
+        return res.status(500).json({
             success: false,
             message: "Server Error"
         });

@@ -109,9 +109,18 @@ export default function MenuManagement() {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    toast({ title: "Delete functionality not yet connected" });
-    queryClient.invalidateQueries({ queryKey: ["get-mess"] });
+  const handleDelete = async (menuId:string) => {
+    const { data } = await axioseInstace.post("/api/deleteMenu",{
+      id:messdata.id,
+      types:menuId
+    });
+    if(data.success){
+        toast({ title: "MenuDeleted Successfully,Please Updated the New Menu" });
+        queryClient.invalidateQueries({ queryKey: ["get-mess"] });
+      }
+      else{
+        toast({ title: `${data.message}`,variant:"destructive" } );
+      }
   };
 
   const todaysItems = menuData[0]?.items || [];

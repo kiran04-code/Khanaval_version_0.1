@@ -64,7 +64,6 @@ const Query = {
 }
 const Mutation = {
     CreateMessProvider: async (parent: any, { payload }: { payload: CreateMessPayload }, idx: GraphqlContext) => {
-        console.log(payload)
         try {
             if (!idx.user?._id) throw Error("User is UnAuthrised")
             const user = await Provider.findById(idx.user?._id)

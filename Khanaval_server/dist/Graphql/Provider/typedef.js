@@ -76,6 +76,7 @@ state:String!
 suburb: String
 }
 type menu {
+  _id:ID
   types:String
   imageUrl:String
   CreateAt:String

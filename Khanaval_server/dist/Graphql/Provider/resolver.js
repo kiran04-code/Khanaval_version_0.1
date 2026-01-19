@@ -56,7 +56,6 @@ const Query = {
 };
 const Mutation = {
     CreateMessProvider: async (parent, { payload }, idx) => {
-        console.log(payload);
         try {
             if (!idx.user?._id)
                 throw Error("User is UnAuthrised");

@@ -74,22 +74,24 @@ const providerSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
-    Menu: {
-        types: {
-            type: String,
-            enum: ["breakfast", "dinner"],
-        },
-        imageUrl: {
-            type: String,
-        },
-        menuDate: {
-            type: Date,
-        },
-        createdAt: {
-            type: Date,
-            default: Date.now,
+    Menu: [
+        {
+            types: {
+                type: String,
+                enum: ["breakfast", "dinner"],
+            },
+            imageUrl: {
+                type: String,
+            },
+            menuDate: {
+                type: Date,
+            },
+            createdAt: {
+                type: Date,
+                default: Date.now,
+            }
         }
-    },
+    ],
     MessQrcode: {
         type: String,
     }

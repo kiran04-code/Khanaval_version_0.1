@@ -76,12 +76,22 @@ export declare const Provider: {
                 messVerified: boolean;
                 createdAt: NativeDate;
                 MessQrcode: string | null | undefined;
-                Menu: {
+                Menu: import("mongoose").Types.DocumentArray<{
                     createdAt: NativeDate;
                     types?: "breakfast" | "dinner" | null;
                     imageUrl?: string | null;
                     menuDate?: NativeDate | null;
-                };
+                }, import("mongoose").Types.Subdocument<import("bson").ObjectId, unknown, {
+                    createdAt: NativeDate;
+                    types?: "breakfast" | "dinner" | null;
+                    imageUrl?: string | null;
+                    menuDate?: NativeDate | null;
+                }> & {
+                    createdAt: NativeDate;
+                    types?: "breakfast" | "dinner" | null;
+                    imageUrl?: string | null;
+                    menuDate?: NativeDate | null;
+                }>;
             } | null>;
         };
         Mutation: {

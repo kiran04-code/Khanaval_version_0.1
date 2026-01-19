@@ -2,6 +2,22 @@ import mongoose from "mongoose";
 declare const Mess: mongoose.Model<{
     providerId: mongoose.Types.ObjectId;
     messVerified: boolean;
+    Menu: mongoose.Types.DocumentArray<{
+        createdAt: NativeDate;
+        imageUrl?: string | null;
+        types?: "breakfast" | "dinner" | null;
+        menuDate?: NativeDate | null;
+    }, mongoose.Types.Subdocument<mongoose.mongo.BSON.ObjectId, unknown, {
+        createdAt: NativeDate;
+        imageUrl?: string | null;
+        types?: "breakfast" | "dinner" | null;
+        menuDate?: NativeDate | null;
+    }> & {
+        createdAt: NativeDate;
+        imageUrl?: string | null;
+        types?: "breakfast" | "dinner" | null;
+        menuDate?: NativeDate | null;
+    }>;
     identity?: {
         name: string;
         startTime?: string | null;
@@ -28,12 +44,6 @@ declare const Mess: mongoose.Model<{
         society?: string | null;
         landmark?: string | null;
         suburb?: string | null;
-    } | null;
-    Menu?: {
-        createdAt: NativeDate;
-        types?: "breakfast" | "dinner" | null;
-        imageUrl?: string | null;
-        menuDate?: NativeDate | null;
     } | null;
     MessQrcode?: string | null;
 } & mongoose.DefaultTimestampProps, {}, {}, {
@@ -41,6 +51,22 @@ declare const Mess: mongoose.Model<{
 }, mongoose.Document<unknown, {}, {
     providerId: mongoose.Types.ObjectId;
     messVerified: boolean;
+    Menu: mongoose.Types.DocumentArray<{
+        createdAt: NativeDate;
+        imageUrl?: string | null;
+        types?: "breakfast" | "dinner" | null;
+        menuDate?: NativeDate | null;
+    }, mongoose.Types.Subdocument<mongoose.mongo.BSON.ObjectId, unknown, {
+        createdAt: NativeDate;
+        imageUrl?: string | null;
+        types?: "breakfast" | "dinner" | null;
+        menuDate?: NativeDate | null;
+    }> & {
+        createdAt: NativeDate;
+        imageUrl?: string | null;
+        types?: "breakfast" | "dinner" | null;
+        menuDate?: NativeDate | null;
+    }>;
     identity?: {
         name: string;
         startTime?: string | null;
@@ -67,12 +93,6 @@ declare const Mess: mongoose.Model<{
         society?: string | null;
         landmark?: string | null;
         suburb?: string | null;
-    } | null;
-    Menu?: {
-        createdAt: NativeDate;
-        types?: "breakfast" | "dinner" | null;
-        imageUrl?: string | null;
-        menuDate?: NativeDate | null;
     } | null;
     MessQrcode?: string | null;
 } & mongoose.DefaultTimestampProps, {
@@ -82,6 +102,22 @@ declare const Mess: mongoose.Model<{
 }> & Omit<{
     providerId: mongoose.Types.ObjectId;
     messVerified: boolean;
+    Menu: mongoose.Types.DocumentArray<{
+        createdAt: NativeDate;
+        imageUrl?: string | null;
+        types?: "breakfast" | "dinner" | null;
+        menuDate?: NativeDate | null;
+    }, mongoose.Types.Subdocument<mongoose.mongo.BSON.ObjectId, unknown, {
+        createdAt: NativeDate;
+        imageUrl?: string | null;
+        types?: "breakfast" | "dinner" | null;
+        menuDate?: NativeDate | null;
+    }> & {
+        createdAt: NativeDate;
+        imageUrl?: string | null;
+        types?: "breakfast" | "dinner" | null;
+        menuDate?: NativeDate | null;
+    }>;
     identity?: {
         name: string;
         startTime?: string | null;
@@ -108,12 +144,6 @@ declare const Mess: mongoose.Model<{
         society?: string | null;
         landmark?: string | null;
         suburb?: string | null;
-    } | null;
-    Menu?: {
-        createdAt: NativeDate;
-        types?: "breakfast" | "dinner" | null;
-        imageUrl?: string | null;
-        menuDate?: NativeDate | null;
     } | null;
     MessQrcode?: string | null;
 } & mongoose.DefaultTimestampProps & {
@@ -127,6 +157,22 @@ declare const Mess: mongoose.Model<{
 }, {
     providerId: mongoose.Types.ObjectId;
     messVerified: boolean;
+    Menu: mongoose.Types.DocumentArray<{
+        createdAt: NativeDate;
+        imageUrl?: string | null;
+        types?: "breakfast" | "dinner" | null;
+        menuDate?: NativeDate | null;
+    }, mongoose.Types.Subdocument<mongoose.mongo.BSON.ObjectId, unknown, {
+        createdAt: NativeDate;
+        imageUrl?: string | null;
+        types?: "breakfast" | "dinner" | null;
+        menuDate?: NativeDate | null;
+    }> & {
+        createdAt: NativeDate;
+        imageUrl?: string | null;
+        types?: "breakfast" | "dinner" | null;
+        menuDate?: NativeDate | null;
+    }>;
     identity?: {
         name: string;
         startTime?: string | null;
@@ -153,17 +199,27 @@ declare const Mess: mongoose.Model<{
         society?: string | null;
         landmark?: string | null;
         suburb?: string | null;
-    } | null;
-    Menu?: {
-        createdAt: NativeDate;
-        types?: "breakfast" | "dinner" | null;
-        imageUrl?: string | null;
-        menuDate?: NativeDate | null;
     } | null;
     MessQrcode?: string | null;
 } & mongoose.DefaultTimestampProps, mongoose.Document<unknown, {}, {
     providerId: mongoose.Types.ObjectId;
     messVerified: boolean;
+    Menu: mongoose.Types.DocumentArray<{
+        createdAt: NativeDate;
+        imageUrl?: string | null;
+        types?: "breakfast" | "dinner" | null;
+        menuDate?: NativeDate | null;
+    }, mongoose.Types.Subdocument<mongoose.mongo.BSON.ObjectId, unknown, {
+        createdAt: NativeDate;
+        imageUrl?: string | null;
+        types?: "breakfast" | "dinner" | null;
+        menuDate?: NativeDate | null;
+    }> & {
+        createdAt: NativeDate;
+        imageUrl?: string | null;
+        types?: "breakfast" | "dinner" | null;
+        menuDate?: NativeDate | null;
+    }>;
     identity?: {
         name: string;
         startTime?: string | null;
@@ -190,12 +246,6 @@ declare const Mess: mongoose.Model<{
         society?: string | null;
         landmark?: string | null;
         suburb?: string | null;
-    } | null;
-    Menu?: {
-        createdAt: NativeDate;
-        types?: "breakfast" | "dinner" | null;
-        imageUrl?: string | null;
-        menuDate?: NativeDate | null;
     } | null;
     MessQrcode?: string | null;
 } & mongoose.DefaultTimestampProps, {
@@ -205,6 +255,22 @@ declare const Mess: mongoose.Model<{
 }>> & Omit<{
     providerId: mongoose.Types.ObjectId;
     messVerified: boolean;
+    Menu: mongoose.Types.DocumentArray<{
+        createdAt: NativeDate;
+        imageUrl?: string | null;
+        types?: "breakfast" | "dinner" | null;
+        menuDate?: NativeDate | null;
+    }, mongoose.Types.Subdocument<mongoose.mongo.BSON.ObjectId, unknown, {
+        createdAt: NativeDate;
+        imageUrl?: string | null;
+        types?: "breakfast" | "dinner" | null;
+        menuDate?: NativeDate | null;
+    }> & {
+        createdAt: NativeDate;
+        imageUrl?: string | null;
+        types?: "breakfast" | "dinner" | null;
+        menuDate?: NativeDate | null;
+    }>;
     identity?: {
         name: string;
         startTime?: string | null;
@@ -231,12 +297,6 @@ declare const Mess: mongoose.Model<{
         society?: string | null;
         landmark?: string | null;
         suburb?: string | null;
-    } | null;
-    Menu?: {
-        createdAt: NativeDate;
-        types?: "breakfast" | "dinner" | null;
-        imageUrl?: string | null;
-        menuDate?: NativeDate | null;
     } | null;
     MessQrcode?: string | null;
 } & mongoose.DefaultTimestampProps & {
@@ -251,6 +311,22 @@ declare const Mess: mongoose.Model<{
     [x: string]: mongoose.SchemaDefinitionProperty<any, any, mongoose.Document<unknown, {}, {
         providerId: mongoose.Types.ObjectId;
         messVerified: boolean;
+        Menu: mongoose.Types.DocumentArray<{
+            createdAt: NativeDate;
+            imageUrl?: string | null;
+            types?: "breakfast" | "dinner" | null;
+            menuDate?: NativeDate | null;
+        }, mongoose.Types.Subdocument<mongoose.mongo.BSON.ObjectId, unknown, {
+            createdAt: NativeDate;
+            imageUrl?: string | null;
+            types?: "breakfast" | "dinner" | null;
+            menuDate?: NativeDate | null;
+        }> & {
+            createdAt: NativeDate;
+            imageUrl?: string | null;
+            types?: "breakfast" | "dinner" | null;
+            menuDate?: NativeDate | null;
+        }>;
         identity?: {
             name: string;
             startTime?: string | null;
@@ -277,12 +353,6 @@ declare const Mess: mongoose.Model<{
             society?: string | null;
             landmark?: string | null;
             suburb?: string | null;
-        } | null;
-        Menu?: {
-            createdAt: NativeDate;
-            types?: "breakfast" | "dinner" | null;
-            imageUrl?: string | null;
-            menuDate?: NativeDate | null;
         } | null;
         MessQrcode?: string | null;
     } & mongoose.DefaultTimestampProps, {
@@ -292,6 +362,22 @@ declare const Mess: mongoose.Model<{
     }>> & Omit<{
         providerId: mongoose.Types.ObjectId;
         messVerified: boolean;
+        Menu: mongoose.Types.DocumentArray<{
+            createdAt: NativeDate;
+            imageUrl?: string | null;
+            types?: "breakfast" | "dinner" | null;
+            menuDate?: NativeDate | null;
+        }, mongoose.Types.Subdocument<mongoose.mongo.BSON.ObjectId, unknown, {
+            createdAt: NativeDate;
+            imageUrl?: string | null;
+            types?: "breakfast" | "dinner" | null;
+            menuDate?: NativeDate | null;
+        }> & {
+            createdAt: NativeDate;
+            imageUrl?: string | null;
+            types?: "breakfast" | "dinner" | null;
+            menuDate?: NativeDate | null;
+        }>;
         identity?: {
             name: string;
             startTime?: string | null;
@@ -318,12 +404,6 @@ declare const Mess: mongoose.Model<{
             society?: string | null;
             landmark?: string | null;
             suburb?: string | null;
-        } | null;
-        Menu?: {
-            createdAt: NativeDate;
-            types?: "breakfast" | "dinner" | null;
-            imageUrl?: string | null;
-            menuDate?: NativeDate | null;
         } | null;
         MessQrcode?: string | null;
     } & mongoose.DefaultTimestampProps & {
@@ -336,6 +416,22 @@ declare const Mess: mongoose.Model<{
 }, {
     providerId: mongoose.Types.ObjectId;
     messVerified: boolean;
+    Menu: mongoose.Types.DocumentArray<{
+        createdAt: NativeDate;
+        imageUrl?: string | null;
+        types?: "breakfast" | "dinner" | null;
+        menuDate?: NativeDate | null;
+    }, mongoose.Types.Subdocument<mongoose.mongo.BSON.ObjectId, unknown, {
+        createdAt: NativeDate;
+        imageUrl?: string | null;
+        types?: "breakfast" | "dinner" | null;
+        menuDate?: NativeDate | null;
+    }> & {
+        createdAt: NativeDate;
+        imageUrl?: string | null;
+        types?: "breakfast" | "dinner" | null;
+        menuDate?: NativeDate | null;
+    }>;
     identity?: {
         name: string;
         startTime?: string | null;
@@ -362,12 +458,6 @@ declare const Mess: mongoose.Model<{
         society?: string | null;
         landmark?: string | null;
         suburb?: string | null;
-    } | null;
-    Menu?: {
-        createdAt: NativeDate;
-        types?: "breakfast" | "dinner" | null;
-        imageUrl?: string | null;
-        menuDate?: NativeDate | null;
     } | null;
     MessQrcode?: string | null;
     createdAt: NativeDate;
@@ -379,6 +469,22 @@ declare const Mess: mongoose.Model<{
 }>, {
     providerId: mongoose.Types.ObjectId;
     messVerified: boolean;
+    Menu: mongoose.Types.DocumentArray<{
+        createdAt: NativeDate;
+        imageUrl?: string | null;
+        types?: "breakfast" | "dinner" | null;
+        menuDate?: NativeDate | null;
+    }, mongoose.Types.Subdocument<mongoose.mongo.BSON.ObjectId, unknown, {
+        createdAt: NativeDate;
+        imageUrl?: string | null;
+        types?: "breakfast" | "dinner" | null;
+        menuDate?: NativeDate | null;
+    }> & {
+        createdAt: NativeDate;
+        imageUrl?: string | null;
+        types?: "breakfast" | "dinner" | null;
+        menuDate?: NativeDate | null;
+    }>;
     identity?: {
         name: string;
         startTime?: string | null;
@@ -405,12 +511,6 @@ declare const Mess: mongoose.Model<{
         society?: string | null;
         landmark?: string | null;
         suburb?: string | null;
-    } | null;
-    Menu?: {
-        createdAt: NativeDate;
-        types?: "breakfast" | "dinner" | null;
-        imageUrl?: string | null;
-        menuDate?: NativeDate | null;
     } | null;
     MessQrcode?: string | null;
     createdAt: NativeDate;

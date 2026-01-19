@@ -59,6 +59,7 @@ export default function ProviderDashboard() {
     return item?.label || "Dashboard";
   };
   const navigate = useNavigate()
+  console.log(messdata)
   if (messdata && messdata?.messVerified === false) {
     return <Unverfied />
   }
@@ -194,11 +195,7 @@ export default function ProviderDashboard() {
                   <Card className="p-6 rounded-3xl border-none shadow-sm bg-orange-600 text-white">
                     <h3 className="font-bold mb-1">Today's Menu</h3>
                     <p className="text-xs text-orange-100 mb-4">Visible to all your students</p>
-                    <Button onClick={() => {
-                      handleNavClick("menu");
-                      scrollTo(0, 0);
-                    }}
-                      variant="secondary" className="w-full rounded-xl font-bold bg-white text-orange-600">Edit Menu</Button>
+                    <Button variant="secondary" className="w-full rounded-xl font-bold bg-white text-orange-600">Edit Menu</Button>
                   </Card>
                 </div>
               </div>

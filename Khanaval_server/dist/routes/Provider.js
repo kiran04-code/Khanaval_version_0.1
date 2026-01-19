@@ -1,5 +1,5 @@
 import express from "express";
-import { Addmenus, BufferimagetoURlimage, getAllDATA } from "../controller/Provoder.js";
+import { Addmenus, BufferimagetoURlimage, DeletetheMenu, getAllDATA } from "../controller/Provoder.js";
 import { upload } from "../config/multer.js";
 const providerRoutes = express.Router();
 providerRoutes.post("/provider/ImageUrl", upload.fields([
@@ -9,5 +9,6 @@ providerRoutes.post("/provider/ImageUrl", upload.fields([
 ]), BufferimagetoURlimage);
 providerRoutes.get("/getallMess", getAllDATA);
 providerRoutes.post("/addmenu", upload.single("image"), Addmenus);
+providerRoutes.post("/deleteMenu", DeletetheMenu);
 export default providerRoutes;
 //# sourceMappingURL=Provider.js.map

@@ -87,7 +87,7 @@ export default function MenuManagement() {
     });
 
     try {
-      const response = await axioseInstace.post("addmenu", {
+      const response = await axioseInstace.post("/addmenu", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(apiPayload),
@@ -175,7 +175,7 @@ function MenuCard({ title, type, icon, colorClass, headerBg, borderColor, isOpen
               <Plus className="w-3 h-3 mr-1" /> ADD MENU
             </Button>
           </DialogTrigger>
-          <DialogContent className="rounded-[2.5rem] sm:max-w-[400px] w-[350px] p-0 overflow-hidden border-none">
+          <DialogContent className="rounded-[2.5rem] sm:max-w-[400px] w-[320px] p-0 overflow-hidden border-none">
             <MenuAddForm type={type} onSave={() => formProps.onSave(type)} imagePreview={formProps.imagePreview} handleImageChange={formProps.handleImageChange} />
           </DialogContent>
         </Dialog>

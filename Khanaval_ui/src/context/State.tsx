@@ -1,3 +1,4 @@
+import axios, { type AxiosInstance } from "axios";
 import { createContext, Dispatch, ReactNode, SetStateAction, useContext, useEffect, useState } from "react";
 
 interface StateContextType   {
@@ -5,6 +6,7 @@ interface StateContextType   {
   setUserLat: Dispatch<SetStateAction<number | null>>;
   userlng: number | null;
   setUserLng: Dispatch<SetStateAction<number | null>>;
+  axioseInstace: AxiosInstance;
 }
 const StateContex = createContext<StateContextType  | null >(null)
 export const StateContextProvider = ({ children }: { children: ReactNode }) => {
@@ -19,7 +21,12 @@ export const StateContextProvider = ({ children }: { children: ReactNode }) => {
     }, [])
     const [userlat,setUserLat] = useState<number | null>(null)
     const [userlng,setUserLng] = useState<number | null>(null)
-    return <StateContex.Provider value={{userlat,setUserLat,userlng,setUserLng}}>
+    const baseurl = import.meta.env.VITE_BACKEND_API;
+  const axioseInstace = axios.create({
+        withCredentials:true,
+        baseURL:baseurl
+    })
+    return <StateContex.Provider value={{userlat,setUserLat,userlng,setUserLng,axioseInstace}}>
         {children}
     </StateContex.Provider>
     

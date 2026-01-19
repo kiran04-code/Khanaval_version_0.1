@@ -23,6 +23,8 @@ import {
   Clock
 } from "lucide-react";
 import { Getmymess } from "@/hooks/PorviderMess";
+import axios from "axios";
+import { useStateContex } from "@/context/State";
 
 type MealType = "breakfast" | "dinner";
 
@@ -46,7 +48,7 @@ export default function MenuManagement() {
   const [isBreakfastOpen, setIsBreakfastOpen] = useState(false);
   const [isDinnerOpen, setIsDinnerOpen] = useState(false);
   const { messdata } = Getmymess();
-
+ const {axioseInstace} = useStateContex()
   useEffect(() => {
     setMenuData((prev) =>
       prev.filter((day) => isSameDay(parseISO(day.date), new Date()))
@@ -85,7 +87,7 @@ export default function MenuManagement() {
     });
 
     try {
-      const response = await fetch("/addmenu", {
+      const response = await axioseInstace.post("addmenu", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(apiPayload),
@@ -127,7 +129,6 @@ export default function MenuManagement() {
       </div>
 
       <div className="grid md:grid-cols-2 gap-8">
-        {/* Breakfast Card */}
         <MenuCard 
           title="Breakfast" 
           type="breakfast"
@@ -142,7 +143,6 @@ export default function MenuManagement() {
           formProps={{ onSave: handleSaveItem, imagePreview, handleImageChange }}
         />
 
-        {/* Dinner Card */}
         <MenuCard 
           title="Dinner" 
           type="dinner"
@@ -167,11 +167,11 @@ function MenuCard({ title, type, icon, colorClass, headerBg, borderColor, isOpen
       <div className={`p-6 ${headerBg} flex items-center justify-between border-b ${borderColor}`}>
         <div className="flex items-center gap-3">
           <div className={`${colorClass} p-2 rounded-xl`}>{icon}</div>
-          <h2 className="text-lg font-bold text-slate-800 uppercase tracking-tight">{title}</h2>
+          <h2 className="text-[14px] font-bold text-slate-800 uppercase tracking-tight">{title}</h2>
         </div>
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
           <DialogTrigger asChild>
-            <Button size="sm" className={`${colorClass} hover:opacity-90 rounded-xl px-3 text-xs font-bold text-white`}>
+            <Button size="sm" className={`${colorClass} hover:opacity-90 rounded-xl  text-[10px] font-bold text-white`}>
               <Plus className="w-3 h-3 mr-1" /> ADD MENU
             </Button>
           </DialogTrigger>
@@ -194,7 +194,6 @@ function MealDisplay({ items, onDelete }: { items: MenuItem[], onDelete: (id: st
     </div>
   );
 
-  // Since there is usually only one menu/dish, we show the first one BIG
   const mainDish = items[items.length - 1]; 
 
   return (

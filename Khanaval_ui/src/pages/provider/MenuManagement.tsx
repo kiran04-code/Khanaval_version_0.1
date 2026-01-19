@@ -1,8 +1,7 @@
-import { useState } from "react";
-import { format, addDays, startOfWeek } from "date-fns";
+import { useState, useEffect } from "react";
+import { format, parseISO, isSameDay } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import {
   Dialog,
@@ -10,26 +9,27 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-  DialogClose,
 } from "@/components/ui/dialog";
 import {
-  ChevronLeft,
-  ChevronRight,
   Plus,
-  Pencil,
   Trash2,
-  Utensils,
   Coffee,
   Moon,
+  Upload,
+  ImageIcon,
+  Lock,
+  ChevronRight,
+  Utensils
 } from "lucide-react";
+import { Getmymess } from "@/hooks/PorviderMess";
 
-type MealType = "breakfast" | "lunch" | "dinner";
+type MealType = "breakfast" | "dinner";
 
 interface MenuItem {
   id: string;
-  name: string;
   type: MealType;
-  isVeg: boolean;
+  time:string;
+  image?: string;
 }
 
 interface DayMenu {
@@ -37,353 +37,176 @@ interface DayMenu {
   items: MenuItem[];
 }
 
-const initialMenuData: DayMenu[] = [
-  {
-    date: format(new Date(), "yyyy-MM-dd"),
-    items: [
-      { id: "1", name: "Poha with Jalebi", type: "breakfast", isVeg: true },
-      { id: "2", name: "Dal Rice, Roti, Sabzi", type: "lunch", isVeg: true },
-      { id: "3", name: "Paneer Curry, Rice, Salad", type: "dinner", isVeg: true },
-    ],
-  },
-  {
-    date: format(addDays(new Date(), 1), "yyyy-MM-dd"),
-    items: [
-      { id: "4", name: "Paratha with Curd", type: "breakfast", isVeg: true },
-      { id: "5", name: "Rajma Chawal, Roti", type: "lunch", isVeg: true },
-      { id: "6", name: "Chicken Curry, Rice", type: "dinner", isVeg: false },
-    ],
-  },
-];
-
-const mealIcons = {
-  breakfast: Coffee,
-  lunch: Utensils,
-  dinner: Moon,
-};
-
-const mealLabels = {
-  breakfast: "Breakfast",
-  lunch: "Lunch",
-  dinner: "Dinner",
-};
-
 export default function MenuManagement() {
-  const [currentWeekStart, setCurrentWeekStart] = useState(startOfWeek(new Date(), { weekStartsOn: 1 }));
-  const [menuData, setMenuData] = useState<DayMenu[]>(initialMenuData);
-  const [selectedDay, setSelectedDay] = useState<string>(format(new Date(), "yyyy-MM-dd"));
-  const [editingItem, setEditingItem] = useState<MenuItem | null>(null);
-  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-  const [newItem, setNewItem] = useState({ name: "", type: "lunch" as MealType, isVeg: true });
+  const todayStr = format(new Date(), "yyyy-MM-dd");
+  const [menuData, setMenuData] = useState<DayMenu[]>([]);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [newItem, setNewItem] = useState({ name: "", isVeg: true });
+  const [isBreakfastOpen, setIsBreakfastOpen] = useState(false);
+  const [isDinnerOpen, setIsDinnerOpen] = useState(false);
+  const {messdata} = Getmymess()
+  useEffect(() => {
+    setMenuData((prev) =>
+      prev.filter((day) => isSameDay(parseISO(day.date), new Date()))
+    );
+  }, []);
 
-  const weekDays = Array.from({ length: 7 }, (_, i) => addDays(currentWeekStart, i));
-
-  const getDayMenu = (date: string) => {
-    return menuData.find((d) => d.date === date)?.items || [];
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => setImagePreview(reader.result as string);
+      reader.readAsDataURL(file);
+    }
   };
 
-  const handlePrevWeek = () => setCurrentWeekStart(addDays(currentWeekStart, -7));
-  const handleNextWeek = () => setCurrentWeekStart(addDays(currentWeekStart, 7));
-
-  const handleAddItem = () => {
-    if (!newItem.name.trim()) return;
-
-    const existingDay = menuData.find((d) => d.date === selectedDay);
-    const newMenuItem: MenuItem = {
-      id: Date.now().toString(),
-      ...newItem,
+  const handleSaveItem = async (type: MealType) => {
+    const apiPayload = {
+      id:messdata?.id,
+      date: todayStr,
+      type: type,
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), 
+      image: imagePreview
     };
 
-    if (existingDay) {
-      setMenuData(menuData.map((d) =>
-        d.date === selectedDay ? { ...d, items: [...d.items, newMenuItem] } : d
-      ));
-    } else {
-      setMenuData([...menuData, { date: selectedDay, items: [newMenuItem] }]);
+    console.log("📤 API SEND TEST:", apiPayload);
+
+    const localEntry: MenuItem = {
+      id: Date.now().toString(),
+      ...apiPayload
+    };
+
+    setMenuData((prev) => {
+      const todayEntry = prev.find(d => d.date === todayStr);
+      if (todayEntry) {
+        return prev.map(d => d.date === todayStr ? { ...d, items: [...d.items, localEntry] } : d);
+      }
+      return [...prev, { date: todayStr, items: [localEntry] }];
+    });
+
+    try {
+      const response = await fetch("/addmenu", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(apiPayload),
+      });
+      if (!response.ok) throw new Error("Sync Error");
+    } catch (err) {
+      console.error("❌ Failed to sync with server:", err);
     }
-
-    setNewItem({ name: "", type: "lunch", isVeg: true });
-    setIsAddDialogOpen(false);
+    setNewItem({ name: "", isVeg: true });
+    setImagePreview(null);
+    setIsBreakfastOpen(false);
+    setIsDinnerOpen(false);
   };
 
-  const handleEditItem = () => {
-    if (!editingItem || !editingItem.name.trim()) return;
-
-    setMenuData(menuData.map((d) =>
-      d.date === selectedDay
-        ? { ...d, items: d.items.map((item) => (item.id === editingItem.id ? editingItem : item)) }
-        : d
-    ));
-    setEditingItem(null);
+  const handleDelete = (id: string) => {
+    setMenuData(prev => prev.map(d => ({
+      ...d,
+      items: d.items.filter(i => i.id !== id)
+    })));
   };
 
-  const handleDeleteItem = (itemId: string) => {
-    setMenuData(menuData.map((d) =>
-      d.date === selectedDay
-        ? { ...d, items: d.items.filter((item) => item.id !== itemId) }
-        : d
-    ));
-  };
-
-  const selectedDayItems = getDayMenu(selectedDay);
-  const groupedItems = {
-    breakfast: selectedDayItems.filter((i) => i.type === "breakfast"),
-    lunch: selectedDayItems.filter((i) => i.type === "lunch"),
-    dinner: selectedDayItems.filter((i) => i.type === "dinner"),
-  };
+  const todaysItems = menuData.find(d => d.date === todayStr)?.items || [];
 
   return (
-    <div className="space-y-6">
-      {/* Calendar Navigation */}
-      <Card variant="elevated">
-        <CardHeader className="pb-2">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-lg">Weekly Menu Calendar</CardTitle>
-            <div className="flex items-center gap-2">
-              <Button variant="ghost" size="icon" onClick={handlePrevWeek}>
-                <ChevronLeft className="w-4 h-4" />
-              </Button>
-              <span className="text-sm font-medium min-w-[140px] text-center">
-                {format(currentWeekStart, "MMM d")} - {format(addDays(currentWeekStart, 6), "MMM d, yyyy")}
-              </span>
-              <Button variant="ghost" size="icon" onClick={handleNextWeek}>
-                <ChevronRight className="w-4 h-4" />
-              </Button>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-7 gap-2">
-            {weekDays.map((day) => {
-              const dateStr = format(day, "yyyy-MM-dd");
-              const isSelected = dateStr === selectedDay;
-              const isToday = dateStr === format(new Date(), "yyyy-MM-dd");
-              const hasItems = getDayMenu(dateStr).length > 0;
+    <div className="max-w-5xl mx-auto p-4 space-y-6">
 
-              return (
-                <button
-                  key={dateStr}
-                  onClick={() => setSelectedDay(dateStr)}
-                  className={`p-3 rounded-xl text-center transition-all ${
-                    isSelected
-                      ? "bg-primary text-primary-foreground shadow-lg"
-                      : isToday
-                      ? "bg-primary/10 text-primary"
-                      : "hover:bg-muted"
-                  }`}
-                >
-                  <p className="text-xs font-medium opacity-70">{format(day, "EEE")}</p>
-                  <p className="text-lg font-bold">{format(day, "d")}</p>
-                  {hasItems && !isSelected && (
-                    <div className="w-1.5 h-1.5 rounded-full bg-accent mx-auto mt-1" />
-                  )}
-                </button>
-              );
-            })}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="md:col-span-2 bg-slate-900 text-white p-6 rounded-3xl shadow-xl flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-black">Today's Daily Menu</h1>
+            <p className="text-slate-400 text-sm font-medium">{format(new Date(), "EEEE, MMM do")}</p>
           </div>
-        </CardContent>
-      </Card>
-
-      {/* Selected Day Menu */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-xl font-bold text-foreground">
-            {format(new Date(selectedDay), "EEEE, MMMM d")}
-          </h2>
-          <p className="text-sm text-muted-foreground">
-            {selectedDayItems.length} items planned
-          </p>
+          <Utensils className="h-10 w-10 text-slate-700" />
         </div>
-        <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-          <DialogTrigger asChild>
-            <Button>
-              <Plus className="w-4 h-4 mr-2" />
-              Add Item
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Add Menu Item</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4 pt-4">
-              <div>
-                <label className="text-sm font-medium text-foreground">Item Name</label>
-                <Input
-                  value={newItem.name}
-                  onChange={(e) => setNewItem({ ...newItem, name: e.target.value })}
-                  placeholder="e.g., Dal Rice, Roti"
-                  className="mt-1"
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium text-foreground">Meal Type</label>
-                <div className="flex gap-2 mt-2">
-                  {(["breakfast", "lunch", "dinner"] as MealType[]).map((type) => (
-                    <Button
-                      key={type}
-                      type="button"
-                      variant={newItem.type === type ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => setNewItem({ ...newItem, type })}
-                    >
-                      {mealLabels[type]}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-              <div>
-                <label className="text-sm font-medium text-foreground">Type</label>
-                <div className="flex gap-2 mt-2">
-                  <Button
-                    type="button"
-                    variant={newItem.isVeg ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => setNewItem({ ...newItem, isVeg: true })}
-                  >
-                    🟢 Veg
-                  </Button>
-                  <Button
-                    type="button"
-                    variant={!newItem.isVeg ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => setNewItem({ ...newItem, isVeg: false })}
-                  >
-                    🔴 Non-Veg
-                  </Button>
-                </div>
-              </div>
-              <div className="flex gap-2 pt-4">
-                <DialogClose asChild>
-                  <Button variant="outline" className="flex-1">Cancel</Button>
-                </DialogClose>
-                <Button onClick={handleAddItem} className="flex-1">Add Item</Button>
-              </div>
-            </div>
-          </DialogContent>
-        </Dialog>
+        <div className="bg-blue-50 border border-blue-100 p-6 rounded-3xl flex flex-col justify-center">
+          <h3 className="text-blue-900 font-bold text-sm flex items-center gap-1"><Lock className="h-3 w-3" /> Auto-Clean</h3>
+          <p className="text-blue-700 text-xs mt-1">This system only manages the current day's service.</p>
+        </div>
       </div>
 
-      {/* Menu Items by Meal */}
-      <div className="grid md:grid-cols-3 gap-4">
-        {(["breakfast", "lunch", "dinner"] as MealType[]).map((mealType) => {
-          const Icon = mealIcons[mealType];
-          const items = groupedItems[mealType];
+      <div className="grid md:grid-cols-2 gap-8">
 
-          return (
-            <Card key={mealType} variant="interactive">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-base flex items-center gap-2">
-                  <Icon className="w-4 h-4 text-primary" />
-                  {mealLabels[mealType]}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {items.length === 0 ? (
-                  <p className="text-sm text-muted-foreground py-4 text-center">
-                    No items added
-                  </p>
-                ) : (
-                  <div className="space-y-2">
-                    {items.map((item) => (
-                      <div
-                        key={item.id}
-                        className="flex items-center justify-between p-3 bg-muted/50 rounded-lg group"
-                      >
-                        <div className="flex items-center gap-2">
-                          <Badge variant={item.isVeg ? "veg" : "non-veg"} className="w-5 h-5 p-0 justify-center">
-                            {item.isVeg ? "🟢" : "🔴"}
-                          </Badge>
-                          <span className="text-sm font-medium">{item.name}</span>
-                        </div>
-                        <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <Dialog>
-                            <DialogTrigger asChild>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-7 w-7"
-                                onClick={() => setEditingItem(item)}
-                              >
-                                <Pencil className="w-3 h-3" />
-                              </Button>
-                            </DialogTrigger>
-                            <DialogContent>
-                              <DialogHeader>
-                                <DialogTitle>Edit Menu Item</DialogTitle>
-                              </DialogHeader>
-                              {editingItem && (
-                                <div className="space-y-4 pt-4">
-                                  <div>
-                                    <label className="text-sm font-medium">Item Name</label>
-                                    <Input
-                                      value={editingItem.name}
-                                      onChange={(e) => setEditingItem({ ...editingItem, name: e.target.value })}
-                                      className="mt-1"
-                                    />
-                                  </div>
-                                  <div>
-                                    <label className="text-sm font-medium">Meal Type</label>
-                                    <div className="flex gap-2 mt-2">
-                                      {(["breakfast", "lunch", "dinner"] as MealType[]).map((type) => (
-                                        <Button
-                                          key={type}
-                                          variant={editingItem.type === type ? "default" : "outline"}
-                                          size="sm"
-                                          onClick={() => setEditingItem({ ...editingItem, type })}
-                                        >
-                                          {mealLabels[type]}
-                                        </Button>
-                                      ))}
-                                    </div>
-                                  </div>
-                                  <div>
-                                    <label className="text-sm font-medium">Type</label>
-                                    <div className="flex gap-2 mt-2">
-                                      <Button
-                                        variant={editingItem.isVeg ? "default" : "outline"}
-                                        size="sm"
-                                        onClick={() => setEditingItem({ ...editingItem, isVeg: true })}
-                                      >
-                                        🟢 Veg
-                                      </Button>
-                                      <Button
-                                        variant={!editingItem.isVeg ? "default" : "outline"}
-                                        size="sm"
-                                        onClick={() => setEditingItem({ ...editingItem, isVeg: false })}
-                                      >
-                                        🔴 Non-Veg
-                                      </Button>
-                                    </div>
-                                  </div>
-                                  <div className="flex gap-2 pt-4">
-                                    <DialogClose asChild>
-                                      <Button variant="outline" className="flex-1">Cancel</Button>
-                                    </DialogClose>
-                                    <DialogClose asChild>
-                                      <Button onClick={handleEditItem} className="flex-1">Save</Button>
-                                    </DialogClose>
-                                  </div>
-                                </div>
-                              )}
-                            </DialogContent>
-                          </Dialog>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-7 w-7 text-destructive hover:text-destructive"
-                            onClick={() => handleDeleteItem(item.id)}
-                          >
-                            <Trash2 className="w-3 h-3" />
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          );
-        })}
+        <Card className="border-none shadow-2xl rounded-[2rem] bg-white overflow-hidden">
+          <div className="p-6 bg-orange-50/50 flex items-center justify-between border-b border-orange-100">
+            <div className="flex items-center gap-3">
+              <div className="bg-orange-500 p-2 rounded-xl"><Coffee className="w-5 h-5 text-white" /></div>
+              <h2 className="text-lg font-bold text-slate-800 uppercase tracking-tight">Breakfast</h2>
+            </div>
+            <Dialog open={isBreakfastOpen} onOpenChange={setIsBreakfastOpen}>
+              <DialogTrigger asChild>
+                <Button size="sm" className="bg-orange-500 hover:bg-orange-600 rounded-xl px-2 text-xs font-bold"><Plus className="w-3 h-3 mr-1" /> ADD DISH</Button>
+              </DialogTrigger>
+              <DialogContent className="rounded-[2rem] sm:max-w-[400px] ">
+                <MenuAddForm type="breakfast" onSave={() => handleSaveItem("breakfast")} newItem={newItem} setNewItem={setNewItem} imagePreview={imagePreview} handleImageChange={handleImageChange} />
+              </DialogContent>
+            </Dialog>
+          </div>
+          <CardContent className="p-6 px-2">
+            <MealList items={todaysItems.filter(i => i.type === "breakfast")} onDelete={handleDelete} />
+          </CardContent>
+        </Card>
+
+        <Card className="border-none shadow-2xl rounded-[2rem] bg-white overflow-hidden">
+          <div className="p-6 bg-indigo-50/50 flex items-center justify-between border-b border-indigo-100">
+            <div className="flex items-center gap-3">
+              <div className="bg-indigo-600 p-2 rounded-xl"><Moon className="w-5 h-5 text-white" /></div>
+              <h2 className="text-lg font-bold text-slate-800 uppercase tracking-tight">Dinner</h2>
+            </div>
+            <Dialog open={isDinnerOpen} onOpenChange={setIsDinnerOpen}>
+              <DialogTrigger asChild>
+                <Button size="sm" className="bg-indigo-600 hover:bg-indigo-700 rounded-xl px-4 text-xs font-bold"><Plus className="w-3 h-3 mr-1" /> ADD DISH</Button>
+              </DialogTrigger>
+              <DialogContent className="rounded-[2rem] sm:max-w-[400px]  w-[300px] ">
+                <MenuAddForm type="dinner" onSave={() => handleSaveItem("dinner")} newItem={newItem} setNewItem={setNewItem} imagePreview={imagePreview} handleImageChange={handleImageChange} />
+              </DialogContent>
+            </Dialog>
+          </div>
+          <CardContent className="p-6">
+            <MealList items={todaysItems.filter(i => i.type === "dinner")} onDelete={handleDelete} />
+          </CardContent>
+        </Card>
+
+      </div>
+    </div>
+  );
+}
+function MealList({ items, onDelete }: { items: MenuItem[], onDelete: (id: string) => void }) {
+  if (items.length === 0) return <div className="py-12 text-center text-slate-300 italic text-sm border-2 border-dashed border-slate-50 rounded-2xl">Empty Menu</div>;
+  return (
+    <div className="space-y-4">
+      {items.map(item => (
+        <div key={item.id} className="flex items-center gap-4 bg-slate-50 p-3 rounded-2xl group border border-transparent hover:border-slate-200 hover:bg-white transition-all">
+          <div className="h-14 w-14 rounded-xl bg-slate-200 overflow-hidden shadow-inner flex-shrink-0">
+            {item.image ? <img src={item.image} className="h-full w-full object-cover" alt="" /> : <ImageIcon className="m-auto h-6 w-6 text-slate-400 mt-4" />}
+          </div>
+          <Button variant="ghost" size="icon" className="text-slate-300 hover:text-red-500 rounded-full h-8 w-8" onClick={() => onDelete(item.id)}><Trash2 className="w-4 h-4" /></Button>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+
+function MenuAddForm({ type, onSave, newItem, setNewItem, imagePreview, handleImageChange }: any) {
+  return (
+    <div>
+      <div className="space-y-5 pt-10 ">
+        <div className="relative h-44 w-full bg-slate-50 border-2 border-dashed border-slate-200 rounded-2xl flex flex-col items-center justify-center overflow-hidden transition-all hover:bg-slate-100 group">
+          {imagePreview ? (
+            <img src={imagePreview} className="h-full w-full object-cover" alt="Preview" />
+          ) : (
+            <label className="cursor-pointer flex flex-col items-center text-slate-400">
+              <div className="bg-white p-3 rounded-2xl shadow-sm mb-2"><Upload className="h-5 h-5 text-indigo-500" /></div>
+              <span className="text-xs font-bold uppercase tracking-tighter">Select Dish Image</span>
+              <input type="file" className="hidden" accept="image/*" onChange={handleImageChange} />
+            </label>
+          )}
+        </div>
+        <Button className="w-full h-14 bg-slate-900 hover:bg-black text-white rounded-2xl font-black text-sm" onClick={onSave}>
+          ADD TO {type.toUpperCase()} <ChevronRight className="ml-1 h-4 w-4" />
+        </Button>
       </div>
     </div>
   );

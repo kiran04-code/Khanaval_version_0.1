@@ -57,4 +57,10 @@ export const getAllDATA = async (req, res) => {
         allmess: mess
     });
 };
+export const Addmenus = async (req, res) => {
+    return res.json({
+        success: false,
+        message: "Menu Updated Sucessfully"
+    });
+};
 //# sourceMappingURL=Provoder.js.map

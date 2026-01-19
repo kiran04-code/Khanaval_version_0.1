@@ -65,3 +65,10 @@ export const getAllDATA = async (req: Request, res: Response): Promise<Response>
         allmess: mess
     })
 }
+
+export const Addmenus = async (req: Request, res: Response): Promise<Response> => {
+ return res.json({
+    success:false,
+    message:"Menu Updated Sucessfully"
+ });
+}

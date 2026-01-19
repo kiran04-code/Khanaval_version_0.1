@@ -29,6 +29,9 @@ declare const Mess: mongoose.Model<{
         landmark?: string | null;
         suburb?: string | null;
     } | null;
+    Menu?: {
+        menuIMages: string;
+    } | null;
     MessQrcode?: string | null;
 } & mongoose.DefaultTimestampProps, {}, {}, {
     id: string;
@@ -61,6 +64,9 @@ declare const Mess: mongoose.Model<{
         society?: string | null;
         landmark?: string | null;
         suburb?: string | null;
+    } | null;
+    Menu?: {
+        menuIMages: string;
     } | null;
     MessQrcode?: string | null;
 } & mongoose.DefaultTimestampProps, {
@@ -96,6 +102,9 @@ declare const Mess: mongoose.Model<{
         society?: string | null;
         landmark?: string | null;
         suburb?: string | null;
+    } | null;
+    Menu?: {
+        menuIMages: string;
     } | null;
     MessQrcode?: string | null;
 } & mongoose.DefaultTimestampProps & {
@@ -136,6 +145,9 @@ declare const Mess: mongoose.Model<{
         landmark?: string | null;
         suburb?: string | null;
     } | null;
+    Menu?: {
+        menuIMages: string;
+    } | null;
     MessQrcode?: string | null;
 } & mongoose.DefaultTimestampProps, mongoose.Document<unknown, {}, {
     providerId: mongoose.Types.ObjectId;
@@ -166,6 +178,9 @@ declare const Mess: mongoose.Model<{
         society?: string | null;
         landmark?: string | null;
         suburb?: string | null;
+    } | null;
+    Menu?: {
+        menuIMages: string;
     } | null;
     MessQrcode?: string | null;
 } & mongoose.DefaultTimestampProps, {
@@ -201,6 +216,9 @@ declare const Mess: mongoose.Model<{
         society?: string | null;
         landmark?: string | null;
         suburb?: string | null;
+    } | null;
+    Menu?: {
+        menuIMages: string;
     } | null;
     MessQrcode?: string | null;
 } & mongoose.DefaultTimestampProps & {
@@ -242,6 +260,9 @@ declare const Mess: mongoose.Model<{
             landmark?: string | null;
             suburb?: string | null;
         } | null;
+        Menu?: {
+            menuIMages: string;
+        } | null;
         MessQrcode?: string | null;
     } & mongoose.DefaultTimestampProps, {
         id: string;
@@ -276,6 +297,9 @@ declare const Mess: mongoose.Model<{
             society?: string | null;
             landmark?: string | null;
             suburb?: string | null;
+        } | null;
+        Menu?: {
+            menuIMages: string;
         } | null;
         MessQrcode?: string | null;
     } & mongoose.DefaultTimestampProps & {
@@ -315,6 +339,9 @@ declare const Mess: mongoose.Model<{
         landmark?: string | null;
         suburb?: string | null;
     } | null;
+    Menu?: {
+        menuIMages: string;
+    } | null;
     MessQrcode?: string | null;
     createdAt: NativeDate;
     updatedAt: NativeDate;
@@ -351,6 +378,9 @@ declare const Mess: mongoose.Model<{
         society?: string | null;
         landmark?: string | null;
         suburb?: string | null;
+    } | null;
+    Menu?: {
+        menuIMages: string;
     } | null;
     MessQrcode?: string | null;
     createdAt: NativeDate;

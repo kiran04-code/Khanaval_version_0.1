@@ -18,7 +18,7 @@ const providerSchema = new mongoose.Schema(
             },
             operatingMode: {
                 type: String,
-                enum: ["Home-made", "Commercial","tifin-only"],
+                enum: ["Home-made", "Commercial", "tifin-only"],
             },
         },
 
@@ -76,17 +76,24 @@ const providerSchema = new mongoose.Schema(
                 required: true,
             },
         },
-        messVerified:{
-            type:Boolean,
-            default:false
+        messVerified: {
+            type: Boolean,
+            default: false
         },
-        MessQrcode:{
-            type:String,
+        Menu: {
+            menuIMages: {
+                type: String,
+                required: true,
+            }
+        },
+        
+        MessQrcode: {
+            type: String,
         }
     },
     { timestamps: true }
 );
 
- const Mess = mongoose.model("MessSchema", providerSchema);
+const Mess = mongoose.model("MessSchema", providerSchema);
 
- export default Mess
+export default Mess

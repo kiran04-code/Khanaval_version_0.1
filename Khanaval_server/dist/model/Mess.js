@@ -74,6 +74,12 @@ const providerSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+    Menu: {
+        menuIMages: {
+            type: String,
+            required: true,
+        }
+    },
     MessQrcode: {
         type: String,
     }

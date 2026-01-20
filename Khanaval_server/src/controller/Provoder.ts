@@ -3,7 +3,7 @@ import cloudinary from "../config/cloudnary.js";
 import Mess from "../model/Mess.js";
 import { redisclient } from "../config/redis.js";
 import { Provider } from "../model/Provider.js";
-import { sendNotification } from "../firebase/SendNotification.js";
+
 import { user } from "../model/mongo.js";
 interface MulterFiles {
     [fieldname: string]: Express.Multer.File[];

@@ -1,3 +1,2 @@
-import admin from "firebase-admin";
-export default admin;
+export {};
 //# sourceMappingURL=firebaseAdmin.d.ts.map

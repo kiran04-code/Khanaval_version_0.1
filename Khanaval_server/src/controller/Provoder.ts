@@ -147,42 +147,42 @@ export const DeletetheMenu = async (req: Request, res: Response): Promise<Respon
     }
 }
 
-export const NotificationsPUSH = async (req: Request, res: Response) => {
-    try {
-        const providers = await Provider.find({
-            FCMtoken: { $exists: true, $ne: null }
-        });
+// export const NotificationsPUSH = async (req: Request, res: Response) => {
+//     try {
+//         const providers = await Provider.find({
+//             FCMtoken: { $exists: true, $ne: null }
+//         });
 
-        if (!providers.length) {
-            return res.status(404).json({
-                success: false,
-                message: "No providers with FCM tokens"
-            });
-        }
+//         if (!providers.length) {
+//             return res.status(404).json({
+//                 success: false,
+//                 message: "No providers with FCM tokens"
+//             });
+//         }
 
-        await Promise.all(
-            providers.map((provider) =>
-                sendNotification(
-                    "fLMIYMbYszFGqihvV3JqXM:APA91bHv_P7VVgH6ag61GjjnigHzY8zfSHiVpLp_JI9V34lVNGtaEnXJQURib-Utjlo3dV0rd4KNJsI0EG48tLqCSqHeZkT-20QWFVuXTqVim1tBnXCiSEI",
-                    "Menu Update 🍽️",
-                    "A provider has updated the menu. Check it now!"
-                )
-            )
-        );
+//         await Promise.all(
+//             providers.map((provider) =>
+//                 sendNotification(
+//                     "fLMIYMbYszFGqihvV3JqXM:APA91bHv_P7VVgH6ag61GjjnigHzY8zfSHiVpLp_JI9V34lVNGtaEnXJQURib-Utjlo3dV0rd4KNJsI0EG48tLqCSqHeZkT-20QWFVuXTqVim1tBnXCiSEI",
+//                     "Menu Update 🍽️",
+//                     "A provider has updated the menu. Check it now!"
+//                 )
+//             )
+//         );
 
-        res.json({
-            success: true,
-            message: "Notification sent to all providers"
-        });
+//         res.json({
+//             success: true,
+//             message: "Notification sent to all providers"
+//         });
 
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({
-            success: false,
-            message: "Server error"
-        });
-    }
-};
+//     } catch (error) {
+//         console.error(error);
+//         res.status(500).json({
+//             success: false,
+//             message: "Server error"
+//         });
+//     }
+// };
 
 
 export const getAllUser = async (req: Request, res: Response) => {

@@ -5,7 +5,6 @@ export default function MessDetails() {
   const { messId } = useParams<{ messId: string }>();
   const [currentMessId, setCurrentMessId] = useState<string | null>(null);
 
-  // Set messId immediately when the component mounts
   useEffect(() => {
     if (messId) setCurrentMessId(messId);
   }, [messId]);

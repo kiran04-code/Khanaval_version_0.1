@@ -3,52 +3,62 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { useCurrentUser } from "@/hooks/user-hook";
 import { cn } from "@/lib/utils";
-import { 
-  Clock, Heart, MapPin, Star, ArrowRight, 
-  ShieldCheck, Utensils, MessageSquare, X, Send 
+import {
+    Clock, Heart, MapPin, Star, ArrowRight,
+    ShieldCheck, Utensils, MessageSquare, X, Send
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { calculateDistance } from "./Distance";
 import { useStateContex } from "@/context/State";
 import { UserProviderdata } from "@/hooks/Provider";
+import { toast } from "@/hooks/use-toast";
+import { useQueryClient } from "@tanstack/react-query";
+
 
 const MessCard = ({ _id, identity, media, rating, location, messVerified, legal, providerId }) => {
-    const { userlat, userlng } = useStateContex();
+    const { userlat, userlng, axioseInstace } = useStateContex();
     const navigate = useNavigate();
     const { user } = useCurrentUser();
     const { Providerdata } = UserProviderdata();
     const distance = calculateDistance(userlat, userlng, location.lat, location.lng);
-
+    const queryClient = useQueryClient()
     // --- FEEDBACK STATES ---
     const [isRating, setIsRating] = useState(false);
     const [userRating, setUserRating] = useState(0);
     const [comment, setComment] = useState("");
 
     // --- SUBMISSION FUNCTION ---
-    const handleSubmitFeedback = () => {
+    const handleSubmitFeedback = async () => {
         console.log("--- Feedback Submitted ---");
-        console.log("Mess ID:", _id);
-        console.log("Mess Name:", identity.name);
-        console.log("Stars:", userRating);
-        console.log("Comment:", comment);
-        
-        // Reset and close
-        setIsRating(false);
-        setUserRating(0);
-        setComment("");
-        alert("Feedback logged to console!");
+        const { data } = await axioseInstace.post("/api/sendFeedback", {
+            messId: _id,
+            name: `${user.first_name + " " + user.last_name}`,
+            text: comment,
+            Stars: userRating
+        })
+        if (data.success) {
+            setIsRating(false);
+            setUserRating(0);
+            setComment("");
+            queryClient.invalidateQueries({
+                queryKey:["GET_ALL_MESS"]
+            })
+            toast({ title: "FeedBack Submited" })
+        } else {
+            toast({ title: "Some Things Wrong With Server" })
+        }
     };
 
     return (
         <Card className="group relative overflow-hidden rounded-[2.5rem] border-none bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all duration-500 h-[420px]">
-            
+
             {/* IMAGE SECTION */}
             <div className="relative h-1/2 w-full overflow-hidden">
-                <img 
-                    src={media?.cover} 
-                    alt={identity.name} 
-                    className="h-full w-full object-cover transition-transform duration-1000 md:group-hover:scale-110" 
+                <img
+                    src={media?.cover}
+                    alt={identity.name}
+                    className="h-full w-full object-cover transition-transform duration-1000 md:group-hover:scale-110"
                 />
                 <div className="absolute top-4 left-4 flex flex-col gap-1.5">
                     {messVerified && (
@@ -61,7 +71,7 @@ const MessCard = ({ _id, identity, media, rating, location, messVerified, legal,
 
             {/* CONTENT SECTION */}
             <CardContent className="p-5 flex flex-col justify-between h-1/2 relative">
-                
+
                 {/* --- FEEDBACK OVERLAY (Only shows when isRating is true) --- */}
                 {isRating ? (
                     <div className="flex flex-col h-full animate-in slide-in-from-bottom-2 duration-300">
@@ -69,26 +79,26 @@ const MessCard = ({ _id, identity, media, rating, location, messVerified, legal,
                             <h4 className="text-xs font-black text-slate-800 uppercase">Rate Experience</h4>
                             <X className="w-4 h-4 cursor-pointer text-slate-400" onClick={() => setIsRating(false)} />
                         </div>
-                        
+
                         <div className="flex gap-1 mb-3">
                             {[1, 2, 3, 4, 5].map((star) => (
-                                <Star 
-                                    key={star} 
+                                <Star
+                                    key={star}
                                     onClick={() => setUserRating(star)}
-                                    className={cn("w-5 h-5 cursor-pointer transition-colors", 
-                                        userRating >= star ? "fill-orange-500 text-orange-500" : "text-slate-200")} 
+                                    className={cn("w-5 h-5 cursor-pointer transition-colors",
+                                        userRating >= star ? "fill-orange-500 text-orange-500" : "text-slate-200")}
                                 />
                             ))}
                         </div>
 
-                        <textarea 
+                        <textarea
                             className="flex-1 w-full bg-slate-50 rounded-xl p-3 text-[11px] outline-none ring-1 ring-slate-100 focus:ring-orange-500 resize-none mb-3"
                             placeholder="Tell us about the food quality..."
                             value={comment}
                             onChange={(e) => setComment(e.target.value)}
                         />
 
-                        <Button 
+                        <Button
                             onClick={handleSubmitFeedback}
                             disabled={userRating === 0}
                             className="w-full bg-orange-500 h-9 rounded-xl font-black text-[10px] text-white hover:bg-slate-900 transition-colors"
@@ -140,7 +150,7 @@ const MessCard = ({ _id, identity, media, rating, location, messVerified, legal,
                                 <span className="text-[8px] font-black text-slate-300 uppercase leading-none">Price</span>
                                 <span className="text-sm font-black text-slate-800">₹3,500</span>
                                 {/* FEEDBACK TRIGGER BUTTON */}
-                                <button 
+                                <button
                                     onClick={() => setIsRating(true)}
                                     className="text-[9px] font-black text-orange-500 uppercase mt-1 hover:underline text-left"
                                 >

@@ -218,4 +218,31 @@ export const verifiyMess = async (req, res) => {
         });
     }
 };
+export const sendFeedback = async (req, res) => {
+    try {
+        const { messId, text, name, Stars } = req.body;
+        await Mess.findByIdAndUpdate(messId, {
+            $push: {
+                UserFeedBack: {
+                    username: name,
+                    Text: text,
+                    ratingInStar: Stars,
+                }
+            }
+        });
+        const cachekey = "AllMESS";
+        await redisclient.del(cachekey);
+        return res.json({
+            success: true,
+            message: "FeedBackSubmited"
+        });
+    }
+    catch (error) {
+        console.log(error);
+        return res.status(503).json({
+            success: false,
+            message: "server Error"
+        });
+    }
+};
 //# sourceMappingURL=Provoder.js.map

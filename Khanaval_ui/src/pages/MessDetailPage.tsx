@@ -5,10 +5,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
   ArrowLeft, Star, MapPin, Clock, Phone,
-  CheckCircle, ChevronRight, Share2, Heart, Navigation,
-  UserCheck, ShieldCheck, Utensils, Image as ImageIcon, Info,
-  Coffee,
-  Moon
+  ChevronRight, Navigation,
+  UserCheck, ShieldCheck, Utensils, Image as ImageIcon,
+  Coffee, Moon, MessageSquare, Calendar, Send,
+  ThumbsUp, MessageCircle, MoreHorizontal, Share2
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { GetALLmess } from "@/hooks/MessData";
@@ -24,9 +24,9 @@ export default function MessDetailPage() {
   const { AllMESS } = GetALLmess();
   const mess = AllMESS?.find((mess) => mess._id === id);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState("dineout"); // NEW: Tab state
+  const [activeTab, setActiveTab] = useState("dineout");
   const { userlat, userlng } = useStateContex();
-  console.log(mess)
+
   useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 2000);
     return () => clearTimeout(timer);
@@ -40,7 +40,7 @@ export default function MessDetailPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50/50 pb-32">
+    <div className="min-h-screen bg-slate-50/50 pb-32 font-sans">
       {/* Hero Image Section */}
       <div className="relative group overflow-hidden bg-slate-200 h-[350px] md:h-[450px]">
         {loading ? (
@@ -59,8 +59,8 @@ export default function MessDetailPage() {
       </div>
 
       <div className="container mx-auto px-4 max-w-5xl -mt-24 relative z-10">
-        {/* Floating Reference Card (Wiggy Style) */}
-        <Card className="border-none shadow-2xl rounded-[32px] overflow-hidden mb-6">
+        {/* Floating Reference Card */}
+        <Card className="border-none shadow-2xl rounded-[32px] overflow-hidden mb-6 bg-white">
           <CardContent className="p-6 md:p-8">
             <div className="space-y-4">
               <div className="flex justify-between items-start">
@@ -71,9 +71,9 @@ export default function MessDetailPage() {
                     </div>
                     <span className="text-slate-500 text-xs font-bold">• ₹150 for one</span>
                   </div>
-                  <h1 className="text-3xl font-black text-slate-900">{mess?.identity?.name}</h1>
+                  <h1 className="text-3xl font-black text-slate-900 leading-tight">{mess?.identity?.name}</h1>
                   <p className="text-sm font-bold text-slate-500 uppercase tracking-wide">
-                    {mess?.identity?.dietaryType} • North Indian
+                    {mess?.identity?.dietaryType} • {mess?.identity?.operatingMode}
                   </p>
                 </div>
               </div>
@@ -85,14 +85,14 @@ export default function MessDetailPage() {
 
               <div className="flex items-center gap-2 text-emerald-600 text-sm font-bold">
                 <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                Open now • <span className="text-slate-500 font-medium">TILL {mess?.identity?.endTime}</span>
+                Open now • <span className="text-slate-500 font-medium uppercase">TILL {mess?.identity?.endTime}</span>
               </div>
 
               <div className="grid grid-cols-2 gap-4 border-t pt-4 mt-2">
-                <Button variant="ghost" className="text-orange-600 font-black gap-2 hover:bg-orange-50 h-12" onClick={() => window.open(`tel:${mess?.providerId?.number}`)}>
+                <Button variant="ghost" className="text-orange-600 font-black gap-2 hover:bg-orange-50 h-12 rounded-2xl" onClick={() => window.open(`tel:${mess?.providerId?.number}`)}>
                   <Phone className="w-4 h-4" /> CALL
                 </Button>
-                <Button variant="ghost" className="text-orange-600 font-black gap-2 hover:bg-orange-50 h-12" onClick={openMaps}>
+                <Button variant="ghost" className="text-orange-600 font-black gap-2 hover:bg-orange-50 h-12 rounded-2xl" onClick={openMaps}>
                   <Navigation className="w-4 h-4" /> DIRECTION
                 </Button>
               </div>
@@ -101,14 +101,14 @@ export default function MessDetailPage() {
         </Card>
 
         {/* Tab Selection */}
-        <div className="flex border-b border-slate-200 mb-8 bg-white/50 backdrop-blur-sm sticky top-0 z-20 rounded-xl overflow-hidden">
-          {["dineout", "photos", "menu"].map((tab) => (
+        <div className="flex border-b border-slate-200 mb-8 bg-white/70 backdrop-blur-md sticky top-0 z-20 rounded-2xl overflow-hidden shadow-sm">
+          {["dineout", "photos", "menu", "reviews"].map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
               className={cn(
                 "flex-1 py-4 text-sm font-black uppercase tracking-widest transition-all",
-                activeTab === tab ? "text-orange-600 border-b-4 border-orange-600 bg-orange-50/50" : "text-slate-400"
+                activeTab === tab ? "text-orange-600 border-b-4 border-orange-600 bg-orange-50/30" : "text-slate-400"
               )}
             >
               {tab}
@@ -116,11 +116,10 @@ export default function MessDetailPage() {
           ))}
         </div>
 
-        {/* Dynamic Content Based on Tabs */}
+        {/* Dynamic Content */}
         <div className="transition-all duration-300">
           {activeTab === "dineout" && (
             <div className="space-y-8 animate-in fade-in duration-500">
-              {/* MANAGED BY OWNER SECTION */}
               <section>
                 <h3 className="text-xl font-black text-slate-800 mb-4 flex items-center gap-2">
                   <UserCheck className="w-6 h-6 text-blue-500" /> Owner Details
@@ -132,8 +131,8 @@ export default function MessDetailPage() {
                     </div>
                     <div>
                       <p className="text-[10px] text-slate-400 font-black uppercase tracking-tighter">Verified Provider</p>
-                      <p className="text-xl font-black text-slate-800 capitalize">{mess?.providerId?.OwnerName}</p>
-                      <p className="text-[12px] font-black text-slate-800 capitalize">{mess?.providerId?.number}</p>
+                      <p className="text-xl font-black text-slate-800 capitalize leading-none mb-1">{mess?.providerId?.OwnerName}</p>
+                      <p className="text-[12px] font-black text-slate-800 capitalize leading-none">{mess?.providerId?.number}</p>
                     </div>
                   </div>
                   <Badge className="bg-blue-50 text-blue-600 border-none px-4 py-1.5 font-black uppercase text-[10px]">
@@ -142,10 +141,9 @@ export default function MessDetailPage() {
                 </div>
               </section>
 
+              {/* RESTORED: Your original Location layout */}
               <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
-
                 <Card className="rounded-[32px] border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-7 space-y-5 bg-white">
-                  
                   <div className="flex items-center justify-between">
                     <h4 className="font-black text-slate-800 flex items-center gap-2 tracking-tight">
                       <MapPin className="w-5 h-5 text-orange-500" /> Location Details
@@ -154,7 +152,6 @@ export default function MessDetailPage() {
                       {mess?.location?.postcode}
                     </Badge>
                   </div>
-
                   <div className="space-y-3">
                     <div>
                       <p className="text-lg font-black text-slate-800 leading-tight">
@@ -164,7 +161,6 @@ export default function MessDetailPage() {
                         {mess?.location?.city}, {mess?.location?.state}
                       </p>
                     </div>
-
                     <div className="flex flex-col gap-2 pt-2 border-t border-slate-50">
                       <div className="flex items-start gap-2">
                         <div className="w-1.5 h-1.5 rounded-full bg-orange-400 mt-1.5 shrink-0" />
@@ -174,15 +170,13 @@ export default function MessDetailPage() {
                       </div>
                       <div className="flex items-start gap-2">
                         <div className="w-1.5 h-1.5 rounded-full bg-slate-300 mt-1.5 shrink-0" />
-                        <p className="text-[11px] font-medium text-slate-400 leading-tight">
-                          {mess?.location?.address}
-                        </p>
+                        <p className="text-[11px] font-medium text-slate-400 leading-tight">{mess?.location?.address}</p>
                       </div>
                     </div>
-                    <div className="flex  items-center ">
-                        <div className="w-1.5 h-1.5 rounded-full bg-orange-400  shrink-0" />
+                    <div className="flex items-center">
+                        <div className="w-1.5 h-1.5 rounded-full bg-orange-400 shrink-0" />
                         <p className="text-[12px] px-2 font-medium text-orange-400 leading-tight">
-                          {calculateDistance(userlat,userlng,mess?.location.lat,mess.location?.lng)} KM AWAY
+                          {calculateDistance(userlat, userlng, mess?.location?.lat, mess?.location?.lng)} KM AWAY
                         </p>
                     </div>
                   </div>
@@ -192,7 +186,6 @@ export default function MessDetailPage() {
                   <h4 className="font-black text-slate-800 flex items-center gap-2 tracking-tight">
                     <Clock className="w-5 h-5 text-emerald-500" /> Operating Details
                   </h4>
-
                   <div className="space-y-4">
                     <div className="bg-slate-50 rounded-2xl p-4 flex items-center justify-between">
                       <span className="text-xs font-black text-slate-400 uppercase tracking-wider">Service Hours</span>
@@ -200,19 +193,12 @@ export default function MessDetailPage() {
                         {mess?.identity?.startTime} — {mess?.identity?.endTime}
                       </p>
                     </div>
-
                     <div className="space-y-3">
                       <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Facilities & Type</p>
                       <div className="flex flex-wrap gap-2">
-                        <Badge className="bg-orange-100 text-orange-700 hover:bg-orange-100 border-none font-black uppercase text-[10px] px-3 py-1 rounded-lg">
-                          {mess?.identity?.operatingMode}
-                        </Badge>
-                        <Badge className="bg-emerald-100 text-emerald-700 hover:bg-emerald-100 border-none font-black uppercase text-[10px] px-3 py-1 rounded-lg">
-                          {mess?.identity?.dietaryType}
-                        </Badge>
-                        <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-100 border-none font-black uppercase text-[10px] px-3 py-1 rounded-lg">
-                          Dine-in Available
-                        </Badge>
+                        <Badge className="bg-orange-100 text-orange-700 hover:bg-orange-100 border-none font-black uppercase text-[10px] px-3 py-1 rounded-lg">{mess?.identity?.operatingMode}</Badge>
+                        <Badge className="bg-emerald-100 text-emerald-700 hover:bg-emerald-100 border-none font-black uppercase text-[10px] px-3 py-1 rounded-lg">{mess?.identity?.dietaryType}</Badge>
+                        <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-100 border-none font-black uppercase text-[10px] px-3 py-1 rounded-lg">Dine-in Available</Badge>
                       </div>
                     </div>
                   </div>
@@ -221,104 +207,101 @@ export default function MessDetailPage() {
             </div>
           )}
 
-          {activeTab === "photos" && (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 animate-in slide-in-from-bottom-4 duration-500">
-              {[
-                { src: mess?.media?.cover, label: "Cover" },
-                { src: mess?.media?.dining, label: "Dining Area" },
-                { src: mess?.media?.kitchen, label: "Kitchen" },
-                { src: mess?.media?.interior, label: "Interior" },
-              ]
-                .filter((img) => img.src)
-                .map((image, index) => (
-                  <div
-                    key={index}
-                    className="group relative aspect-square rounded-[2rem] overflow-hidden bg-slate-100 border-2 border-white shadow-sm hover:shadow-xl transition-all duration-300"
-                  >
-                    <img
-                      src={image.src}
-                      alt={image.label}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                    />
+{activeTab === "reviews" && (
+  <div className="space-y-4 animate-in fade-in duration-500 max-w-2xl mx-auto">
+    {mess?.UserFeedBack && mess.UserFeedBack.length > 0 ? (
+      mess.UserFeedBack.map((review, idx) => (
+        <Card key={idx} className="rounded-[24px] border-none shadow-sm p-5 bg-white">
+          <div className="flex items-start gap-4">
+            {/* Avatar */}
+            <div className="w-10 h-10 rounded-full bg-slate-100 flex-shrink-0 flex items-center justify-center font-black text-slate-400 text-sm">
+              {review.username?.charAt(0).toUpperCase()}
+            </div>
 
-                    <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
-                      <p className="text-white text-[10px] font-black uppercase tracking-widest">{image.label}</p>
+            <div className="flex-1 space-y-1">
+              {/* Header Info */}
+              <div className="flex justify-between items-start">
+                <div>
+                  <h4 className="text-sm font-black text-slate-900 leading-none">{review.username}</h4>
+                  <p className="text-[10px] font-bold text-slate-400 mt-1 uppercase tracking-tighter">
+                    {new Date(review.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
+                  </p>
+                </div>
+                
+                {/* Rating Badge */}
+                <div className="bg-emerald-600 text-white px-2 py-0.5 rounded-md flex items-center gap-1 text-[10px] font-black">
+                  {review.ratingInStar} <Star className="w-2.5 h-2.5 fill-white" />
+                </div>
+              </div>
+
+              {/* Review Text */}
+              <p className="text-[13px] text-slate-600 leading-snug pt-1">
+                {review.Text}
+              </p>
+            </div>
+          </div>
+        </Card>
+      ))
+    ) : (
+      <div className="py-20 text-center bg-white rounded-[32px] border border-slate-50">
+        <MessageSquare className="w-8 h-8 text-slate-200 mx-auto mb-2" />
+        <p className="text-slate-400 font-black text-[10px] uppercase tracking-widest">No feedback yet</p>
+      </div>
+    )}
+  </div>
+)}
+          {/* RESTORED: Your original masonry Menu layout */}
+          {activeTab === "menu" && (
+            <div className="space-y-6 animate-in fade-in duration-500">
+              <div className="flex items-center justify-between px-2">
+                <h3 className="text-2xl font-black text-slate-900 tracking-tight">Today's Menu</h3>
+                <div className="flex items-center gap-1.5 bg-emerald-50 px-3 py-1 rounded-full">
+                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  <span className="text-[10px] font-black text-emerald-600 uppercase">Live</span>
+                </div>
+              </div>
+
+              {mess?.Menu && mess.Menu.length > 0 ? (
+                <div className="columns-1 md:columns-2 gap-4 space-y-4">
+                  {mess.Menu.map((item, index) => (
+                    <div key={index} className="break-inside-avoid mb-4">
+                      <Card className="rounded-[2rem] border-none shadow-sm hover:shadow-md transition-shadow overflow-hidden bg-white">
+                        <div className="px-5 py-4 flex items-center justify-between border-b border-slate-50">
+                          <div className="flex items-center gap-2">
+                            {item.types === "breakfast" ? <Coffee className="w-4 h-4 text-orange-500" /> : <Moon className="w-4 h-4 text-indigo-500" />}
+                            <span className="text-sm font-black text-slate-800 uppercase tracking-wide">{item.types}</span>
+                          </div>
+                        </div>
+                        <div className="w-full h-auto bg-slate-50">
+                          <img src={item.imageUrl} className="w-full h-auto block" alt={item.types} loading="lazy" />
+                        </div>
+                        <div className="p-4 bg-slate-50/50 flex justify-center">
+                           <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Tap image to zoom</p>
+                        </div>
+                      </Card>
                     </div>
-                  </div>
-                ))}
-
-              {(!mess?.media?.dining && !mess?.media?.kitchen) && (
-                <div className="col-span-2 md:col-span-3 py-12 flex flex-col items-center justify-center border-2 border-dashed border-slate-200 rounded-[2rem]">
-                  <ImageIcon className="w-10 h-10 text-slate-300 mb-2" />
-                  <p className="text-slate-400 font-bold text-sm">More photos coming soon</p>
+                  ))}
+                </div>
+              ) : (
+                <div className="py-20 flex flex-col items-center justify-center bg-white rounded-[3rem] border border-slate-100 shadow-inner">
+                  <Utensils className="w-10 h-10 text-slate-100 mb-4" />
+                  <p className="text-slate-400 font-bold text-sm uppercase tracking-widest">Menu is empty</p>
                 </div>
               )}
             </div>
           )}
 
-{activeTab === "menu" && (
-  <div className="space-y-6 animate-in fade-in duration-500">
-    <div className="flex items-center justify-between px-2">
-      <h3 className="text-2xl font-black text-slate-900 tracking-tight">Today's Menu</h3>
-      <div className="flex items-center gap-1.5 bg-emerald-50 px-3 py-1 rounded-full">
-        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-        <span className="text-[10px] font-black text-emerald-600 uppercase">Live</span>
-      </div>
-    </div>
-
-    {mess?.Menu && mess.Menu.length > 0 ? (
-      <div className="columns-1 md:columns-2 gap-4 space-y-4">
-        {mess.Menu.map((item, index) => (
-          <div key={index} className="break-inside-avoid mb-4">
-            <Card className="rounded-[2rem] border-none shadow-sm hover:shadow-md transition-shadow overflow-hidden bg-white">
-              
-              {/* Header Label inside Card */}
-              <div className="px-5 py-4 flex items-center justify-between border-b border-slate-50">
-                <div className="flex items-center gap-2">
-                  {item.types === "breakfast" ? 
-                    <Coffee className="w-4 h-4 text-orange-500" /> : 
-                    <Moon className="w-4 h-4 text-indigo-500" />
-                  }
-                  <span className="text-sm font-black text-slate-800 uppercase tracking-wide">
-                    {item.types}
-                  </span>
-                </div>
-              </div>
-
-              {/* The Image - No cropping, no black bars */}
-              <div className="w-full h-auto bg-slate-50">
-                {item.imageUrl ? (
-                  <img 
-                    src={item.imageUrl} 
-                    className="w-full h-auto block" // h-auto ensures full height is shown
-                    alt={item.types} 
-                    loading="lazy"
-                  />
-                ) : (
-                  <div className="py-20 flex flex-col items-center justify-center">
-                    <ImageIcon className="w-10 h-10 text-slate-200" />
+          {activeTab === "photos" && (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 animate-in slide-in-from-bottom-4 duration-500">
+              {Object.entries(mess?.media || {}).map(([key, url]) => (
+                url && (
+                  <div key={key} className="aspect-square rounded-[2rem] overflow-hidden bg-slate-100 border-2 border-white shadow-sm hover:shadow-xl transition-all duration-300">
+                    <img src={url} className="w-full h-full object-cover transition-transform duration-500 hover:scale-110" alt={key} />
                   </div>
-                )}
-              </div>
-
-              {/* Footer - Subtle Action */}
-              <div className="p-4 bg-slate-50/50 flex justify-center">
-                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                   Tap image to zoom
-                 </p>
-              </div>
-            </Card>
-          </div>
-        ))}
-      </div>
-    ) : (
-      <div className="py-20 flex flex-col items-center justify-center bg-white rounded-[3rem] border border-slate-100 shadow-inner">
-        <Utensils className="w-10 h-10 text-slate-100 mb-4" />
-        <p className="text-slate-400 font-bold text-sm uppercase tracking-widest">Menu is empty</p>
-      </div>
-    )}
-  </div>
-)}
+                )
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
@@ -328,7 +311,7 @@ export default function MessDetailPage() {
           <div className="container mx-auto max-w-5xl flex items-center justify-between gap-4">
             <div>
               <p className="text-[10px] font-black text-slate-400 uppercase leading-none">Monthly Subscription</p>
-              <p className="text-2xl font-black text-slate-900">₹4000</p>
+              <p className="text-2xl font-black text-slate-900">₹{mess?.identity?.price || "4000"}</p>
             </div>
             <Link to="/epass">
               <Button size="lg" className="rounded-2xl bg-orange-600 hover:bg-orange-500 text-white font-black px-8 h-14 shadow-lg shadow-orange-200">

@@ -187,7 +187,7 @@ export const DeletetheMenu = async (req: Request, res: Response): Promise<Respon
 
 export const getAllUser = async (req: Request, res: Response) => {
     try {
-        const data = await user.find()    
+        const data = await user.find()
         return res.json({
             userData: data
         })
@@ -231,4 +231,31 @@ export const verifiyMess = async (req: Request, res: Response) => {
             message: "server Error"
         })
     }
+}
+
+export const sendFeedback = async (req: Request, res: Response) => {
+  try {
+      const {messId,text,name,Stars} = req.body
+      await Mess.findByIdAndUpdate(messId,{
+       $push:{
+        UserFeedBack:{
+            username:name,
+            Text:text,
+            ratingInStar:Stars,
+        }
+       }
+    })
+    const cachekey = "AllMESS"
+    await redisclient.del(cachekey)
+    return res.json({
+        success: true,
+        message: "FeedBackSubmited"
+    })
+  } catch (error) {
+    console.log(error)
+    return res.status(503).json({
+        success:false,
+        message:"server Error"
+    })
+  }
 }

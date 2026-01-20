@@ -7,4 +7,5 @@ export declare const DeletetheMenu: (req: Request, res: Response) => Promise<Res
 export declare const getAllUser: (req: Request, res: Response) => Promise<Response<any, Record<string, any>>>;
 export declare const getAllProvider: (req: Request, res: Response) => Promise<Response<any, Record<string, any>>>;
 export declare const verifiyMess: (req: Request, res: Response) => Promise<Response<any, Record<string, any>>>;
+export declare const sendFeedback: (req: Request, res: Response) => Promise<Response<any, Record<string, any>>>;
 //# sourceMappingURL=Provoder.d.ts.map

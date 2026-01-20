@@ -2,6 +2,9 @@ import { response } from "express";
 import cloudinary from "../config/cloudnary.js";
 import Mess from "../model/Mess.js";
 import { redisclient } from "../config/redis.js";
+import { Provider } from "../model/Provider.js";
+import { sendNotification } from "../firebase/SendNotification.js";
+import { user } from "../model/mongo.js";
 export const BufferimagetoURlimage = async (req, res) => {
     try {
         if (!req.files) {
@@ -52,6 +55,19 @@ export const getAllDATA = async (req, res) => {
             allmess: JSON.parse(cachedata)
         });
     const mess = await Mess.find({ messVerified: true }).populate("providerId");
+    await redisclient.set(cachekey, JSON.stringify(mess));
+    return res.json({
+        allmess: mess
+    });
+};
+export const GetValidMess = async (req, res) => {
+    const cachekey = "AllMESS";
+    const cachedata = await redisclient.get(cachekey);
+    if (cachedata)
+        return res.json({
+            allmess: JSON.parse(cachedata)
+        });
+    const mess = await Mess.find().populate("providerId");
     await redisclient.set(cachekey, JSON.stringify(mess));
     return res.json({
         allmess: mess
@@ -119,6 +135,79 @@ export const DeletetheMenu = async (req, res) => {
         return res.status(500).json({
             success: false,
             message: "Server Error"
+        });
+    }
+};
+export const NotificationsPUSH = async (req, res) => {
+    try {
+        const providers = await Provider.find({
+            FCMtoken: { $exists: true, $ne: null }
+        });
+        if (!providers.length) {
+            return res.status(404).json({
+                success: false,
+                message: "No providers with FCM tokens"
+            });
+        }
+        await Promise.all(providers.map((provider) => sendNotification("fLMIYMbYszFGqihvV3JqXM:APA91bHv_P7VVgH6ag61GjjnigHzY8zfSHiVpLp_JI9V34lVNGtaEnXJQURib-Utjlo3dV0rd4KNJsI0EG48tLqCSqHeZkT-20QWFVuXTqVim1tBnXCiSEI", "Menu Update 🍽️", "A provider has updated the menu. Check it now!")));
+        res.json({
+            success: true,
+            message: "Notification sent to all providers"
+        });
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).json({
+            success: false,
+            message: "Server error"
+        });
+    }
+};
+export const getAllUser = async (req, res) => {
+    try {
+        const data = await user.find();
+        return res.json({
+            userData: data
+        });
+    }
+    catch (error) {
+        console.log(error);
+        return res.json({
+            success: true,
+            message: "server Error"
+        });
+    }
+};
+export const getAllProvider = async (req, res) => {
+    try {
+        const allProvider = await Provider.find();
+        return res.json({
+            ProviderData: allProvider
+        });
+    }
+    catch (error) {
+        return res.json({
+            success: false,
+            message: "Server Error To Fetch Provider"
+        });
+    }
+};
+export const verifiyMess = async (req, res) => {
+    try {
+        const { ids, verifyed } = req.body;
+        await Mess.findByIdAndUpdate(ids, { messVerified: verifyed });
+        const cachekey = "AllMESS";
+        await redisclient.del(cachekey);
+        return res.json({
+            success: true,
+            message: "Mess Updated Sucessfully"
+        });
+    }
+    catch (error) {
+        console.log(error);
+        return res.json({
+            success: true,
+            message: "server Error"
         });
     }
 };

@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -22,32 +23,49 @@ import QRScanPages from "./pages/Qrcodescan";
 import MessDetails from "./pages/messDeatils";
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/auth" element={<PublicRoute><AuthPage/></PublicRoute>} />
-          <Route path="/dashboard" element={<UserDashboard />} />
-          <Route path="/profile" element={<ProtectedRoutes><KhanavalProfile /></ProtectedRoutes>} />
-          <Route path="/mess/:id" element={<MessDetailPage />} />
-          <Route path="/epass" element={<EPassPage />} />
-          <Route path="/order/:id" element={<OrderTrackingPage />} />
-          <Route path="/provider" element={<ProviderDashboard />} />
-          <Route path="/mess" element={<UserDashboard />} />
-          <Route path="/provider/messsResgiter" element={<RegistrationFlow />} />
-          <Route path="/scan-qr" element={<QRScanPages/>} />
-          <Route path="/messsDetails/:messId" element={<MessDetails/>} />
-          <Route path="/tiffin" element={<UserDashboard />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
-    <ReactQueryDevtools/>
-  </QueryClientProvider>
-);
+const App = () => {
+  useEffect(() => {
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", async () => {
+        try {
+          const registration = await navigator.serviceWorker.register(
+            "/firebase-messaging-sw.js"
+          );
+          console.log("✅ Service Worker registered:", registration);
+        } catch (err) {
+          console.error("❌ Service Worker registration failed:", err);
+        }
+      });
+    }
+  }, []);
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/auth" element={<PublicRoute><AuthPage/></PublicRoute>} />
+            <Route path="/dashboard" element={<UserDashboard />} />
+            <Route path="/profile" element={<ProtectedRoutes><KhanavalProfile /></ProtectedRoutes>} />
+            <Route path="/mess/:id" element={<MessDetailPage />} />
+            <Route path="/epass" element={<EPassPage />} />
+            <Route path="/order/:id" element={<OrderTrackingPage />} />
+            <Route path="/provider" element={<ProviderDashboard />} />
+            <Route path="/mess" element={<UserDashboard />} />
+            <Route path="/provider/messsResgiter" element={<RegistrationFlow />} />
+            <Route path="/scan-qr" element={<QRScanPages/>} />
+            <Route path="/messsDetails/:messId" element={<MessDetails/>} />
+            <Route path="/tiffin" element={<UserDashboard />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+      <ReactQueryDevtools/>
+    </QueryClientProvider>
+  );
+};
 
 export default App;

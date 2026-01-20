@@ -54,7 +54,8 @@ class ProviderService {
             }
             const providerdata = await Provider.create({
                 OwnerName: data.Ownername,
-                number: data.number
+                number: data.number,
+                FCMtoken: data.FCMtoken
             });
             await redisclient.del(redisKey);
             console.log(providerdata);

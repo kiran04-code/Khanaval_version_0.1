@@ -11,6 +11,7 @@ import { VERIFIED_USER_GOOGLE, VERIFIED_USER_GOOGLE_LOGIN } from "@/graphql/user
 import { PROVIDER_OTP_LOGIN_QUERY, PROVIDER_OTP_LOGIN_VERYFIED_QUERY, PROVIDER_OTP_SIGNUP_QUERY, PROVIDER_OTP_SIGNUP_VERYFIED_QUERY } from "@/graphql/Provider";
 import { UserProviderdata } from "@/hooks/Provider";
 import { useQueryClient } from "@tanstack/react-query";
+import { requestPushPermission } from "@/FIREBASE/getToken";
 
 export default function HybridAuthPage() {
   const navigate = useNavigate();
@@ -31,6 +32,7 @@ export default function HybridAuthPage() {
   const [providerName, setProviderName] = useState("");
   const [providerNumber, setProviderNumber] = useState("");
   const [providerOtp, setProviderOtp] = useState("");
+  const [fcToken, setfcToken] = useState("");
   const { Providerdata } = UserProviderdata()
   /* ---------------- USER GOOGLE SUCCESS ---------------- */
   const handleGoogleSuccess = async (credential: string) => {
@@ -75,7 +77,6 @@ export default function HybridAuthPage() {
       toast({ title: "Invalid phone number" });
       return;
     }
-
     setIsLoading(true);
     try {
       const { verifiedgoodtokenandnumberforSignup } =
@@ -114,7 +115,9 @@ export default function HybridAuthPage() {
 
     setIsLoading(true);
     try {
-      if (providerMode  === "signup") {
+      if (providerMode === "signup") {
+        const fcmToken = await requestPushPermission(); // <-- make sure service worker is active
+        setfcToken(fcmToken)
         const { ProviderverficationOTP } = await graphqlClient.request(PROVIDER_OTP_SIGNUP_QUERY, {
           number: providerNumber
         });
@@ -135,7 +138,7 @@ export default function HybridAuthPage() {
           setProviderStep(2);
         } else {
           toast({ title: `${ProviderverficationOTPLogin.message}`, variant: "destructive" });
-          setProviderMode(providerMode  === "login" ? "signup" : "signup");
+          setProviderMode(providerMode === "login" ? "signup" : "signup");
         }
       }
 
@@ -151,7 +154,7 @@ export default function HybridAuthPage() {
   const handleProviderVerify = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      if (providerMode  === "signup") {
+      if (providerMode === "signup") {
         if (providerOtp.length !== 4) {
           toast({ title: "Enter 4 digit OTP" });
           return;
@@ -161,7 +164,8 @@ export default function HybridAuthPage() {
           payload: {
             number: providerNumber,
             Ownername: providerMode === "signup" ? providerName : "Existing User",
-            otp: Number(providerOtp)
+            otp: Number(providerOtp),
+            FCMtoken:fcToken
           }
         });
 

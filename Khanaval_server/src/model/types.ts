@@ -12,7 +12,8 @@ export interface IProvider {
     OwnerName:string,
     number:string,
     user_type?:string
-    MessRegister:boolean
+    MessRegister:boolean,
+    FCMtoken:string
 }
 
 export  interface JwtToken {

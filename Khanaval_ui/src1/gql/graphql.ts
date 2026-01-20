@@ -219,6 +219,7 @@ export type Signupinput = {
 };
 
 export type Signupinputp = {
+  FCMtoken?: InputMaybe<Scalars['String']['input']>;
   Ownername: Scalars['String']['input'];
   number: Scalars['String']['input'];
   otp: Scalars['Int']['input'];
@@ -507,6 +508,7 @@ export type Signupinput = {
 };
 
 export type Signupinputp = {
+  FCMtoken?: InputMaybe<Scalars['String']['input']>;
   Ownername: Scalars['String']['input'];
   number: Scalars['String']['input'];
   otp: Scalars['Int']['input'];

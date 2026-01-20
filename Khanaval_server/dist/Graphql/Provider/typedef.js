@@ -3,6 +3,8 @@ input signupinputp {
      Ownername:String!,
      number:String!
      otp:Int!
+     FCMtoken:String
+
 }
 input loginpinputp {
      number:String!

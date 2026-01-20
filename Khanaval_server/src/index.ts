@@ -15,7 +15,8 @@ app.use(cors({
   credentials: true,
   origin: [
     "https://khanaval-version-0-1-5tyc.vercel.app",
-    "http://localhost:8080"
+    "http://localhost:8080" ,
+    "https://admin-khanaval-com.vercel.app"
   ]
 }));
 

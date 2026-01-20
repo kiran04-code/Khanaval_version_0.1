@@ -4,6 +4,9 @@ const ProviderScehma = new mongoose.Schema({
         type: String,
         required: true
     },
+    FCMtoken: {
+        type: String,
+    },
     number: {
         type: String,
         required: true

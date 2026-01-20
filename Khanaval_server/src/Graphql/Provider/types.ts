@@ -2,6 +2,7 @@ export interface Iprovider {
     Ownername:string,
      number:string
      otp:number
+     FCMtoken:string
 }
 export interface IproviderlOGIN {
      number:string

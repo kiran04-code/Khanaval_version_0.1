@@ -13,6 +13,7 @@ export interface IProvider {
     number: string;
     user_type?: string;
     MessRegister: boolean;
+    FCMtoken: string;
 }
 export interface JwtToken {
     _id: string;

@@ -156,7 +156,7 @@ const {userlat,userlng} = useStateContex()
           <div className="grid lg:grid-cols-2 gap-16 items-center">
 
             {/* LEFT CONTENT */}
-            <div className="text-center py-[15px] lg:text-left animate-slide-up z-10">
+            <div className="text-center py-[15px] md:py-20 lg:text-left animate-slide-up z-10">
               <Badge variant="soft" className="mb-6 px-4 py-1.5 text-sm uppercase tracking-wide border-orange-100">
                 🍛 India’s Trusted Mess Discovery
               </Badge>

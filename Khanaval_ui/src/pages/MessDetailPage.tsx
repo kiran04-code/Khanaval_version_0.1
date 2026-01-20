@@ -101,30 +101,30 @@ export default function MessDetailPage() {
         </Card>
 
         {/* Tab Selection */}
-     <div className="sticky top-2 z-30 px-4 mb-8">
-  <div className="bg-white/90 backdrop-blur-md p-1.5 rounded-[22px] shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-slate-100 flex items-center justify-between">
-    {[
-      { id: "dineout", label: "Dine", icon: <Utensils className="w-3.5 h-3.5" /> },
-      { id: "photos", label: "Photos", icon: <ImageIcon className="w-3.5 h-3.5" /> },
-      { id: "menu", label: "Menu", icon: <MessageSquare className="w-3.5 h-3.5" /> },
-      { id: "reviews", label: "Review", icon: <Star className="w-3.5 h-3.5" /> },
-    ].map((tab) => (
-      <button
-        key={tab.id}
-        onClick={() => setActiveTab(tab.id)}
-        className={cn(
-          "flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-[18px] text-[10px] font-black uppercase tracking-tighter transition-all duration-300",
-          activeTab === tab.id
-            ? "bg-orange-500 text-white shadow-md shadow-orange-100 scale-[1.02]"
-            : "text-slate-400 hover:text-slate-600"
-        )}
-      >
-        {tab.icon}
-        <span>{tab.label}</span>
-      </button>
-    ))}
-  </div>
-</div>
+        <div className="sticky top-2 z-30 px-4 mb-8">
+          <div className="bg-white/90 backdrop-blur-md p-1.5 rounded-[22px] shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-slate-100 flex items-center justify-between">
+            {[
+              { id: "dineout", label: "Dine", icon: <Utensils className="w-3.5 h-3.5" /> },
+              { id: "photos", label: "Photos", icon: <ImageIcon className="w-3.5 h-3.5" /> },
+              { id: "menu", label: "Menu", icon: <MessageSquare className="w-3.5 h-3.5" /> },
+              { id: "reviews", label: "Review", icon: <Star className="w-3.5 h-3.5" /> },
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={cn(
+                  "flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-[18px] text-[10px] font-black uppercase tracking-tighter transition-all duration-300",
+                  activeTab === tab.id
+                    ? "bg-orange-500 text-white shadow-md shadow-orange-100 scale-[1.02]"
+                    : "text-slate-400 hover:text-slate-600"
+                )}
+              >
+                {tab.icon}
+                <span>{tab.label}</span>
+              </button>
+            ))}
+          </div>
+        </div>
 
         {/* Dynamic Content */}
         <div className="transition-all duration-300">
@@ -184,10 +184,10 @@ export default function MessDetailPage() {
                       </div>
                     </div>
                     <div className="flex items-center">
-                        <div className="w-1.5 h-1.5 rounded-full bg-orange-400 shrink-0" />
-                        <p className="text-[12px] px-2 font-medium text-orange-400 leading-tight">
-                          {calculateDistance(userlat, userlng, mess?.location?.lat, mess?.location?.lng)} KM AWAY
-                        </p>
+                      <div className="w-1.5 h-1.5 rounded-full bg-orange-400 shrink-0" />
+                      <p className="text-[12px] px-2 font-medium text-orange-400 leading-tight">
+                        {calculateDistance(userlat, userlng, mess?.location?.lat, mess?.location?.lng)} KM AWAY
+                      </p>
                     </div>
                   </div>
                 </Card>
@@ -217,49 +217,49 @@ export default function MessDetailPage() {
             </div>
           )}
 
-{activeTab === "reviews" && (
-  <div className="space-y-4 animate-in fade-in duration-500 max-w-2xl mx-auto">
-    {mess?.UserFeedBack && mess.UserFeedBack.length > 0 ? (
-      mess.UserFeedBack.map((review, idx) => (
-        <Card key={idx} className="rounded-[24px] border-none shadow-sm p-5 bg-white">
-          <div className="flex items-start gap-4">
-            {/* Avatar */}
-            <div className="w-10 h-10 rounded-full bg-slate-100 flex-shrink-0 flex items-center justify-center font-black text-slate-400 text-sm">
-              {review.username?.charAt(0).toUpperCase()}
-            </div>
+          {activeTab === "reviews" && (
+            <div className="space-y-4 animate-in fade-in duration-500 max-w-2xl mx-auto">
+              {mess?.UserFeedBack && mess.UserFeedBack.length > 0 ? (
+                mess.UserFeedBack.map((review, idx) => (
+                  <Card key={idx} className="rounded-[24px] border-none shadow-sm p-5 bg-white">
+                    <div className="flex items-start gap-4">
+                      {/* Avatar */}
+                      <div className="w-10 h-10 rounded-full bg-slate-100 flex-shrink-0 flex items-center justify-center font-black text-slate-400 text-sm">
+                        {review.username?.charAt(0).toUpperCase()}
+                      </div>
 
-            <div className="flex-1 space-y-1">
-              {/* Header Info */}
-              <div className="flex justify-between items-start">
-                <div>
-                  <h4 className="text-sm font-black text-slate-900 leading-none">{review.username}</h4>
-                  <p className="text-[10px] font-bold text-slate-400 mt-1 uppercase tracking-tighter">
-                    {new Date(review.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
-                  </p>
-                </div>
-                
-                {/* Rating Badge */}
-                <div className="bg-emerald-600 text-white px-2 py-0.5 rounded-md flex items-center gap-1 text-[10px] font-black">
-                  {review.ratingInStar} <Star className="w-2.5 h-2.5 fill-white" />
-                </div>
-              </div>
+                      <div className="flex-1 space-y-1">
+                        {/* Header Info */}
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <h4 className="text-sm font-black text-slate-900 leading-none">{review.username}</h4>
+                            <p className="text-[10px] font-bold text-slate-400 mt-1 uppercase tracking-tighter">
+                              {new Date(review.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
+                            </p>
+                          </div>
 
-              {/* Review Text */}
-              <p className="text-[13px] text-slate-600 leading-snug pt-1">
-                {review.Text}
-              </p>
+                          {/* Rating Badge */}
+                          <div className="bg-emerald-600 text-white px-2 py-0.5 rounded-md flex items-center gap-1 text-[10px] font-black">
+                            {review.ratingInStar} <Star className="w-2.5 h-2.5 fill-white" />
+                          </div>
+                        </div>
+
+                        {/* Review Text */}
+                        <p className="text-[13px] text-slate-600 leading-snug pt-1">
+                          {review.Text}
+                        </p>
+                      </div>
+                    </div>
+                  </Card>
+                ))
+              ) : (
+                <div className="py-20 text-center bg-white rounded-[32px] border border-slate-50">
+                  <MessageSquare className="w-8 h-8 text-slate-200 mx-auto mb-2" />
+                  <p className="text-slate-400 font-black text-[10px] uppercase tracking-widest">No feedback yet</p>
+                </div>
+              )}
             </div>
-          </div>
-        </Card>
-      ))
-    ) : (
-      <div className="py-20 text-center bg-white rounded-[32px] border border-slate-50">
-        <MessageSquare className="w-8 h-8 text-slate-200 mx-auto mb-2" />
-        <p className="text-slate-400 font-black text-[10px] uppercase tracking-widest">No feedback yet</p>
-      </div>
-    )}
-  </div>
-)}
+          )}
           {/* RESTORED: Your original masonry Menu layout */}
           {activeTab === "menu" && (
             <div className="space-y-6 animate-in fade-in duration-500">
@@ -286,7 +286,7 @@ export default function MessDetailPage() {
                           <img src={item.imageUrl} className="w-full h-auto block" alt={item.types} loading="lazy" />
                         </div>
                         <div className="p-4 bg-slate-50/50 flex justify-center">
-                           <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Tap image to zoom</p>
+                          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Tap image to zoom</p>
                         </div>
                       </Card>
                     </div>

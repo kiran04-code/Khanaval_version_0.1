@@ -101,20 +101,30 @@ export default function MessDetailPage() {
         </Card>
 
         {/* Tab Selection */}
-        <div className="flex border-b border-slate-200 mb-8 bg-white/70 backdrop-blur-md sticky top-0 z-20 rounded-2xl overflow-hidden shadow-sm">
-          {["dineout", "photos", "menu", "reviews"].map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={cn(
-                "flex-1 py-4 text-sm font-black uppercase tracking-widest transition-all",
-                activeTab === tab ? "text-orange-600 border-b-4 border-orange-600 bg-orange-50/30" : "text-slate-400"
-              )}
-            >
-              {tab}
-            </button>
-          ))}
-        </div>
+     <div className="sticky top-2 z-30 px-4 mb-8">
+  <div className="bg-white/90 backdrop-blur-md p-1.5 rounded-[22px] shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-slate-100 flex items-center justify-between">
+    {[
+      { id: "dineout", label: "Dine", icon: <Utensils className="w-3.5 h-3.5" /> },
+      { id: "photos", label: "Photos", icon: <ImageIcon className="w-3.5 h-3.5" /> },
+      { id: "menu", label: "Menu", icon: <MessageSquare className="w-3.5 h-3.5" /> },
+      { id: "reviews", label: "Review", icon: <Star className="w-3.5 h-3.5" /> },
+    ].map((tab) => (
+      <button
+        key={tab.id}
+        onClick={() => setActiveTab(tab.id)}
+        className={cn(
+          "flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-[18px] text-[10px] font-black uppercase tracking-tighter transition-all duration-300",
+          activeTab === tab.id
+            ? "bg-orange-500 text-white shadow-md shadow-orange-100 scale-[1.02]"
+            : "text-slate-400 hover:text-slate-600"
+        )}
+      >
+        {tab.icon}
+        <span>{tab.label}</span>
+      </button>
+    ))}
+  </div>
+</div>
 
         {/* Dynamic Content */}
         <div className="transition-all duration-300">
@@ -296,7 +306,7 @@ export default function MessDetailPage() {
               {Object.entries(mess?.media || {}).map(([key, url]) => (
                 url && (
                   <div key={key} className="aspect-square rounded-[2rem] overflow-hidden bg-slate-100 border-2 border-white shadow-sm hover:shadow-xl transition-all duration-300">
-                    <img src={url} className="w-full h-full object-cover transition-transform duration-500 hover:scale-110" alt={key} />
+                    <img src={String(url)} className="w-full h-full object-cover transition-transform duration-500 hover:scale-110" alt={key} />
                   </div>
                 )
               ))}

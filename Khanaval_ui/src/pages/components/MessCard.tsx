@@ -1,11 +1,12 @@
-import React, { useState } from "react"; // Added useState
+import React, { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { useCurrentUser } from "@/hooks/user-hook";
 import { cn } from "@/lib/utils";
 import {
     Clock, Heart, MapPin, Star, ArrowRight,
-    ShieldCheck, Utensils, MessageSquare, X, Send
+    ShieldCheck, Utensils, MessageSquare, X, Send,
+    Loader2 // Added Loader2 for the spinner
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
@@ -15,38 +16,46 @@ import { UserProviderdata } from "@/hooks/Provider";
 import { toast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
 
-
 const MessCard = ({ _id, identity, media, rating, location, messVerified, legal, providerId }) => {
     const { userlat, userlng, axioseInstace } = useStateContex();
     const navigate = useNavigate();
     const { user } = useCurrentUser();
     const { Providerdata } = UserProviderdata();
     const distance = calculateDistance(userlat, userlng, location.lat, location.lng);
-    const queryClient = useQueryClient()
+    const queryClient = useQueryClient();
+
     // --- FEEDBACK STATES ---
     const [isRating, setIsRating] = useState(false);
     const [userRating, setUserRating] = useState(0);
     const [comment, setComment] = useState("");
+    const [isSubmitting, setIsSubmitting] = useState(false); // Added isSubmitting state
 
     // --- SUBMISSION FUNCTION ---
     const handleSubmitFeedback = async () => {
-        console.log("--- Feedback Submitted ---");
-        const { data } = await axioseInstace.post("/api/sendFeedback", {
-            messId: _id,
-            name: `${user.first_name + " " + user.last_name}`,
-            text: comment,
-            Stars: userRating
-        })
-        if (data.success) {
-            setIsRating(false);
-            setUserRating(0);
-            setComment("");
-            queryClient.invalidateQueries({
-                queryKey:["GET_ALL_MESS"]
-            })
-            toast({ title: "FeedBack Submited" })
-        } else {
-            toast({ title: "Some Things Wrong With Server" })
+        try {
+            setIsSubmitting(true); // Start loading
+            const { data } = await axioseInstace.post("/api/sendFeedback", {
+                messId: _id,
+                name: `${user.first_name + " " + user.last_name}`,
+                text: comment,
+                Stars: userRating
+            });
+
+            if (data.success) {
+                setIsRating(false);
+                setUserRating(0);
+                setComment("");
+                queryClient.invalidateQueries({
+                    queryKey: ["GET_ALL_MESS"]
+                });
+                toast({ title: "Feedback Submitted" });
+            } else {
+                toast({ title: "Something went wrong with the server", variant: "destructive" });
+            }
+        } catch (error) {
+            toast({ title: "Failed to send feedback", variant: "destructive" });
+        } finally {
+            setIsSubmitting(false); // Stop loading
         }
     };
 
@@ -72,27 +81,29 @@ const MessCard = ({ _id, identity, media, rating, location, messVerified, legal,
             {/* CONTENT SECTION */}
             <CardContent className="p-5 flex flex-col justify-between h-1/2 relative">
 
-                {/* --- FEEDBACK OVERLAY (Only shows when isRating is true) --- */}
+                {/* --- FEEDBACK OVERLAY --- */}
                 {isRating ? (
                     <div className="flex flex-col h-full animate-in slide-in-from-bottom-2 duration-300">
                         <div className="flex justify-between items-center mb-2">
                             <h4 className="text-xs font-black text-slate-800 uppercase">Rate Experience</h4>
-                            <X className="w-4 h-4 cursor-pointer text-slate-400" onClick={() => setIsRating(false)} />
+                            <X className="w-4 h-4 cursor-pointer text-slate-400" onClick={() => !isSubmitting && setIsRating(false)} />
                         </div>
 
                         <div className="flex gap-1 mb-3">
                             {[1, 2, 3, 4, 5].map((star) => (
                                 <Star
                                     key={star}
-                                    onClick={() => setUserRating(star)}
-                                    className={cn("w-5 h-5 cursor-pointer transition-colors",
+                                    onClick={() => !isSubmitting && setUserRating(star)}
+                                    className={cn("w-5 h-5 transition-colors",
+                                        !isSubmitting && "cursor-pointer",
                                         userRating >= star ? "fill-orange-500 text-orange-500" : "text-slate-200")}
                                 />
                             ))}
                         </div>
 
                         <textarea
-                            className="flex-1 w-full bg-slate-50 rounded-xl p-3 text-[11px] outline-none ring-1 ring-slate-100 focus:ring-orange-500 resize-none mb-3"
+                            disabled={isSubmitting}
+                            className="flex-1 w-full bg-slate-50 rounded-xl p-3 text-[11px] outline-none ring-1 ring-slate-100 focus:ring-orange-500 resize-none mb-3 disabled:opacity-50"
                             placeholder="Tell us about the food quality..."
                             value={comment}
                             onChange={(e) => setComment(e.target.value)}
@@ -100,10 +111,14 @@ const MessCard = ({ _id, identity, media, rating, location, messVerified, legal,
 
                         <Button
                             onClick={handleSubmitFeedback}
-                            disabled={userRating === 0}
+                            disabled={userRating === 0 || isSubmitting}
                             className="w-full bg-orange-500 h-9 rounded-xl font-black text-[10px] text-white hover:bg-slate-900 transition-colors"
                         >
-                            SUBMIT <Send className="ml-2 w-3 h-3" />
+                            {isSubmitting ? (
+                                <Loader2 className="w-4 h-4 animate-spin" />
+                            ) : (
+                                <>SUBMIT <Send className="ml-2 w-3 h-3" /></>
+                            )}
                         </Button>
                     </div>
                 ) : (
@@ -149,9 +164,8 @@ const MessCard = ({ _id, identity, media, rating, location, messVerified, legal,
                             <div className="flex flex-col">
                                 <span className="text-[8px] font-black text-slate-300 uppercase leading-none">Price</span>
                                 <span className="text-sm font-black text-slate-800">₹3,500</span>
-                                {/* FEEDBACK TRIGGER BUTTON */}
                                 <button
-                                    onClick={() => setIsRating(true)}
+                                    onClick={() => user ? setIsRating(true) : navigate(`/auth`)}
                                     className="text-[9px] font-black text-orange-500 uppercase mt-1 hover:underline text-left"
                                 >
                                     + Add Feedback

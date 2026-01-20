@@ -4,19 +4,35 @@ declare const Mess: mongoose.Model<{
     messVerified: boolean;
     Menu: mongoose.Types.DocumentArray<{
         createdAt: NativeDate;
-        imageUrl?: string | null;
         types?: "breakfast" | "dinner" | null;
+        imageUrl?: string | null;
         menuDate?: NativeDate | null;
     }, mongoose.Types.Subdocument<mongoose.mongo.BSON.ObjectId, unknown, {
         createdAt: NativeDate;
-        imageUrl?: string | null;
         types?: "breakfast" | "dinner" | null;
+        imageUrl?: string | null;
         menuDate?: NativeDate | null;
     }> & {
         createdAt: NativeDate;
-        imageUrl?: string | null;
         types?: "breakfast" | "dinner" | null;
+        imageUrl?: string | null;
         menuDate?: NativeDate | null;
+    }>;
+    UserFeedBack: mongoose.Types.DocumentArray<{
+        createdAt: NativeDate;
+        username?: string | null;
+        Text?: string | null;
+        ratingInStar?: number | null;
+    }, mongoose.Types.Subdocument<mongoose.mongo.BSON.ObjectId, unknown, {
+        createdAt: NativeDate;
+        username?: string | null;
+        Text?: string | null;
+        ratingInStar?: number | null;
+    }> & {
+        createdAt: NativeDate;
+        username?: string | null;
+        Text?: string | null;
+        ratingInStar?: number | null;
     }>;
     identity?: {
         name: string;
@@ -53,19 +69,35 @@ declare const Mess: mongoose.Model<{
     messVerified: boolean;
     Menu: mongoose.Types.DocumentArray<{
         createdAt: NativeDate;
-        imageUrl?: string | null;
         types?: "breakfast" | "dinner" | null;
+        imageUrl?: string | null;
         menuDate?: NativeDate | null;
     }, mongoose.Types.Subdocument<mongoose.mongo.BSON.ObjectId, unknown, {
         createdAt: NativeDate;
-        imageUrl?: string | null;
         types?: "breakfast" | "dinner" | null;
+        imageUrl?: string | null;
         menuDate?: NativeDate | null;
     }> & {
         createdAt: NativeDate;
-        imageUrl?: string | null;
         types?: "breakfast" | "dinner" | null;
+        imageUrl?: string | null;
         menuDate?: NativeDate | null;
+    }>;
+    UserFeedBack: mongoose.Types.DocumentArray<{
+        createdAt: NativeDate;
+        username?: string | null;
+        Text?: string | null;
+        ratingInStar?: number | null;
+    }, mongoose.Types.Subdocument<mongoose.mongo.BSON.ObjectId, unknown, {
+        createdAt: NativeDate;
+        username?: string | null;
+        Text?: string | null;
+        ratingInStar?: number | null;
+    }> & {
+        createdAt: NativeDate;
+        username?: string | null;
+        Text?: string | null;
+        ratingInStar?: number | null;
     }>;
     identity?: {
         name: string;
@@ -104,19 +136,35 @@ declare const Mess: mongoose.Model<{
     messVerified: boolean;
     Menu: mongoose.Types.DocumentArray<{
         createdAt: NativeDate;
-        imageUrl?: string | null;
         types?: "breakfast" | "dinner" | null;
+        imageUrl?: string | null;
         menuDate?: NativeDate | null;
     }, mongoose.Types.Subdocument<mongoose.mongo.BSON.ObjectId, unknown, {
         createdAt: NativeDate;
-        imageUrl?: string | null;
         types?: "breakfast" | "dinner" | null;
+        imageUrl?: string | null;
         menuDate?: NativeDate | null;
     }> & {
         createdAt: NativeDate;
-        imageUrl?: string | null;
         types?: "breakfast" | "dinner" | null;
+        imageUrl?: string | null;
         menuDate?: NativeDate | null;
+    }>;
+    UserFeedBack: mongoose.Types.DocumentArray<{
+        createdAt: NativeDate;
+        username?: string | null;
+        Text?: string | null;
+        ratingInStar?: number | null;
+    }, mongoose.Types.Subdocument<mongoose.mongo.BSON.ObjectId, unknown, {
+        createdAt: NativeDate;
+        username?: string | null;
+        Text?: string | null;
+        ratingInStar?: number | null;
+    }> & {
+        createdAt: NativeDate;
+        username?: string | null;
+        Text?: string | null;
+        ratingInStar?: number | null;
     }>;
     identity?: {
         name: string;
@@ -159,19 +207,35 @@ declare const Mess: mongoose.Model<{
     messVerified: boolean;
     Menu: mongoose.Types.DocumentArray<{
         createdAt: NativeDate;
-        imageUrl?: string | null;
         types?: "breakfast" | "dinner" | null;
+        imageUrl?: string | null;
         menuDate?: NativeDate | null;
     }, mongoose.Types.Subdocument<mongoose.mongo.BSON.ObjectId, unknown, {
         createdAt: NativeDate;
-        imageUrl?: string | null;
         types?: "breakfast" | "dinner" | null;
+        imageUrl?: string | null;
         menuDate?: NativeDate | null;
     }> & {
         createdAt: NativeDate;
-        imageUrl?: string | null;
         types?: "breakfast" | "dinner" | null;
+        imageUrl?: string | null;
         menuDate?: NativeDate | null;
+    }>;
+    UserFeedBack: mongoose.Types.DocumentArray<{
+        createdAt: NativeDate;
+        username?: string | null;
+        Text?: string | null;
+        ratingInStar?: number | null;
+    }, mongoose.Types.Subdocument<mongoose.mongo.BSON.ObjectId, unknown, {
+        createdAt: NativeDate;
+        username?: string | null;
+        Text?: string | null;
+        ratingInStar?: number | null;
+    }> & {
+        createdAt: NativeDate;
+        username?: string | null;
+        Text?: string | null;
+        ratingInStar?: number | null;
     }>;
     identity?: {
         name: string;
@@ -206,19 +270,35 @@ declare const Mess: mongoose.Model<{
     messVerified: boolean;
     Menu: mongoose.Types.DocumentArray<{
         createdAt: NativeDate;
-        imageUrl?: string | null;
         types?: "breakfast" | "dinner" | null;
+        imageUrl?: string | null;
         menuDate?: NativeDate | null;
     }, mongoose.Types.Subdocument<mongoose.mongo.BSON.ObjectId, unknown, {
         createdAt: NativeDate;
-        imageUrl?: string | null;
         types?: "breakfast" | "dinner" | null;
+        imageUrl?: string | null;
         menuDate?: NativeDate | null;
     }> & {
         createdAt: NativeDate;
-        imageUrl?: string | null;
         types?: "breakfast" | "dinner" | null;
+        imageUrl?: string | null;
         menuDate?: NativeDate | null;
+    }>;
+    UserFeedBack: mongoose.Types.DocumentArray<{
+        createdAt: NativeDate;
+        username?: string | null;
+        Text?: string | null;
+        ratingInStar?: number | null;
+    }, mongoose.Types.Subdocument<mongoose.mongo.BSON.ObjectId, unknown, {
+        createdAt: NativeDate;
+        username?: string | null;
+        Text?: string | null;
+        ratingInStar?: number | null;
+    }> & {
+        createdAt: NativeDate;
+        username?: string | null;
+        Text?: string | null;
+        ratingInStar?: number | null;
     }>;
     identity?: {
         name: string;
@@ -257,19 +337,35 @@ declare const Mess: mongoose.Model<{
     messVerified: boolean;
     Menu: mongoose.Types.DocumentArray<{
         createdAt: NativeDate;
-        imageUrl?: string | null;
         types?: "breakfast" | "dinner" | null;
+        imageUrl?: string | null;
         menuDate?: NativeDate | null;
     }, mongoose.Types.Subdocument<mongoose.mongo.BSON.ObjectId, unknown, {
         createdAt: NativeDate;
-        imageUrl?: string | null;
         types?: "breakfast" | "dinner" | null;
+        imageUrl?: string | null;
         menuDate?: NativeDate | null;
     }> & {
         createdAt: NativeDate;
-        imageUrl?: string | null;
         types?: "breakfast" | "dinner" | null;
+        imageUrl?: string | null;
         menuDate?: NativeDate | null;
+    }>;
+    UserFeedBack: mongoose.Types.DocumentArray<{
+        createdAt: NativeDate;
+        username?: string | null;
+        Text?: string | null;
+        ratingInStar?: number | null;
+    }, mongoose.Types.Subdocument<mongoose.mongo.BSON.ObjectId, unknown, {
+        createdAt: NativeDate;
+        username?: string | null;
+        Text?: string | null;
+        ratingInStar?: number | null;
+    }> & {
+        createdAt: NativeDate;
+        username?: string | null;
+        Text?: string | null;
+        ratingInStar?: number | null;
     }>;
     identity?: {
         name: string;
@@ -313,19 +409,35 @@ declare const Mess: mongoose.Model<{
         messVerified: boolean;
         Menu: mongoose.Types.DocumentArray<{
             createdAt: NativeDate;
-            imageUrl?: string | null;
             types?: "breakfast" | "dinner" | null;
+            imageUrl?: string | null;
             menuDate?: NativeDate | null;
         }, mongoose.Types.Subdocument<mongoose.mongo.BSON.ObjectId, unknown, {
             createdAt: NativeDate;
-            imageUrl?: string | null;
             types?: "breakfast" | "dinner" | null;
+            imageUrl?: string | null;
             menuDate?: NativeDate | null;
         }> & {
             createdAt: NativeDate;
-            imageUrl?: string | null;
             types?: "breakfast" | "dinner" | null;
+            imageUrl?: string | null;
             menuDate?: NativeDate | null;
+        }>;
+        UserFeedBack: mongoose.Types.DocumentArray<{
+            createdAt: NativeDate;
+            username?: string | null;
+            Text?: string | null;
+            ratingInStar?: number | null;
+        }, mongoose.Types.Subdocument<mongoose.mongo.BSON.ObjectId, unknown, {
+            createdAt: NativeDate;
+            username?: string | null;
+            Text?: string | null;
+            ratingInStar?: number | null;
+        }> & {
+            createdAt: NativeDate;
+            username?: string | null;
+            Text?: string | null;
+            ratingInStar?: number | null;
         }>;
         identity?: {
             name: string;
@@ -364,19 +476,35 @@ declare const Mess: mongoose.Model<{
         messVerified: boolean;
         Menu: mongoose.Types.DocumentArray<{
             createdAt: NativeDate;
-            imageUrl?: string | null;
             types?: "breakfast" | "dinner" | null;
+            imageUrl?: string | null;
             menuDate?: NativeDate | null;
         }, mongoose.Types.Subdocument<mongoose.mongo.BSON.ObjectId, unknown, {
             createdAt: NativeDate;
-            imageUrl?: string | null;
             types?: "breakfast" | "dinner" | null;
+            imageUrl?: string | null;
             menuDate?: NativeDate | null;
         }> & {
             createdAt: NativeDate;
-            imageUrl?: string | null;
             types?: "breakfast" | "dinner" | null;
+            imageUrl?: string | null;
             menuDate?: NativeDate | null;
+        }>;
+        UserFeedBack: mongoose.Types.DocumentArray<{
+            createdAt: NativeDate;
+            username?: string | null;
+            Text?: string | null;
+            ratingInStar?: number | null;
+        }, mongoose.Types.Subdocument<mongoose.mongo.BSON.ObjectId, unknown, {
+            createdAt: NativeDate;
+            username?: string | null;
+            Text?: string | null;
+            ratingInStar?: number | null;
+        }> & {
+            createdAt: NativeDate;
+            username?: string | null;
+            Text?: string | null;
+            ratingInStar?: number | null;
         }>;
         identity?: {
             name: string;
@@ -418,19 +546,35 @@ declare const Mess: mongoose.Model<{
     messVerified: boolean;
     Menu: mongoose.Types.DocumentArray<{
         createdAt: NativeDate;
-        imageUrl?: string | null;
         types?: "breakfast" | "dinner" | null;
+        imageUrl?: string | null;
         menuDate?: NativeDate | null;
     }, mongoose.Types.Subdocument<mongoose.mongo.BSON.ObjectId, unknown, {
         createdAt: NativeDate;
-        imageUrl?: string | null;
         types?: "breakfast" | "dinner" | null;
+        imageUrl?: string | null;
         menuDate?: NativeDate | null;
     }> & {
         createdAt: NativeDate;
-        imageUrl?: string | null;
         types?: "breakfast" | "dinner" | null;
+        imageUrl?: string | null;
         menuDate?: NativeDate | null;
+    }>;
+    UserFeedBack: mongoose.Types.DocumentArray<{
+        createdAt: NativeDate;
+        username?: string | null;
+        Text?: string | null;
+        ratingInStar?: number | null;
+    }, mongoose.Types.Subdocument<mongoose.mongo.BSON.ObjectId, unknown, {
+        createdAt: NativeDate;
+        username?: string | null;
+        Text?: string | null;
+        ratingInStar?: number | null;
+    }> & {
+        createdAt: NativeDate;
+        username?: string | null;
+        Text?: string | null;
+        ratingInStar?: number | null;
     }>;
     identity?: {
         name: string;
@@ -471,19 +615,35 @@ declare const Mess: mongoose.Model<{
     messVerified: boolean;
     Menu: mongoose.Types.DocumentArray<{
         createdAt: NativeDate;
-        imageUrl?: string | null;
         types?: "breakfast" | "dinner" | null;
+        imageUrl?: string | null;
         menuDate?: NativeDate | null;
     }, mongoose.Types.Subdocument<mongoose.mongo.BSON.ObjectId, unknown, {
         createdAt: NativeDate;
-        imageUrl?: string | null;
         types?: "breakfast" | "dinner" | null;
+        imageUrl?: string | null;
         menuDate?: NativeDate | null;
     }> & {
         createdAt: NativeDate;
-        imageUrl?: string | null;
         types?: "breakfast" | "dinner" | null;
+        imageUrl?: string | null;
         menuDate?: NativeDate | null;
+    }>;
+    UserFeedBack: mongoose.Types.DocumentArray<{
+        createdAt: NativeDate;
+        username?: string | null;
+        Text?: string | null;
+        ratingInStar?: number | null;
+    }, mongoose.Types.Subdocument<mongoose.mongo.BSON.ObjectId, unknown, {
+        createdAt: NativeDate;
+        username?: string | null;
+        Text?: string | null;
+        ratingInStar?: number | null;
+    }> & {
+        createdAt: NativeDate;
+        username?: string | null;
+        Text?: string | null;
+        ratingInStar?: number | null;
     }>;
     identity?: {
         name: string;

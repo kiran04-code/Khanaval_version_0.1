@@ -101,8 +101,24 @@ const providerSchema = new mongoose.Schema(
                 }
             }
         ],
+        UserFeedBack: [
+            {
+                username: {
+                    type: String
+                },
+                Text: {
+                    type: String
+                },
+                ratingInStar: {
+                    type: Number
+                },
+                 createdAt: {
+                    type: Date,
+                    default: Date.now,
+                }
 
-
+            }
+        ],
         MessQrcode: {
             type: String,
         }

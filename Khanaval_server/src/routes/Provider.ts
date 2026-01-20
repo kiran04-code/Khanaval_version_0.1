@@ -21,3 +21,4 @@ providerRoutes.post("/verifiyMess",verifiyMess)
 providerRoutes.get("/getAllUser",getAllUser)
 providerRoutes.get("/getAllProvider",getAllProvider)
 export  default providerRoutes;
+

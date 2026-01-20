@@ -201,6 +201,7 @@ export const getAllProvider = async (req, res) => {
 export const verifiyMess = async (req, res) => {
     try {
         const { ids, verifyed } = req.body;
+        console.log(req.body);
         await Mess.findByIdAndUpdate(ids, { messVerified: verifyed });
         const cachekey = "AllMESS";
         await redisclient.del(cachekey);

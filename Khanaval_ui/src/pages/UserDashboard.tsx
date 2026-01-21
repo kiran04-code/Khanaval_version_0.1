@@ -56,7 +56,6 @@ export default function UserDashboard() {
 
   const processedMesses = useMemo(() => {
     if (!AllMESS) return [];
-
     return AllMESS
       .map(mess => {
         const dist = calculateDistance(userlat, userlng, mess.location?.lat, mess.location?.lng);
@@ -67,7 +66,9 @@ export default function UserDashboard() {
         const matchesSearch = 
           mess.identity?.name?.toLowerCase().includes(searchQuery.toLowerCase()) || 
           mess.location?.landmark?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          mess.location?.society?.toLowerCase().includes(searchQuery.toLowerCase());
+          mess.location?.society?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          mess.location?.address?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+           mess.location?.city?.toLowerCase().includes(searchQuery.toLowerCase());
         let matchesTab = true;
         if (activeTab === "nearby") matchesTab = true;
         if (activeTab === "veg") matchesTab = mess.identity?.dietaryType === "Pure Veg";

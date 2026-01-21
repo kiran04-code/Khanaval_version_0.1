@@ -138,7 +138,7 @@ export default function HybridAuthPage() {
           setProviderStep(2);
         } else {
           toast({ title: `${ProviderverficationOTPLogin.message}`, variant: "destructive" });
-          setProviderMode(providerMode === "login" ? "signup" : "signup");
+          setProviderStep(2);
         }
       }
 

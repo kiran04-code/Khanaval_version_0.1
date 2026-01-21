@@ -108,45 +108,77 @@ export default function SubscriberManagement() {
   return (
     <div className="p-6 max-w-5xl mx-auto">
       {/* --- PAGE HEADER --- */}
-   <div className="flex flex-col gap-6 p-8 rounded-[2.5rem] bg-gradient-to-br from-orange-50 via-white to-orange-100/30 border border-orange-100 shadow-xl shadow-orange-500/5 transition-all">
-  <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+ <div className="flex flex-col gap-8 p-6 md:p-10 rounded-[2.5rem] bg-gradient-to-br from-orange-50 via-white to-orange-100/30 border border-orange-100 shadow-xl shadow-orange-500/5 transition-all">
+  <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
+    
     {/* Left Side: Title & Context */}
-    <div className="space-y-1">
-      <div className="flex items-center gap-2">
-        <div className="p-2 bg-orange-500 rounded-xl shadow-lg shadow-orange-200">
-          <Sparkle className="w-5 h-5 text-white" />
+    <div className="flex flex-col items-center text-center md:items-start md:text-left space-y-3">
+      <div className="flex items-center gap-2.5">
+        <div className="p-2 bg-orange-500 rounded-xl shadow-lg shadow-orange-200 animate-pulse-slow">
+          <Sparkle className="w-4 h-4 md:w-5 md:h-5 text-white" />
         </div>
-        <span className="text-orange-600 font-black uppercase tracking-[0.2em] text-[11px]">
+        <span className="text-orange-600 font-black uppercase tracking-[0.2em] text-[10px] md:text-[11px]">
           Management Portal
         </span>
       </div>
-      <h2 className="text-4xl font-black text-slate-900 tracking-tight mt-2">
-        Subscribers <span className="text-orange-500">.</span>
-      </h2>
-      <p className="text-slate-500 text-sm font-medium max-w-xs leading-relaxed">
-        Monitor your membership growth and manage active plans in real-time.
-      </p>
+      
+      <div className="space-y-2">
+        <h2 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight">
+          Subscribers<span className="text-orange-500 ml-1">.</span>
+        </h2>
+        <p className="text-slate-500 text-sm md:text-base font-medium max-w-[280px] md:max-w-sm leading-relaxed">
+          Monitor your membership growth and manage active plans in real-time.
+        </p>
+      </div>
     </div>
 
     {/* Right Side: Primary Action */}
-    <Button 
-      className="h-16 px-10 rounded-[1.5rem] bg-orange-500 hover:bg-orange-600 text-white shadow-xl shadow-orange-200 transition-all hover:-translate-y-1 active:scale-95 gap-3 border-b-4 border-orange-700 group"
-      onClick={() => setIsAddModalOpen(true)}
-    >
-      <div className="bg-white/20 p-2 rounded-lg group-hover:rotate-12 transition-transform">
-        <UserPlus className="w-5 h-5 text-white" />
-      </div>
-      <span className="font-black text-lg tracking-tight">Add New Subscriber</span>
-    </Button>
+    <div className="w-full md:w-auto">
+      <Button 
+        className="w-full md:w-auto h-14 md:h-16 px-8 md:px-10 rounded-[1.25rem] md:rounded-[1.5rem] bg-orange-500 hover:bg-orange-600 text-white shadow-xl shadow-orange-200 transition-all hover:-translate-y-1 active:scale-[0.97] gap-3 border-b-4 border-orange-700 group"
+        onClick={() => setIsAddModalOpen(true)}
+      >
+        <div className="bg-white/20 p-2 rounded-lg group-hover:rotate-12 transition-transform">
+          <UserPlus className="w-5 h-5 text-white" />
+        </div>
+        <span className="font-black  text-[12px] md:text-lg tracking-tight uppercase">
+          Add New Subscriber
+        </span>
+      </Button>
+    </div>
   </div>
-</div>  
+
+  {/* --- RESPONSIVE STATS BAR --- */}
+  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-0 pt-6 border-t border-orange-200/50">
+    {[
+      { label: "Total Members", value: "1,284", color: "text-slate-800" },
+      { label: "Active Plans", value: "856", color: "text-emerald-500" },
+      { label: "Expiring Soon", value: "24", color: "text-orange-500" },
+      { label: "Revenue", value: "₹42K", color: "text-slate-800" },
+    ].map((stat, idx) => (
+      <div 
+        key={idx} 
+        className={`flex flex-row md:flex-col justify-between md:justify-start items-center md:items-start px-2 md:px-6 ${
+          idx !== 0 ? "md:border-l border-orange-100" : ""
+        }`}
+      >
+        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+          {stat.label}
+        </span>
+        <span className={`text-xl md:text-2xl font-black ${stat.color}`}>
+          {stat.value}
+        </span>
+      </div>
+    ))}
+  </div>
+</div>
 
       {/* --- ADD SUBSCRIBER DIALOG --- */}
       <Dialog open={isAddModalOpen} onOpenChange={(val) => { 
           setIsAddModalOpen(val); 
           if(!val) resetForm(); 
       }}>
-        <DialogContent className="max-w-[400px] w-[350px] p-0 overflow-hidden border-none rounded-[3rem] shadow-2xl bg-white">
+        <DialogContent className="max-w-[400px] md:max-w-[400px] sm:max-w-[400px] w-[300px] p-0 overflow-hidden border-none rounded-[3rem] shadow-2xl bg-white">
           
           {/* DIALOG HEADER */}
           <div className="bg-orange-500 p-8 text-white">

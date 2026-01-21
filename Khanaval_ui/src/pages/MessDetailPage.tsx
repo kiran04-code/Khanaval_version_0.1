@@ -261,45 +261,106 @@ export default function MessDetailPage() {
             </div>
           )}
           {/* RESTORED: Your original masonry Menu layout */}
-          {activeTab === "menu" && (
-            <div className="space-y-6 animate-in fade-in duration-500">
-              <div className="flex items-center justify-between px-2">
-                <h3 className="text-2xl font-black text-slate-900 tracking-tight">Today's Menu</h3>
-                <div className="flex items-center gap-1.5 bg-emerald-50 px-3 py-1 rounded-full">
-                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                  <span className="text-[10px] font-black text-emerald-600 uppercase">Live</span>
-                </div>
-              </div>
+ {activeTab === "menu" && (
+  <div className="space-y-6 animate-in fade-in duration-500">
+    <div className="flex items-center justify-between px-2">
+      <h3 className="text-2xl font-black text-slate-900 tracking-tight">Today's Menu</h3>
+      <div className="flex items-center gap-1.5 bg-emerald-50 px-3 py-1 rounded-full">
+        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+        <span className="text-[10px] font-black text-emerald-600 uppercase">Live</span>
+      </div>
+    </div>
 
-              {mess?.Menu && mess.Menu.length > 0 ? (
-                <div className="columns-1 md:columns-2 gap-4 space-y-4">
-                  {mess.Menu.map((item, index) => (
-                    <div key={index} className="break-inside-avoid mb-4">
-                      <Card className="rounded-[2rem] border-none shadow-sm hover:shadow-md transition-shadow overflow-hidden bg-white">
-                        <div className="px-5 py-4 flex items-center justify-between border-b border-slate-50">
-                          <div className="flex items-center gap-2">
-                            {item.types === "breakfast" ? <Coffee className="w-4 h-4 text-orange-500" /> : <Moon className="w-4 h-4 text-indigo-500" />}
-                            <span className="text-sm font-black text-slate-800 uppercase tracking-wide">{item.types}</span>
-                          </div>
-                        </div>
-                        <div className="w-full h-auto bg-slate-50">
-                          <img src={item.imageUrl} className="w-full h-auto block" alt={item.types} loading="lazy" />
-                        </div>
-                        <div className="p-4 bg-slate-50/50 flex justify-center">
-                          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Tap image to zoom</p>
-                        </div>
-                      </Card>
-                    </div>
-                  ))}
+    {mess?.Menu && mess.Menu.length > 0 ? (
+      <div className="columns-1 md:columns-2 gap-4 space-y-4">
+        {mess.Menu.map((item, index) => {
+          const menuDate = new Date(item?.createdAt);
+          const today = new Date();
+          const menuMidnight = new Date(menuDate.getFullYear(), menuDate.getMonth(), menuDate.getDate());
+          const todayMidnight = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+
+          const yesterday = new Date(todayMidnight);
+          yesterday.setDate(yesterday.getDate() - 1);
+          const tomorrow = new Date(todayMidnight);
+          tomorrow.setDate(tomorrow.getDate() + 1);
+
+          let dayLabel = "";
+          const isSameDate = (d1, d2) => 
+            d1.getDate() === d2.getDate() && 
+            d1.getMonth() === d2.getMonth() && 
+            d1.getFullYear() === d2.getFullYear();
+
+          if (isSameDate(menuDate, today)) {
+            dayLabel = "Today";
+          } else if (isSameDate(menuDate, yesterday)) {
+            dayLabel = "Yesterday";
+          } else if (isSameDate(menuDate, tomorrow)) {
+            dayLabel = "Tomorrow";
+          } else if (menuMidnight < yesterday) {
+            const diffTime = Math.abs(todayMidnight - menuMidnight);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            dayLabel = `${diffDays} days ago`;
+          } else {
+            dayLabel = menuDate.toLocaleDateString('en-US', { weekday: 'long' });
+          }
+          const formattedDate = menuDate.toLocaleDateString('en-US', { 
+            day: 'numeric', 
+            month: 'short' 
+          });
+
+          return (
+            <div key={index} className="break-inside-avoid mb-4">
+              <Card className="rounded-[2rem] border-none shadow-sm hover:shadow-md transition-shadow overflow-hidden bg-white">
+                <div className="px-5 py-4 flex items-center justify-between border-b border-slate-50">
+                  <div className="flex items-center gap-2">
+                    {item.types === "breakfast" ? (
+                      <Coffee className="w-4 h-4 text-orange-500" />
+                    ) : (
+                      <Moon className="w-4 h-4 text-indigo-500" />
+                    )}
+                    <span className="text-sm font-black text-slate-800 uppercase tracking-wide">
+                      {item.types}
+                    </span>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-[10px] font-black text-orange-500 uppercase leading-none">
+                      {dayLabel}
+                    </p>
+                    <p className="text-[9px] font-bold text-slate-400 uppercase mt-0.5">
+                      {formattedDate}
+                    </p>
+                  </div>
                 </div>
-              ) : (
-                <div className="py-20 flex flex-col items-center justify-center bg-white rounded-[3rem] border border-slate-100 shadow-inner">
-                  <Utensils className="w-10 h-10 text-slate-100 mb-4" />
-                  <p className="text-slate-400 font-bold text-sm uppercase tracking-widest">Menu is empty</p>
+                
+                <div className="w-full h-auto bg-slate-50">
+                  <img 
+                    src={item.imageUrl} 
+                    className="w-full h-auto block" 
+                    alt={item.types} 
+                    loading="lazy" 
+                  />
                 </div>
-              )}
+
+                <div className="p-4 bg-slate-50/50 flex justify-center">
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                    Tap image to zoom
+                  </p>
+                </div>
+              </Card>
             </div>
-          )}
+          );
+        })}
+      </div>
+    ) : (
+      <div className="py-20 flex flex-col items-center justify-center bg-white rounded-[3rem] border border-slate-100 shadow-inner">
+        <Utensils className="w-10 h-10 text-slate-100 mb-4" />
+        <p className="text-slate-400 font-bold text-sm uppercase tracking-widest">
+          Menu is empty
+        </p>
+      </div>
+    )}
+  </div>
+)}
 
           {activeTab === "photos" && (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 animate-in slide-in-from-bottom-4 duration-500">

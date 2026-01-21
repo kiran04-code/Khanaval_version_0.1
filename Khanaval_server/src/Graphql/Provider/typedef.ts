@@ -63,7 +63,7 @@ type  GetCurrentMess{
   messVerified:Boolean!
   createdAt:String!
   MessQrcode:String!
-  Menu:[menu]!
+  Menu:[menu]
 }
 type Locations {
 address: String!
@@ -81,7 +81,7 @@ type menu {
   _id:ID
   types:String
   imageUrl:String
-  CreateAt:String
+  createdAt:String
 }
 type Medias {
   cover:String!

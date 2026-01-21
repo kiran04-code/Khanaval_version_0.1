@@ -90,7 +90,7 @@ query GetcurentMessdata{
         _id
       types
       imageUrl
-      CreateAt
+      createdAt
     }
     }
   }

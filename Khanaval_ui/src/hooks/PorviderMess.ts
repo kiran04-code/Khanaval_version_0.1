@@ -11,7 +11,6 @@ export const CreatemessForProvider = () => {
             graphqlClient.request(CREATE_MESS_FOR_PROVIDER, { payload }),
             onSuccess:()=>queryclient.invalidateQueries({queryKey:["get-mess"]})
     })
-
     return result
 }
 
@@ -19,8 +18,7 @@ export const Getmymess = () => {
     const query = useQuery({
         queryKey: ["get-mess"],
         queryFn: () => graphqlClient.request(GET_MY_MESS),
-
     })
-
+    
     return { ...query, messdata: query.data?.getproviderMessData }
 }

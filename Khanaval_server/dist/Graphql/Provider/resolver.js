@@ -38,7 +38,7 @@ const Query = {
         if (!mess) {
             return mess;
         }
-        if (!mess.identity || !mess.legal || !mess.media || !mess.location || !mess.Menu) {
+        if (!mess.identity || !mess.legal || !mess.media || !mess.location) {
             throw new Error("Incomplete mess data");
         }
         return {

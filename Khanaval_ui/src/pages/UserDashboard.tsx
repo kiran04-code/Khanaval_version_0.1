@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Suspense } from "react";
+import React, { useState, useEffect, Suspense, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,10 +11,29 @@ import { Skeleton } from "@/components/common/Skeleton";
 import { GetALLmess } from "@/hooks/MessData";
 
 const MessCard = React.lazy(() => import("./components/MessCard"));
+
+// --- IMPROVED SKELETON COMPONENT ---
+const MessCardSkeleton = () => (
+  <div className="min-w-[85vw] sm:min-w-[320px] md:min-w-0 shrink-0 snap-center">
+    <div className="bg-white rounded-[2.5rem] p-4 h-[420px] shadow-sm animate-pulse flex flex-col gap-4">
+      <div className="bg-slate-200 h-1/2 w-full rounded-[2rem]" />
+      <div className="space-y-3 px-2">
+        <div className="h-6 bg-slate-200 rounded-md w-3/4" />
+        <div className="h-4 bg-slate-100 rounded-md w-1/2" />
+        <div className="h-10 bg-slate-50 rounded-xl w-full mt-4" />
+        <div className="flex justify-between items-center mt-6">
+          <div className="h-8 bg-slate-200 rounded-lg w-20" />
+          <div className="h-10 bg-slate-900/10 rounded-xl w-32" />
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
 const QuickActionBadge = ({ icon: Icon, label, active, onClick }) => (
   <button 
-  onClick={onClick}
-  className={cn(
+    onClick={onClick}
+    className={cn(
       "flex items-center gap-2 px-5 py-2.5 rounded-2xl text-sm font-bold transition-all duration-300 whitespace-nowrap border-2 shrink-0",
       active
         ? "bg-orange-500 border-orange-500 text-white shadow-lg shadow-orange-200 scale-105"
@@ -27,18 +46,19 @@ const QuickActionBadge = ({ icon: Icon, label, active, onClick }) => (
 );
 
 export default function UserDashboard() {
-  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+  const { AllMESS, isLoading } = GetALLmess(); 
   const [activeTab, setActiveTab] = useState("popular");
   const [searchQuery, setSearchQuery] = useState("");
-  const navigate = useNavigate();
-  const { AllMESS } = GetALLmess();
-  
-  useEffect(() => {
-    setTimeout(() => setLoading(false), 1500);
-  }, []);
+
+  const verifiedMesses = useMemo(() => {
+    if (!AllMESS) return [];
+    return AllMESS.filter(mess => mess.messVerified === true);
+  }, [AllMESS]);
+
   return (
     <div className="min-h-screen bg-[#FDFDFF] pb-24 md:pb-12">
-      {/* DESKTOP HEADER */}
+      {/* DESKTOP HEADER - (Kept as is) */}
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-2xl border-b border-slate-100/60 hidden md:block">
         <div className="container mx-auto px-6 h-20 flex items-center justify-between gap-10">
           <Link to="/" className="w-[170px]">
@@ -70,8 +90,6 @@ export default function UserDashboard() {
           </div>
         </div>
       </header>
-
-      {/* MOBILE HEADER */}
       <div className="md:hidden sticky top-0 z-50 bg-white px-4 pt-4 pb-3 shadow-sm">
         <div className="flex items-center justify-between mb-3">
           <Link to="/" className="w-[140px]">
@@ -86,39 +104,43 @@ export default function UserDashboard() {
       </div>
 
       <main className="container mx-auto px-4 md:px-6 pt-6 md:pt-10 max-w-7xl">
-        {/* Horizontal Action Badges */}
         <div className="flex gap-3 overflow-x-auto no-scrollbar pb-8 -mx-4 px-4 md:mx-0 md:px-0">
           <QuickActionBadge icon={Sparkles} label="Popular" active={activeTab === "popular"} onClick={() => setActiveTab("popular")} />
           <QuickActionBadge icon={Utensils} label="Pure Veg" active={activeTab === "veg"} onClick={() => setActiveTab("veg")} />
           <QuickActionBadge icon={Clock} label="Fastest" active={activeTab === "fast"} onClick={() => setActiveTab("fast")} />
           <QuickActionBadge icon={Wallet} label="Budget" active={activeTab === "budget"} onClick={() => setActiveTab("budget")} />
         </div>
-          <div className="
+
+        {/* --- GRID / CARDS SECTION --- */}
+        <div className="
           flex overflow-x-auto gap-5 pb-10 -mx-4 px-4 no-scrollbar
           snap-x-mandatory scroll-smooth
           md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:gap-10 md:mx-0 md:px-0 md:overflow-visible md:snap-none
         ">
-          {loading ? (
-            Array(4).fill(0).map((_, i) => (
-              <Skeleton key={i} className="min-w-[280px] h-[400px] md:w-full rounded-[2.5rem] shrink-0 snap-center" />
-            ))
+          { !AllMESS ? (
+            Array(4).fill(0).map((_, i) => <MessCardSkeleton key={i} />)
           ) : (
-            AllMESS?.map((mess, idx) => (
-              /* Added snap-center and smooth transition wrapper */
+            verifiedMesses.map((mess, idx) => (
               <div 
-                key={idx} 
-                className="min-w-[85vw] sm:min-w-[320px] md:min-w-0 shrink-0 snap-center transition-transform duration-500 ease-out"
+                key={mess._id || idx} 
+                className="min-w-[85vw] sm:min-w-[320px] md:min-w-0 shrink-0 snap-center transition-all duration-500"
               >
-                <Suspense fallback={<Skeleton className="h-[400px] w-full rounded-[2.5rem]" />}>
+                <Suspense fallback={<MessCardSkeleton />}>
                   <MessCard {...mess} />
                 </Suspense>
               </div>
             ))
           )}
+          {verifiedMesses.length === 0 && (
+            <div className="col-span-full py-20 text-center">
+              <Utensils className="w-12 h-12 text-slate-200 mx-auto mb-4" />
+              <p className="text-slate-400 font-medium">No verified messes found in this area.</p>
+            </div>
+          )}
         </div>
       </main>
 
-      {/* MOBILE NAV */}
+      {/* MOBILE NAV - (Kept as is) */}
       <nav className="fixed bottom-0 left-0 right-0 z-[100] bg-white/90 backdrop-blur-xl border-t border-slate-100 px-8 py-4 md:hidden flex justify-between items-center">
         <button className="flex flex-col items-center gap-1 text-orange-500 font-bold"><Home className="w-6 h-6" /><span className="text-[10px]">Explore</span></button>
         <button onClick={() => navigate("/scan-qr")} className="relative -top-8 bg-slate-900 p-4 rounded-full shadow-2xl border-4 border-white active:scale-95 transition-transform"><QrCode className="w-6 h-6 text-white" /></button>

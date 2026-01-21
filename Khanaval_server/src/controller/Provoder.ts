@@ -62,7 +62,9 @@ export const getAllDATA = async (req: Request, res: Response): Promise<Response>
     if (cachedata) return res.json({
         allmess: JSON.parse(cachedata)
     })
-    const mess = await Mess.find({ messVerified: true }).populate("providerId")
+   const mess = await Mess.find({ messVerified: true })
+  .populate("providerId");
+
     await redisclient.set(cachekey, JSON.stringify(mess))
     return res.json({
         allmess: mess

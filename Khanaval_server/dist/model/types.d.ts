@@ -6,6 +6,7 @@ export interface Iuser {
     emailId: string;
     user_type?: string;
     imageUrl: string;
+    Subscriber?: boolean;
 }
 export interface IProvider {
     id?: string;

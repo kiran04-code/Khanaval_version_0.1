@@ -62,8 +62,8 @@ export const getAllDATA = async (req: Request, res: Response): Promise<Response>
     if (cachedata) return res.json({
         allmess: JSON.parse(cachedata)
     })
-   const mess = await Mess.find({ messVerified: true })
-  .populate("providerId");
+    const mess = await Mess.find({ messVerified: true })
+        .populate("providerId");
 
     await redisclient.set(cachekey, JSON.stringify(mess))
     return res.json({
@@ -236,28 +236,53 @@ export const verifiyMess = async (req: Request, res: Response) => {
 }
 
 export const sendFeedback = async (req: Request, res: Response) => {
-  try {
-      const {messId,text,name,Stars} = req.body
-      await Mess.findByIdAndUpdate(messId,{
-       $push:{
-        UserFeedBack:{
-            username:name,
-            Text:text,
-            ratingInStar:Stars,
+    try {
+        const { messId, text, name, Stars } = req.body
+        await Mess.findByIdAndUpdate(messId, {
+            $push: {
+                UserFeedBack: {
+                    username: name,
+                    Text: text,
+                    ratingInStar: Stars,
+                }
+            }
+        })
+        const cachekey = "AllMESS"
+        await redisclient.del(cachekey)
+        return res.json({
+            success: true,
+            message: "FeedBackSubmited"
+        })
+    } catch (error) {
+        console.log(error)
+        return res.status(503).json({
+            success: false,
+            message: "server Error"
+        })
+    }
+}
+
+export const finderUserByNumber = async (req: Request, res: Response) => {
+    try {
+        console.log(req.body)
+        const { number } = req.body;
+        const data = await user.findOne({ number: number })
+        if (data?.Subscriber) {
+            return res.json({
+                success: false,
+                message: "User is Alredy in Anather Mess",
+                userData: null
+            })
         }
-       }
-    })
-    const cachekey = "AllMESS"
-    await redisclient.del(cachekey)
-    return res.json({
-        success: true,
-        message: "FeedBackSubmited"
-    })
-  } catch (error) {
-    console.log(error)
-    return res.status(503).json({
-        success:false,
-        message:"server Error"
-    })
-  }
+        return res.json({
+            success: true,
+            message: "User found",
+            userData: data
+        })
+    } catch (error) {
+        return res.json({
+            success: false,
+            message: "Server"
+        })
+    }
 }

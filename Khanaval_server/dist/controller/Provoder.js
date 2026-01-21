@@ -246,4 +246,29 @@ export const sendFeedback = async (req, res) => {
         });
     }
 };
+export const finderUserByNumber = async (req, res) => {
+    try {
+        console.log(req.body);
+        const { number } = req.body;
+        const data = await user.findOne({ number: number });
+        if (data?.Subscriber) {
+            return res.json({
+                success: false,
+                message: "User is Alredy in Anather Mess",
+                userData: null
+            });
+        }
+        return res.json({
+            success: true,
+            message: "User found",
+            userData: data
+        });
+    }
+    catch (error) {
+        return res.json({
+            success: false,
+            message: "Server"
+        });
+    }
+};
 //# sourceMappingURL=Provoder.js.map

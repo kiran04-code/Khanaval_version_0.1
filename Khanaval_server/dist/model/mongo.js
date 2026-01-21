@@ -22,6 +22,10 @@ const UserShema = new mongoose.Schema({
         required: true,
         default: "customer"
     },
+    Subscriber: {
+        type: Boolean,
+        default: false
+    },
     imageUrl: {
         type: String,
         required: true

@@ -78,18 +78,18 @@ export declare const Provider: {
                 MessQrcode: string | null | undefined;
                 Menu: import("mongoose").Types.DocumentArray<{
                     createdAt: NativeDate;
-                    types?: "breakfast" | "dinner" | null;
                     imageUrl?: string | null;
+                    types?: "breakfast" | "dinner" | null;
                     menuDate?: NativeDate | null;
                 }, import("mongoose").Types.Subdocument<import("bson").ObjectId, unknown, {
                     createdAt: NativeDate;
-                    types?: "breakfast" | "dinner" | null;
                     imageUrl?: string | null;
+                    types?: "breakfast" | "dinner" | null;
                     menuDate?: NativeDate | null;
                 }> & {
                     createdAt: NativeDate;
-                    types?: "breakfast" | "dinner" | null;
                     imageUrl?: string | null;
+                    types?: "breakfast" | "dinner" | null;
                     menuDate?: NativeDate | null;
                 }>;
             } | null>;

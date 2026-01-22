@@ -15,10 +15,14 @@
     // and npm install -D @types/node
     "resolveJsonModule": true,
     "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "moduleResolution": "NodeNext",
+    "ignoreDeprecations": "5.0",
     // Other Outputs
     "sourceMap": true,
     "declaration": true,
     "declarationMap": true,
+
     // Stricter Typechecking Options
     "noUncheckedIndexedAccess": true,
     "exactOptionalPropertyTypes": true,
@@ -30,6 +34,7 @@
     // "noFallthroughCasesInSwitch": true,
     // "noPropertyAccessFromIndexSignature": true,
     // Recommended Options
+    
     "strict": true,
     "jsx": "react-jsx",
     "verbatimModuleSyntax": true,
@@ -37,5 +42,7 @@
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
     "skipLibCheck": true,
-  }
+  },
+   "include": ["src/**/*"],
+  "exclude": ["node_modules"]
 }

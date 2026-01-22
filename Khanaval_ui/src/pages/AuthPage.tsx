@@ -99,7 +99,7 @@ export default function HybridAuthPage() {
       toast({
         variant: "destructive",
         title: "Signup failed",
-        description: "Business emails are not allowed",
+        description: "Please allowed for daily Menu Updates",
       });
     }
     setIsLoading(false);

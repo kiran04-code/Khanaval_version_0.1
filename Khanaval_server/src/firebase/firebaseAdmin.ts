@@ -1,27 +1,16 @@
 import admin from "firebase-admin";
+import serviceAccount from "./serviceAccountKey.json" with { type: "json" };
 
-// Define a helper to get credentials safely
-const getCredentials = () => {
-  // If we are in production (Vercel/Render/etc), use Environment Variables
-  if (process.env.FIREBASE_SERVICE_ACCOUNT) {
-    return JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
-  }
+console.log("🔥 Initializing Firebase Admin...");
 
-  // If we are local, try to require the file
-  try {
-    return require("./serviceAccountKey.json");
-  } catch (error) {
-    console.error("Firebase Service Account key missing!");
-    return null;
-  }
-};
-
-const serviceAccount = getCredentials();
-
-if (serviceAccount && !admin.apps.length) {
+if (!admin.apps.length) {
   admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount as admin.ServiceAccount),
+    credential: admin.credential.cert(
+      serviceAccount as admin.ServiceAccount
+    ),
   });
 }
+
+console.log("✅ Firebase Admin Apps:", admin.apps.length);
 
 export default admin;

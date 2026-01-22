@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 importScripts("https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js");
 importScripts("https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js");
 
@@ -12,13 +13,23 @@ firebase.initializeApp({
 const messaging = firebase.messaging();
 
 messaging.onBackgroundMessage((payload) => {
-  const title = payload.data?.title || "New Notification";
-  const body = payload.data?.body || "You have a new message";
+  console.log("[SW] Received background message", payload);
+
+  // ✅ HARD SAFETY (prevents ALL crashes)
+  if (!payload || !payload.data || !payload.data.title) {
+    console.warn("[SW] Invalid or empty payload, ignoring");
+    return;
+  }
+
+  const title = payload.data.title;
+  const body = payload.data.body || "You have a new message";
 
   self.registration.showNotification(title, {
     body,
     icon: "/logo.png",
     badge: "/badge.png",
-    data: { url: payload.data?.url || "/" },
+    data: {
+      url: payload.data.url || "/"
+    }
   });
 });

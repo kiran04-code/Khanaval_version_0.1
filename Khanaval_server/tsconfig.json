@@ -17,6 +17,7 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "moduleResolution": "NodeNext",
+    "module": "NodeNext",          
     "ignoreDeprecations": "5.0",
     // Other Outputs
     "sourceMap": true,
@@ -42,7 +43,5 @@
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
     "skipLibCheck": true,
-  },
-   "include": ["src/**/*"],
-  "exclude": ["node_modules"]
+  }
 }

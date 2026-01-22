@@ -16,8 +16,7 @@
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "moduleResolution": "NodeNext",
-    "module": "NodeNext",          
+    "moduleResolution": "NodeNext",         
     "ignoreDeprecations": "5.0",
     // Other Outputs
     "sourceMap": true,

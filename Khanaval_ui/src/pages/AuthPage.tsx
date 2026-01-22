@@ -54,7 +54,6 @@ export default function HybridAuthPage() {
         await graphqlClient.request(VERIFIED_USER_GOOGLE_LOGIN, {
           token,
         });
-
       if (verifiedgoodtokenandnumberforSignin.success) {
         localStorage.setItem("_user_Token__", verifiedgoodtokenandnumberforSignin.token);
         toast({ title: "Login successful" });

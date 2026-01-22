@@ -5,6 +5,7 @@ import { redisclient } from "../config/redis.js";
 import { Provider } from "../model/Provider.js";
 
 import { user } from "../model/mongo.js";
+import { sendNotification } from "../firebase/SendNotification.js";
 interface MulterFiles {
     [fieldname: string]: Express.Multer.File[];
 }
@@ -148,44 +149,78 @@ export const DeletetheMenu = async (req: Request, res: Response): Promise<Respon
         })
     }
 }
+export const sendMessageToAllUser = async (req: Request, res: Response) => {
+    try {
+        const { message } = req.body
+        const providers = await user.find({
+            FCMtoken: { $exists: true, $ne: null },
+        });
 
-// export const NotificationsPUSH = async (req: Request, res: Response) => {
-//     try {
-//         const providers = await Provider.find({
-//             FCMtoken: { $exists: true, $ne: null }
-//         });
+        if (!providers.length) {
+            return res.status(404).json({
+                success: false,
+                message: "No User with FCM tokens found",
+            });
+        }
 
-//         if (!providers.length) {
-//             return res.status(404).json({
-//                 success: false,
-//                 message: "No providers with FCM tokens"
-//             });
-//         }
+        await Promise.allSettled(
+            providers.map(async (provider) => {
+                try {
+                    await sendNotification(
+                        provider.FCMtoken!,
+                        "Menu Update 🍽️ 🍽️",
+                        `${message}`
+                    );
+                } catch (err: any) {
+                    console.error(`FCM Error for ${provider._id}:`, err.message);
+                }
+            })
+        );
+        return res.status(200   ).json({
+            success: true,
+            message: "Message sent to all Users successfully!",
+        });
+    } catch (error) {
+        console.error("Error sending messages to all providers:", error);
+    }
+};
 
-//         await Promise.all(
-//             providers.map((provider) =>
-//                 sendNotification(
-//                     "fLMIYMbYszFGqihvV3JqXM:APA91bHv_P7VVgH6ag61GjjnigHzY8zfSHiVpLp_JI9V34lVNGtaEnXJQURib-Utjlo3dV0rd4KNJsI0EG48tLqCSqHeZkT-20QWFVuXTqVim1tBnXCiSEI",
-//                     "Menu Update 🍽️",
-//                     "A provider has updated the menu. Check it now!"
-//                 )
-//             )
-//         );
+export const NotificationsPUSH = async (req: Request, res: Response) => {
+    try {
+        const {message} = req.body
+        const providers = await Provider.find({
+            FCMtoken: { $exists: true, $nin: [null, ""] },
+        });
 
-//         res.json({
-//             success: true,
-//             message: "Notification sent to all providers"
-//         });
+        if (!providers.length) {
+            return res.status(404).json({
+                success: false,
+                message: "No providers with FCM tokens",
+            });
+        }
 
-//     } catch (error) {
-//         console.error(error);
-//         res.status(500).json({
-//             success: false,
-//             message: "Server error"
-//         });
-//     }
-// };
+        await Promise.allSettled(
+            providers.map((provider) =>
+                sendNotification(
+                    provider.FCMtoken!,
+                    "Khanaaval Alert 🍽️",
+                    `${message}`
+                )
+            )
+        );
 
+        return res.status(200).json({
+            success: true,
+            message: "Notification sent to all providers",
+        });
+    } catch (error) {
+        console.error("PUSH ERROR:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Server error",
+        });
+    }
+};
 
 export const getAllUser = async (req: Request, res: Response) => {
     try {

@@ -1,5 +1,5 @@
 import express from "express";
-import { Addmenus, BufferimagetoURlimage, DeletetheMenu, finderUserByNumber, getAllDATA, getAllProvider, getAllUser, GetValidMess, sendFeedback, verifiyMess } from "../controller/Provoder.js";
+import { Addmenus, BufferimagetoURlimage, DeletetheMenu, finderUserByNumber, getAllDATA, getAllProvider, getAllUser, GetValidMess, NotificationsPUSH, sendFeedback, sendMessageToAllUser, verifiyMess } from "../controller/Provoder.js";
 import { upload } from "../config/multer.js";
 import { Provider } from "../model/Provider.js";
 const providerRoutes = express.Router();
@@ -16,6 +16,8 @@ providerRoutes.post("/verifiyMess", verifiyMess);
 providerRoutes.get("/getAllUser", getAllUser);
 providerRoutes.get("/getAllProvider", getAllProvider);
 providerRoutes.post("/sendFeedback", sendFeedback);
+providerRoutes.post("/ProviderNotify", NotificationsPUSH);
 providerRoutes.post("/VerifiedUser", finderUserByNumber);
+providerRoutes.post("/UserNotify", sendMessageToAllUser);
 export default providerRoutes;
 //# sourceMappingURL=Provider.js.map

@@ -18,7 +18,8 @@ const Query = {
             last_name: googleresult?.family_name,
             emailId: googleresult.email,
             number: payload.number,
-            imageUrl: googleresult.picture
+            imageUrl: googleresult.picture,
+            FCMtoken: payload.FCMtoken
         });
         if (TokenToReturnUser == null) {
             return {

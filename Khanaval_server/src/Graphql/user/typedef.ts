@@ -2,6 +2,7 @@ export const typeDefs = `#graphql
 input signupinput {
      token:String!,
      number:String!
+     FCMtoken:String!
 }
 type SignupResponse {
   success: Boolean!

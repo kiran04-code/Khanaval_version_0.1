@@ -16,6 +16,9 @@ const UserShema = new mongoose.Schema({
         type: String,
         required: true
     },
+    FCMtoken: {
+        type: String,
+    },
     user_type: {
         type: String,
         enum: ["customer", "provider"],

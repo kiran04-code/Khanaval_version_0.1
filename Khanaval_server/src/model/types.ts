@@ -7,6 +7,7 @@ export interface Iuser {
     user_type?:string
     imageUrl:string
     Subscriber?:boolean
+    FCMtoken?:string
 }
 export interface IProvider {
     id?:string,

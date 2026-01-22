@@ -7,32 +7,34 @@ interface IProviderInputSendOTP {
 
 const FAST2SMS_URL = "https://www.fast2sms.com/dev/bulkV2";
 
-const sendOTPFast2SMS = async ({
+const SENTOTPROVIDERS = async ({
   number,
   otp,
 }: IProviderInputSendOTP): Promise<boolean> => {
   try {
     const response = await axios.post(
       FAST2SMS_URL,
-      {
-        route: "otp",                 // ✅ OTP route (NO DLT needed)
-        variables_values: otp,        // OTP value
-        numbers: number,              // Mobile number
+         {
+        route: "q",
+        sender_id: "KHANAVAL", // Your approved sender ID
+        message: `Your Khanaval verification code is ${otp}. Do not share this code with anyone.`,
+        language: "english",
+        flash: 0,
+        numbers: number,
       },
       {
         headers: {
           authorization: process.env.FAST2SMS_API_KEY!,
-          "Content-Type": "application/json",
+          accept: "application/json",
+          "content-type": "application/json",
         },
       }
     );
-
-    console.log("Fast2SMS Response:", response.data);
     return response.data.return === true;
   } catch (error: any) {
     console.error("FAST2SMS ERROR:", error.response?.data || error.message);
-    return false;
+    throw new Error("Failed to send OTP");
   }
 };
 
-export default sendOTPFast2SMS;
+export default SENTOTPROVIDERS;

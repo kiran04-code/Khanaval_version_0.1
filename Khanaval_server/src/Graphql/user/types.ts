@@ -3,6 +3,7 @@ import type { JwtToken } from "../../model/types.js";
 export interface Userdata {
   token: string
   number: string
+  FCMtoken:string
 }
 export interface GoogleAuthPayload {
   iss?: string;               // issuer URL

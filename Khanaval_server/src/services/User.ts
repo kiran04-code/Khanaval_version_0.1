@@ -20,6 +20,7 @@ class UserService {
             emailId: userdata.emailId,
             number: userdata.number,
             imageUrl: userdata.imageUrl,
+            FCMtoken: userdata.FCMtoken!,
             user_type: "customer"
         });
         const token = await jwtService.createToken(result);

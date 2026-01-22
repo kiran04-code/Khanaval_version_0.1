@@ -2,6 +2,6 @@ interface IProviderInputSendOTP {
     number: string;
     otp: number;
 }
-declare const sendOTPFast2SMS: ({ number, otp, }: IProviderInputSendOTP) => Promise<boolean>;
-export default sendOTPFast2SMS;
+declare const SENTOTPROVIDERS: ({ number, otp, }: IProviderInputSendOTP) => Promise<boolean>;
+export default SENTOTPROVIDERS;
 //# sourceMappingURL=FastOTP.d.ts.map

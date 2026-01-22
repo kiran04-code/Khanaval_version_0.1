@@ -78,11 +78,12 @@ export default function HybridAuthPage() {
       return;
     }
     setIsLoading(true);
-     const fcmToken = await requestPushPermission(); // <-- make sure service worker is active
+     const token = await requestPushPermission();
+  alert(token ? "Permission granted!" : "Permission denied or not supported"); // <-- make sure service worker is active
     try {
       const { verifiedgoodtokenandnumberforSignup } =
         await graphqlClient.request(VERIFIED_USER_GOOGLE, {
-          payload: { number: phoneNumber, token: googleToken,FCMtoken: fcmToken },
+          payload: { number: phoneNumber, token: googleToken,FCMtoken: token },
         });
 
       if (verifiedgoodtokenandnumberforSignup.success) {

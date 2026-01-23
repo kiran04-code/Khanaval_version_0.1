@@ -176,18 +176,22 @@ export const sendMessageToAllUser = async (req: Request, res: Response) => {
                 }
             })
         );
-        return res.status(200   ).json({
+        return res.status(200).json({
             success: true,
             message: "Message sent to all Users successfully!",
         });
     } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Notification failed",
+        });
         console.error("Error sending messages to all providers:", error);
     }
 };
 
 export const NotificationsPUSH = async (req: Request, res: Response) => {
     try {
-        const {message} = req.body
+        const { message } = req.body
         const providers = await Provider.find({
             FCMtoken: { $exists: true, $nin: [null, ""] },
         });

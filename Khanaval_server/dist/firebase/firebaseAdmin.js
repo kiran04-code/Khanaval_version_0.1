@@ -1,11 +1,12 @@
 import admin from "firebase-admin";
-import path from "path";
-import { readFileSync } from "fs";
-const serviceAccountPath = path.resolve("./src/firebase/serviceAccountKey.json");
-const serviceAccount = JSON.parse(readFileSync(serviceAccountPath, "utf8"));
+console.log(process.env.FIREBASE_PRIVATE_KEY?.includes("\\n"), process.env.FIREBASE_PRIVATE_KEY?.startsWith("-----BEGIN PRIVATE KEY-----"));
 if (!admin.apps.length) {
     admin.initializeApp({
-        credential: admin.credential.cert(serviceAccount),
+        credential: admin.credential.cert({
+            projectId: process.env.FIREBASE_PROJECT_ID,
+            clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+            privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, "\n"),
+        }),
     });
 }
 export default admin;

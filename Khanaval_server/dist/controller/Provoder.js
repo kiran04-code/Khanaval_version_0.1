@@ -165,6 +165,10 @@ export const sendMessageToAllUser = async (req, res) => {
         });
     }
     catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Notification failed",
+        });
         console.error("Error sending messages to all providers:", error);
     }
 };

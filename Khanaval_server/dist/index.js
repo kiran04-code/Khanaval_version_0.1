@@ -24,10 +24,6 @@ app.use((req, res, next) => {
     res.setHeader('Cross-Origin-Opener-Policy', 'same-origin-allow-popups');
     next();
 });
-// All Neded heathCheck
-app.get("/test", (req, res) => {
-    res.send("Khanaval Backend is Working Perfect");
-});
 app.get("/", (req, res) => {
     res.send("Backend is Wroking Properly 🌐!");
 });

@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 import { GetALLmess } from "@/hooks/MessData";
 import { useStateContex } from "@/context/State";
 import { calculateDistance } from "./components/Distance";
+import { useCurrentUser } from "@/hooks/user-hook";
 
 const MessCard = React.lazy(() => import("./components/MessCard"));
 
@@ -50,6 +51,8 @@ const QuickActionBadge = ({ icon: Icon, label, active, onClick }) => (
 export default function UserDashboard() {
   const navigate = useNavigate();
   const { AllMESS, isLoading } = GetALLmess(); 
+  const {user } = useCurrentUser(); 
+
   const { userlat, userlng } = useStateContex(); 
   const [activeTab, setActiveTab] = useState("nearby"); 
   const [searchQuery, setSearchQuery] = useState("");
@@ -112,12 +115,14 @@ export default function UserDashboard() {
 
           <div className="flex items-center gap-4">
             <Button variant="ghost" size="icon" className="rounded-2xl bg-slate-50"><Bell className="w-5 h-5" /></Button>
-            <div 
+           {
+            user &&  <div 
               className="w-10 h-10 rounded-2xl bg-orange-100 cursor-pointer overflow-hidden border-2 border-white shadow-md" 
               onClick={() => navigate("/profile")}
             >
-              <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Rahul" alt="user" />
+              <img src="https://img.freepik.com/free-vector/smiling-young-man-illustration_1308-174669.jpg?semt=ais_hybrid&w=740&q=80" alt="user" />
             </div>
+           }
           </div>
         </div>
       </header>

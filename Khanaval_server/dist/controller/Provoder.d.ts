@@ -11,4 +11,6 @@ export declare const getAllProvider: (req: Request, res: Response) => Promise<Re
 export declare const verifiyMess: (req: Request, res: Response) => Promise<Response<any, Record<string, any>>>;
 export declare const sendFeedback: (req: Request, res: Response) => Promise<Response<any, Record<string, any>>>;
 export declare const finderUserByNumber: (req: Request, res: Response) => Promise<Response<any, Record<string, any>>>;
+export declare const submitFeedback: (req: Request, res: Response) => Promise<Response<any, Record<string, any>>>;
+export declare const getAllFeedback: (req: Request, res: Response) => Promise<Response<any, Record<string, any>>>;
 //# sourceMappingURL=Provoder.d.ts.map

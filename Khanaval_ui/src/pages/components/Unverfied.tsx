@@ -1,34 +1,57 @@
 import { Getmymess } from '@/hooks/PorviderMess';
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import {
-  LayoutDashboard,
   Utensils,
-  Users,
-  QrCode,
-  Wallet,
-  Menu,
-  X,
-  TrendingUp,
   Clock,
-  CheckCircle,
-  Users2,
-  CalendarCheck,
-  ShieldAlert,
-  PlusCircle,
-  BookOpen,
-  AlertCircle,
   MapPin,
   CheckCircle2,
   ShieldCheck,
   Home,
   Building2,
   Timer,
-  Eye
+  Eye,
+  RefreshCw,
+  PhoneCall
 } from "lucide-react";
+
 const Unverfied = () => {
-     const {messdata} = Getmymess()
-   return (<div className="min-h-screen bg-[#F8FAFC] flex flex-col items-center p-4 pb-12 font-sans">
-            <div className="w-full max-w-md mt-8 mb-6 text-center space-y-4">
+    const { messdata } = Getmymess()
+    const [showReload, setShowReload] = useState(false);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setShowReload(true);
+        }, 10000); // Trigger after 10 seconds
+        return () => clearTimeout(timer);
+    }, []);
+
+    return (
+        <div className="min-h-screen bg-[#F8FAFC] flex flex-col items-center p-4 pb-12 font-sans">
+            
+            {/* Action Bar at Top */}
+            {showReload && (
+                <div className="w-full max-w-md grid grid-cols-2 gap-2 mb-6 animate-in fade-in slide-in-from-top-4 duration-700">
+                    {/* Call Button - Opens Dialer */}
+                    <a 
+                        href="tel:8788113738" 
+                        className="bg-orange-500 hover:bg-orange-600 text-white p-3 rounded-2xl shadow-lg shadow-orange-200 flex items-center justify-center gap-2 transition-all active:scale-95"
+                    >
+                        <PhoneCall className="w-4 h-4" />
+                        <span className="text-xs font-black uppercase tracking-tight">Call Support</span>
+                    </a>
+
+                    {/* Reload Button */}
+                    <button 
+                        onClick={() => window.location.reload()}
+                        className="bg-white border border-slate-200 text-slate-700 p-3 rounded-2xl shadow-sm flex items-center justify-center gap-2 transition-all active:scale-95"
+                    >
+                        <RefreshCw className="w-4 h-4 text-orange-500" />
+                        <span className="text-xs font-black uppercase tracking-tight text-slate-500">Reload</span>
+                    </button>
+                </div>
+            )}
+
+            <div className="w-full max-w-md mt-4 mb-6 text-center space-y-4">
                 <div className="relative mx-auto w-20 h-20">
                     <div className="absolute inset-0 bg-orange-100 rounded-full animate-ping opacity-25" />
                     <div className="relative w-20 h-20 bg-white rounded-3xl shadow-xl flex items-center justify-center border border-orange-50">
@@ -45,7 +68,7 @@ const Unverfied = () => {
             </div>
 
             <div className="w-full max-w-md space-y-4">
-                
+                {/* Kitchen Identity Card */}
                 <div className="bg-white rounded-3xl p-5 shadow-sm border border-slate-100">
                     <div className="flex items-center gap-2 mb-4 border-b border-slate-50 pb-3">
                         <Utensils className="w-4 h-4 text-orange-500" />
@@ -69,6 +92,7 @@ const Unverfied = () => {
                     </div>
                 </div>
 
+                {/* Media Showcase Card */}
                 <div className="bg-white rounded-3xl p-5 shadow-sm border border-slate-100">
                     <div className="flex items-center gap-2 mb-4 border-b border-slate-50 pb-3">
                         <Eye className="w-4 h-4 text-orange-500" />
@@ -89,6 +113,8 @@ const Unverfied = () => {
                         ))}
                     </div>
                 </div>
+
+                {/* Location Details Card */}
                 <div className="bg-white rounded-3xl p-5 shadow-sm border border-slate-100">
                     <div className="flex items-center gap-2 mb-4 border-b border-slate-50 pb-3">
                         <MapPin className="w-4 h-4 text-orange-500" />
@@ -131,6 +157,7 @@ const Unverfied = () => {
                     </div>
                 </div>
 
+                {/* FSSAI Footer Card */}
                 <div className="bg-slate-900 rounded-3xl p-5 shadow-xl">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
@@ -147,11 +174,9 @@ const Unverfied = () => {
                         <CheckCircle2 className="w-5 h-5 text-emerald-500" />
                     </div>
                 </div>
-
-    
             </div>
         </div>
     );
 }
 
-export default Unverfied
+export default Unverfied;

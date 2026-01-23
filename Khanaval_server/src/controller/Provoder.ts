@@ -6,6 +6,7 @@ import { Provider } from "../model/Provider.js";
 
 import { user } from "../model/mongo.js";
 import { sendNotification } from "../firebase/SendNotification.js";
+import { Feedback } from "../model/FeedBack.js";
 interface MulterFiles {
     [fieldname: string]: Express.Multer.File[];
 }
@@ -325,3 +326,57 @@ export const finderUserByNumber = async (req: Request, res: Response) => {
         })
     }
 }
+
+export const submitFeedback = async (req: Request, res: Response) => {
+  try {
+    // Extract formData from the request body
+    const { formData } = req.body;
+
+    if (!formData) {
+      return res.status(400).json({
+        success: false,
+        message: "No data provided"
+      });
+    }
+
+    const newFeedback = await Feedback.create({
+      rating: formData.rating,
+      fullName: formData.fullName,
+      email: formData.email,
+      topic: formData.topic,
+      message: formData.message
+    });
+    console.log(newFeedback)
+    return res.status(201).json({
+      success: true,
+      message: "Feedback submitted successfully",
+    });
+
+  } catch (error: any) {
+    console.error("Feedback Error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server Error",
+      error: error.message
+    });
+  }
+};
+
+export const getAllFeedback = async (req: Request, res: Response) => {
+  try {
+    const feedbackList = await Feedback.find({}).sort({ createdAt: -1 });
+
+    return res.status(200).json({
+      success: true,
+      count: feedbackList.length,
+      data: feedbackList
+    });
+  } catch (error: any) {
+    console.error("Fetch Feedback Error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+      error: error.message
+    });
+  }
+};

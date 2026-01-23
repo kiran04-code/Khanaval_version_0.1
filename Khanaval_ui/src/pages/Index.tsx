@@ -204,30 +204,12 @@ const {userlat,userlng} = useStateContex()
                     Find Verified Mess
                   </Button>
                 </Link>
-                <Button variant="ghost" size="xl" className="w-full sm:w-auto">
+                <Button onClick={()=>navigate("/how-it-works")} variant="ghost" size="xl" className="w-full sm:w-auto">
                   How it works
                 </Button>
               </div>
               <div className="mt-12 flex flex-col sm:flex-row items-center gap-6 justify-center lg:justify-start border-t border-border pt-8">
-                <div className="flex -space-x-3">
-                  {[1, 2, 3, 4].map((i) => (
-                    <div
-                      key={i}
-                      className="w-12 h-12 rounded-full bg-slate-200 border-2 border-background flex items-center justify-center text-xs font-bold ring-2 ring-orange-50"
-                    >
-                      <img
-                        src={`https://i.pravatar.cc/150?u=${i}`}
-                        alt="user"
-                        className="rounded-full"
-                      />
-                    </div>
-                  ))}
-                  <div className="w-12 h-12 rounded-full bg-orange-500 border-2 border-background flex items-center justify-center text-white text-[10px] font-bold">
-                    +10k
-                  </div>
-                </div>
                 <div className="text-center lg:text-left">
-                  <p className="font-bold text-lg text-foreground leading-none">10,000+ Users</p>
                   <p className="text-sm text-muted-foreground mt-1">Trusting <span className="font-semibold text-orange-600 text-3xl">Khanaval.com</span> every day</p>
                 </div>
               </div>
@@ -363,7 +345,7 @@ const {userlat,userlng} = useStateContex()
             {/* BENTO GRID AREA: SHOW SKELETON OR DATA */}
             <div className="relative min-h-[500px]">
               <div className="grid grid-cols-2 lg:grid-cols-2 gap-3 md:gap-4">
-                {isLoading ? (
+                {AllMESS.length<0 ? (
                   <>
                     <MessSkeleton isLarge={true} />
                     <MessSkeleton isLarge={false} />
@@ -469,7 +451,7 @@ const {userlat,userlng} = useStateContex()
                 <Link to="/auth?role=user" className="w-full sm:w-auto">
                   <Button
                     size="xl"
-                    className="w-full sm:w-auto px-12 h-18 bg-white text-primary hover:bg-white/90 hover:scale-105 hover:shadow-[0_20px_40px_rgba(255,255,255,0.2)] transition-all text-xl font-black rounded-2xl"
+                    className="w-full sm:w-auto py-2 px-12 h-18 bg-white text-primary hover:bg-white/90 hover:scale-105 hover:shadow-[0_20px_40px_rgba(255,255,255,0.2)] transition-all text-xl font-black rounded-2xl"
                   >
                     Get Started Free
                     <ArrowRight className="ml-2 w-6 h-6" />
@@ -480,7 +462,7 @@ const {userlat,userlng} = useStateContex()
                   <Button
                     variant="outline"
                     size="xl"
-                    className="w-full sm:w-auto px-12 h-18 border-white/20 text-white hover:bg-white/10 text-xl font-bold rounded-2xl backdrop-blur-md"
+                    className="w-full sm:w-auto py-2 px-12 h-18 border-white/20 text-white hover:bg-white/10 text-xl font-bold rounded-2xl backdrop-blur-md"
                   >
                     List Your Mess
                   </Button>

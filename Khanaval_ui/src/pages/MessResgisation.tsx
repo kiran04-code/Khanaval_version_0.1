@@ -45,7 +45,7 @@ export default function UpdishOnboarding() {
         state: "", landmark: "", society: "", houseNo: "", postcode: ""
     });
     const [locationStatus, setLocationStatus] = useState('idle');
-    
+
     const { mutate, isSuccess } = CreatemessForProvider();
 
     const [files, setFiles] = useState({ cover: null, kitchen: null, dining: null });
@@ -76,6 +76,7 @@ export default function UpdishOnboarding() {
             const { data } = await axios.post(`${import.meta.env.VITE_BACKEND_API}/api/provider/ImageUrl`, formData, {
                 headers: { "Content-Type": "multipart/form-data" }
             });
+            console.log(data)
             if (data.success) {
                 setUploadedUrls(data.urls);
                 setStep(3);
@@ -115,10 +116,10 @@ export default function UpdishOnboarding() {
 
     const handleNext = () => {
         if (step === 1 && !messName.trim()) return showToast("Mess name is required");
-        
+
         if (step === 2) {
             if (!previews.kitchen) return showToast("Please upload a kitchen photo");
-            uploadImages(); 
+            uploadImages();
             return;
         }
 
@@ -144,7 +145,7 @@ export default function UpdishOnboarding() {
         const finalData = {
             providerId: Providerdata?.id,
             identity: { name: messName, startTime, endTime, dietaryType, operatingMode: selectedType },
-            media: uploadedUrls, 
+            media: uploadedUrls,
             location: locationData,
             legal: { fssaiNumber: fssai },
         };
@@ -162,9 +163,9 @@ export default function UpdishOnboarding() {
         });
     };
 
-    const triggerUpload = (slot) => { 
-        setActiveSlot(slot); 
-        fileInputRef.current.click(); 
+    const triggerUpload = (slot) => {
+        setActiveSlot(slot);
+        fileInputRef.current.click();
     };
 
     const handleImageChange = (e) => {
@@ -177,7 +178,7 @@ export default function UpdishOnboarding() {
         }
 
         setFiles(prev => ({ ...prev, [activeSlot]: file }));
-        
+
         // BETTER FOR MOBILE: Using Blob URL instead of Base64
         const objectUrl = URL.createObjectURL(file);
         setPreviews(prev => ({ ...prev, [activeSlot]: objectUrl }));
@@ -222,12 +223,12 @@ export default function UpdishOnboarding() {
             )}
 
             {/* Hidden Input - optimized for mobile */}
-            <input 
-                type="file" 
-                ref={fileInputRef} 
-                style={{ display: 'none' }} 
-                accept="image/*" 
-                onChange={handleImageChange} 
+            <input
+                type="file"
+                ref={fileInputRef}
+                style={{ display: 'none' }}
+                accept="image/*"
+                onChange={handleImageChange}
             />
 
             <nav className="p-4 flex items-center bg-white border-b border-gray-100">
@@ -289,25 +290,99 @@ export default function UpdishOnboarding() {
                 )}
 
                 {step === 3 && (
-                    <div className="space-y-6">
-                        <h2 className="text-xl font-bold text-center">Service Location</h2>
-                        {locationStatus !== 'confirmed' ? (
-                            <div className="flex flex-col items-center py-10">
-                                <MapPin className="text-orange-600 w-12 h-12 mb-4" />
-                                <Button onClick={detectLocation} className="bg-slate-900 text-white rounded-xl px-8">Verify GPS</Button>
-                            </div>
-                        ) : (
-                            <div className="space-y-4">
-                                <div className="bg-emerald-50 p-4 rounded-2xl text-[11px] text-slate-600">{locationData.address}</div>
-                                <div className="bg-white p-5 rounded-3xl border border-gray-100 space-y-4">
-                                    <input value={locationData.society} onChange={(e) => setLocationData({ ...locationData, society: e.target.value })} className="w-full h-10 border-b outline-none font-bold text-sm" placeholder="Society / Building Name" />
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <input value={locationData.houseNo} onChange={(e) => setLocationData({ ...locationData, houseNo: e.target.value })} className="w-full h-10 border-b outline-none font-bold text-sm" placeholder="House/Shop No" />
-                                        <input value={locationData.landmark} onChange={(e) => setLocationData({ ...locationData, landmark: e.target.value })} className="w-full h-10 border-b outline-none font-bold text-sm" placeholder="Landmark" />
+                    <div className="max-w-md mx-auto bg-slate-50 min-h-screen p-6">
+                        <div className="bg-white rounded-[2.5rem] p-8 shadow-sm border border-slate-100">
+                            <header className="mb-8 text-center">
+                                <h2 className="text-2xl font-extrabold text-slate-900 tracking-tight">Service Location</h2>
+                                <p className="text-slate-500 text-sm mt-2">Where should we send our professional?</p>
+                            </header>
+
+                            {locationStatus !== 'confirmed' ? (
+                                <div className="space-y-4">
+                                    {/* Primary Action: GPS */}
+                                    <button
+                                        onClick={() => setLocationStatus('confirmed')}
+                                        className="w-full group relative flex items-center p-4 bg-orange-50 hover:bg-orange-100 border-2 border-orange-200 rounded-2xl transition-all duration-200"
+                                    >
+                                        <div className="bg-orange-600 p-3 rounded-xl mr-4 text-white group-hover:scale-110 transition-transform">
+                                            <Navigation size={20} fill="currentColor" />
+                                        </div>
+                                        <div className="text-left">
+                                            <span className="block font-bold text-slate-800">Use Current Location</span>
+                                            <span className="text-xs text-orange-700/70 font-medium">Fastest & most accurate</span>
+                                        </div>
+                                    </button>
+
+                                    {/* Secondary Action: Manual Search */}
+                                    <div className="relative group">
+                                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-slate-900 transition-colors" size={18} />
+                                        <input
+                                            type="text"
+                                            placeholder="Search for your area/society..."
+                                            className="w-full py-4 pl-12 pr-4 bg-white border border-slate-200 rounded-2xl text-sm focus:ring-2 focus:ring-slate-900 focus:border-transparent outline-none transition-all"
+                                        />
+                                    </div>
+
+                                    <div className="py-4 flex items-center justify-center space-x-2">
+                                        <div className="h-px w-8 bg-slate-200"></div>
+                                        <span className="text-[10px] uppercase tracking-widest text-slate-400 font-bold">Or pinpoint on map</span>
+                                        <div className="h-px w-8 bg-slate-200"></div>
                                     </div>
                                 </div>
-                            </div>
-                        )}
+                            ) : (
+                                <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                                    {/* Address Preview Card */}
+                                    <div className="relative overflow-hidden bg-emerald-50 border border-emerald-100 p-5 rounded-2xl flex items-start gap-3">
+                                        <div className="bg-emerald-500 rounded-full p-1 mt-0.5">
+                                            <CheckCircle2 size={14} className="text-white" />
+                                        </div>
+                                        <div>
+                                            <span className="block text-[10px] font-bold text-emerald-700 uppercase tracking-wider mb-1">Detected Location</span>
+                                            <p className="text-xs text-slate-700 leading-relaxed font-medium">{locationData.address}</p>
+                                            <button onClick={() => setLocationStatus('idle')} className="mt-2 text-[10px] font-bold text-slate-500 underline decoration-slate-300 underline-offset-2">Change</button>
+                                        </div>
+                                    </div>
+
+                                    {/* Detailed Inputs */}
+                                    <div className="space-y-5">
+                                        <div className="relative">
+                                            <label className="text-[10px] font-bold text-slate-400 uppercase ml-1 mb-1 block">Building / Society</label>
+                                            <input
+                                                value={locationData.society}
+                                                onChange={(e) => setLocationData({ ...locationData, society: e.target.value })}
+                                                className="w-full px-4 py-3 bg-slate-50 border-b-2 border-slate-200 focus:border-slate-900 outline-none font-semibold text-slate-800 transition-colors"
+                                                placeholder="e.g. Green Valley Apartments"
+                                            />
+                                        </div>
+
+                                        <div className="grid grid-cols-2 gap-6">
+                                            <div className="relative">
+                                                <label className="text-[10px] font-bold text-slate-400 uppercase ml-1 mb-1 block">Flat / Shop No.</label>
+                                                <input
+                                                    value={locationData.houseNo}
+                                                    onChange={(e) => setLocationData({ ...locationData, houseNo: e.target.value })}
+                                                    className="w-full px-4 py-3 bg-slate-50 border-b-2 border-slate-200 focus:border-slate-900 outline-none font-semibold text-slate-800 transition-colors"
+                                                    placeholder="402-A"
+                                                />
+                                            </div>
+                                            <div className="relative">
+                                                <label className="text-[10px] font-bold text-slate-400 uppercase ml-1 mb-1 block">Landmark</label>
+                                                <input
+                                                    value={locationData.landmark}
+                                                    onChange={(e) => setLocationData({ ...locationData, landmark: e.target.value })}
+                                                    className="w-full px-4 py-3 bg-slate-50 border-b-2 border-slate-200 focus:border-slate-900 outline-none font-semibold text-slate-800 transition-colors"
+                                                    placeholder="Near Park"
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <button className="w-full bg-slate-900 text-white py-4 rounded-2xl font-bold shadow-lg shadow-slate-200 hover:bg-black transition-all active:scale-[0.98]">
+                                            Confirm & Continue
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 )}
 
@@ -320,12 +395,12 @@ export default function UpdishOnboarding() {
                                     <label className="text-[11px] font-bold text-gray-400 uppercase">Mobile Number</label>
                                     <span className="text-[10px] text-orange-600 font-bold bg-orange-50 px-2 py-0.5 rounded-full">Required</span>
                                 </div>
-                                <input 
-                                    value={fssai} 
-                                    onChange={(e) => setFssai(e.target.value.replace(/\D/g, ""))} 
-                                    className="w-full h-12 bg-gray-50 rounded-xl px-4 font-mono font-bold tracking-widest outline-none border border-transparent focus:border-orange-200" 
-                                    placeholder="Mobile Number" 
-                                    maxLength={10} 
+                                <input
+                                    value={fssai}
+                                    onChange={(e) => setFssai(e.target.value.replace(/\D/g, ""))}
+                                    className="w-full h-12 bg-gray-50 rounded-xl px-4 font-mono font-bold tracking-widest outline-none border border-transparent focus:border-orange-200"
+                                    placeholder="Mobile Number"
+                                    maxLength={10}
                                 />
                                 {fssai.length > 0 && fssai.length < 10 && (
                                     <p className="text-[10px] text-red-500 font-medium">Needs {10 - fssai.length} more digits</p>
@@ -337,8 +412,8 @@ export default function UpdishOnboarding() {
             </main>
 
             <footer className="p-6 bg-white border-t">
-                <Button 
-                    onClick={handleNext} 
+                <Button
+                    onClick={handleNext}
                     className={`w-full h-14 text-white rounded-2xl font-black text-xs uppercase tracking-widest flex items-center justify-center gap-2 shadow-xl ${step === 4 && fssai.length !== 14 ? 'bg-gray-400' : 'bg-orange-600'}`}
                 >
                     {step === 4 ? 'Complete Registration' : 'Continue'}

@@ -59,7 +59,6 @@ export default function ProviderDashboard() {
     return item?.label || "Dashboard";
   };
   const navigate = useNavigate()
-  console.log(messdata)
   if (messdata && messdata?.messVerified === false) {
     return <Unverfied />
   }

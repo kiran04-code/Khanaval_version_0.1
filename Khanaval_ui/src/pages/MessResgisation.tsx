@@ -76,7 +76,6 @@ export default function UpdishOnboarding() {
         try {
             const { data } = await axios.post(`${import.meta.env.VITE_BACKEND_API}/api/provider/ImageUrl`, formData,);
             console.log("you image data", data)
-            console.log(data)
             if (data.success) {
                 setUploadedUrls(data.urls);
                 setStep(3);

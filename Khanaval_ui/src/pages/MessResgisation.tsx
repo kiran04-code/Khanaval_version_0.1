@@ -168,12 +168,12 @@ export default function UpdishOnboarding() {
         fileInputRef.current.click();
     };
 
-    const handleImageChange = async(e) => {
+    const handleImageChange = async (e) => {
         const file = e.target.files[0];
         if (!file) return;
 
         const options = {
-            maxSizeMB: 1.5,              
+            maxSizeMB: 1.5,
             maxWidthOrHeight: 1920,
             useWebWorker: true,
         };
@@ -292,21 +292,69 @@ export default function UpdishOnboarding() {
                 )}
 
                 {step === 3 && (
-                    <div className="space-y-6">
-                        <h2 className="text-xl font-bold text-center">Service Location</h2>
+                    <div className="max-w-md mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                        <div className="text-center space-y-2">
+                            <h2 className="text-2xl font-extrabold text-slate-900">Service Location</h2>
+                            <p className="text-slate-500 text-sm">Where should our technician arrive?</p>
+                        </div>
+
                         {locationStatus !== 'confirmed' ? (
-                            <div className="flex flex-col items-center py-10">
-                                <MapPin className="text-orange-600 w-12 h-12 mb-4" />
-                                <Button onClick={detectLocation} className="bg-slate-900 text-white rounded-xl px-8">Verify GPS</Button>
+                            <div className="flex flex-col items-center justify-center p-8 border-2 border-dashed border-slate-200 rounded-3xl bg-slate-50/50">
+                                <div className="bg-orange-100 p-4 rounded-full mb-4">
+                                    <MapPin className="text-orange-600 w-8 h-8" />
+                                </div>
+                                <p className="text-slate-600 text-sm mb-6 text-center">We need your GPS coordinates to ensure accurate service.</p>
+                                <Button
+                                    onClick={detectLocation}
+                                    className="w-full sm:w-auto bg-slate-900 hover:bg-slate-800 text-white rounded-2xl px-10 py-6 transition-all active:scale-95 shadow-lg shadow-slate-200"
+                                >
+                                    Verify My Location
+                                </Button>
                             </div>
                         ) : (
-                            <div className="space-y-4">
-                                <div className="bg-emerald-50 p-4 rounded-2xl text-[11px] text-slate-600">{locationData.address}</div>
-                                <div className="bg-white p-5 rounded-3xl border border-gray-100 space-y-4">
-                                    <input value={locationData.society} onChange={(e) => setLocationData({ ...locationData, society: e.target.value })} className="w-full h-10 border-b outline-none font-bold text-sm" placeholder="Society / Building Name" />
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <input value={locationData.houseNo} onChange={(e) => setLocationData({ ...locationData, houseNo: e.target.value })} className="w-full h-10 border-b outline-none font-bold text-sm" placeholder="House/Shop No" />
-                                        <input value={locationData.landmark} onChange={(e) => setLocationData({ ...locationData, landmark: e.target.value })} className="w-full h-10 border-b outline-none font-bold text-sm" placeholder="Landmark" />
+                            <div className="space-y-6">
+                                {/* Address Card */}
+                                <div className="flex items-start gap-3 bg-emerald-50 border border-emerald-100 p-4 rounded-2xl">
+                                    <div className="mt-1 bg-emerald-500 rounded-full p-1">
+                                        <Check className="w-3 h-3 text-white" />
+                                    </div>
+                                    <div>
+                                        <p className="text-[10px] uppercase tracking-wider font-bold text-emerald-700">Detected Address</p>
+                                        <p className="text-sm text-slate-700 leading-relaxed">{locationData.address}</p>
+                                    </div>
+                                </div>
+
+                                {/* Manual Inputs */}
+                                <div className="bg-white p-2 space-y-1">
+                                    <div className="group border-b border-slate-200 focus-within:border-orange-500 transition-colors py-2">
+                                        <label className="block text-[10px] uppercase font-bold text-slate-400 group-focus-within:text-orange-600">Society / Building Name</label>
+                                        <input
+                                            value={locationData.society}
+                                            onChange={(e) => setLocationData({ ...locationData, society: e.target.value })}
+                                            className="w-full bg-transparent outline-none font-medium text-slate-900 placeholder:text-slate-300"
+                                            placeholder="e.g. Green Valley Apartments"
+                                        />
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-6 pt-2">
+                                        <div className="group border-b border-slate-200 focus-within:border-orange-500 transition-colors py-2">
+                                            <label className="block text-[10px] uppercase font-bold text-slate-400 group-focus-within:text-orange-600">House/Shop No</label>
+                                            <input
+                                                value={locationData.houseNo}
+                                                onChange={(e) => setLocationData({ ...locationData, houseNo: e.target.value })}
+                                                className="w-full bg-transparent outline-none font-medium text-slate-900 placeholder:text-slate-300"
+                                                placeholder="A-102"
+                                            />
+                                        </div>
+                                        <div className="group border-b border-slate-200 focus-within:border-orange-500 transition-colors py-2">
+                                            <label className="block text-[10px] uppercase font-bold text-slate-400 group-focus-within:text-orange-600">Landmark</label>
+                                            <input
+                                                value={locationData.landmark}
+                                                onChange={(e) => setLocationData({ ...locationData, landmark: e.target.value })}
+                                                className="w-full bg-transparent outline-none font-medium text-slate-900 placeholder:text-slate-300"
+                                                placeholder="Near Metro Station"
+                                            />
+                                        </div>
                                     </div>
                                 </div>
                             </div>

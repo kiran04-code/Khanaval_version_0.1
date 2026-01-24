@@ -7,6 +7,7 @@ import { user } from "../model/mongo.js";
 import { sendNotification } from "../firebase/SendNotification.js";
 import { Feedback } from "../model/FeedBack.js";
 export const BufferimagetoURlimage = async (req, res) => {
+    res.setHeader("Access-Control-Allow-Origin", "*");
     try {
         if (!req.files) {
             return res.status(400).json({ success: false, message: "No files uploaded" });
@@ -42,9 +43,10 @@ export const BufferimagetoURlimage = async (req, res) => {
         });
     }
     catch (error) {
-        return res.json({
+        console.error("ImageUrl route error:", error);
+        return res.status(500).json({
             success: false,
-            urls: null,
+            message: "Image upload failed",
         });
     }
 };

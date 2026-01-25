@@ -128,8 +128,7 @@ export default function UpdishOnboarding() {
         }
 
         if (step === 4) {
-            // STRICT FSSAI VALIDATION
-            if (!fssai || fssai.length !== 10) {
+            if (!fssai || fssai.length !== 14) {
                 return showToast("Please enter a valid number");
             }
             handleSubmit();
@@ -375,10 +374,10 @@ export default function UpdishOnboarding() {
                                     onChange={(e) => setFssai(e.target.value.replace(/\D/g, ""))}
                                     className="w-full h-12 bg-gray-50 rounded-xl px-4 font-mono font-bold tracking-widest outline-none border border-transparent focus:border-orange-200"
                                     placeholder="Mobile Number"
-                                    maxLength={10}
+                                    maxLength={14}
                                 />
-                                {fssai.length > 0 && fssai.length < 10 && (
-                                    <p className="text-[10px] text-red-500 font-medium">Needs {10 - fssai.length} more digits</p>
+                                {fssai.length > 0 && fssai.length < 14 && (
+                                    <p className="text-[10px] text-red-500 font-medium">Needs {14 - fssai.length} more digits</p>
                                 )}
                             </div>
                         </div>

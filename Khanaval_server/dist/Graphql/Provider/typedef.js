@@ -63,7 +63,16 @@ type  GetCurrentMess{
   messVerified:Boolean!
   createdAt:String!
   MessQrcode:String!
-  Menu:[menu]
+  Menu:[menu],
+  myAllSubscribers:[SubscriberforMess]
+}
+type SubscriberforMess{
+  id:ID!
+totalDays:Int!,
+RemainingDay:Int,
+userId:User,
+price:Int!,
+startAt:String
 }
 type Locations {
 address: String!

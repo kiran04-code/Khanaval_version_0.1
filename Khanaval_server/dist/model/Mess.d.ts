@@ -34,6 +34,7 @@ declare const Mess: mongoose.Model<{
         Text?: string | null;
         ratingInStar?: number | null;
     }>;
+    myAllSubscribers: mongoose.Types.ObjectId[];
     identity?: {
         name: string;
         startTime?: string | null;
@@ -99,6 +100,7 @@ declare const Mess: mongoose.Model<{
         Text?: string | null;
         ratingInStar?: number | null;
     }>;
+    myAllSubscribers: mongoose.Types.ObjectId[];
     identity?: {
         name: string;
         startTime?: string | null;
@@ -166,6 +168,7 @@ declare const Mess: mongoose.Model<{
         Text?: string | null;
         ratingInStar?: number | null;
     }>;
+    myAllSubscribers: mongoose.Types.ObjectId[];
     identity?: {
         name: string;
         startTime?: string | null;
@@ -237,6 +240,7 @@ declare const Mess: mongoose.Model<{
         Text?: string | null;
         ratingInStar?: number | null;
     }>;
+    myAllSubscribers: mongoose.Types.ObjectId[];
     identity?: {
         name: string;
         startTime?: string | null;
@@ -300,6 +304,7 @@ declare const Mess: mongoose.Model<{
         Text?: string | null;
         ratingInStar?: number | null;
     }>;
+    myAllSubscribers: mongoose.Types.ObjectId[];
     identity?: {
         name: string;
         startTime?: string | null;
@@ -367,6 +372,7 @@ declare const Mess: mongoose.Model<{
         Text?: string | null;
         ratingInStar?: number | null;
     }>;
+    myAllSubscribers: mongoose.Types.ObjectId[];
     identity?: {
         name: string;
         startTime?: string | null;
@@ -439,6 +445,7 @@ declare const Mess: mongoose.Model<{
             Text?: string | null;
             ratingInStar?: number | null;
         }>;
+        myAllSubscribers: mongoose.Types.ObjectId[];
         identity?: {
             name: string;
             startTime?: string | null;
@@ -506,6 +513,7 @@ declare const Mess: mongoose.Model<{
             Text?: string | null;
             ratingInStar?: number | null;
         }>;
+        myAllSubscribers: mongoose.Types.ObjectId[];
         identity?: {
             name: string;
             startTime?: string | null;
@@ -576,6 +584,7 @@ declare const Mess: mongoose.Model<{
         Text?: string | null;
         ratingInStar?: number | null;
     }>;
+    myAllSubscribers: mongoose.Types.ObjectId[];
     identity?: {
         name: string;
         startTime?: string | null;
@@ -645,6 +654,7 @@ declare const Mess: mongoose.Model<{
         Text?: string | null;
         ratingInStar?: number | null;
     }>;
+    myAllSubscribers: mongoose.Types.ObjectId[];
     identity?: {
         name: string;
         startTime?: string | null;

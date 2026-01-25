@@ -1,3 +1,5 @@
+import type mongoose from "mongoose"
+
 export interface Iuser {
     id?:string,
     first_name:string,

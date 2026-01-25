@@ -34,7 +34,12 @@ const Query = {
         }
         const mess = await Mess.findOne({
             providerId: ctx.user._id,
-        }).lean();
+        }).populate({
+            path: "myAllSubscribers",
+            populate: {
+                path: "userId", // User inside Subscription
+            }
+        });
         if (!mess) {
             return mess;
         }
@@ -50,7 +55,8 @@ const Query = {
             messVerified: mess.messVerified,
             createdAt: mess.createdAt,
             MessQrcode: mess.MessQrcode,
-            Menu: mess.Menu
+            Menu: mess.Menu,
+            myAllSubscribers: mess.myAllSubscribers
         };
     },
 };
@@ -89,11 +95,11 @@ const Mutation = {
                     fssaiNumber: payload.legal.fssaiNumber
                 }
             });
+            const cachekey = "AllMESS";
+            await redisclient.del(cachekey);
             const qrcode = await Qrcodegenerator(data._id);
             await Mess.findByIdAndUpdate(data._id, { MessQrcode: qrcode });
             await Provider.findByIdAndUpdate(idx.user._id, { MessRegister: true });
-            const cachekey = "AllMESS";
-            await redisclient.del(cachekey);
             return {
                 success: true,
                 message: "mess create Successfull"

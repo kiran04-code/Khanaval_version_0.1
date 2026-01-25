@@ -7,6 +7,7 @@ import { Provider } from "../model/Provider.js";
 import { user } from "../model/mongo.js";
 import { sendNotification } from "../firebase/SendNotification.js";
 import { Feedback } from "../model/FeedBack.js";
+import { Subscription } from "../model/Subscriber.js";
 interface MulterFiles {
     [fieldname: string]: Express.Multer.File[];
 }
@@ -306,9 +307,16 @@ export const sendFeedback = async (req: Request, res: Response) => {
 
 export const finderUserByNumber = async (req: Request, res: Response) => {
     try {
-        console.log(req.body)
         const { number } = req.body;
+        console.log(number)
         const data = await user.findOne({ number: number })
+        if (!data) {
+            return res.json({
+                success: true,
+                message: "Your Founded",
+                userData: data
+            })
+        }
         if (data?.Subscriber) {
             return res.json({
                 success: false,
@@ -382,3 +390,65 @@ export const getAllFeedback = async (req: Request, res: Response) => {
         });
     }
 };
+
+
+export const AddToSubscriber = async (req: Request, res: Response) => {
+    try {
+        console.log(req.body)
+        const {
+            userId,
+            messId,
+            totalDays,
+            price
+        } = req.body
+        const data = await user.findById(userId)
+        if (data?.Subscriber) {
+            return res.status(404).json({
+                success: false,
+                messsage: "User is Alredy Exits in Anather Mess"
+            })
+        }
+        const createdSubsciber = await Subscription.create({
+            userId: userId,
+            messId: messId,
+            price: price,
+            totalDays: totalDays,
+            RemainingDay: totalDays
+        })
+        console.log(createdSubsciber)
+        await Mess.findByIdAndUpdate(messId, {
+            $addToSet: {
+                myAllSubscribers: createdSubsciber._id,
+            }
+        })
+        await user.findByIdAndUpdate(userId, { Subscriber: true, myMess: createdSubsciber._id })
+        return res.status(200).json({
+            success: true,
+            messsage: "User is Added To subscriber"
+        })
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({
+            success: false,
+            messsage: "Server Error"
+        })
+    }
+}
+
+
+export const finUderAndDelete = async (req: Request, res: Response) => {
+    try {
+        const { sub,userId } = req.body
+        await Subscription.findByIdAndDelete(sub)
+        await user.findByIdAndUpdate(userId, { Subscriber: false })
+        return res.status(200).json({
+            success: true,
+            message: "Delete Successfully"
+        })
+    } catch (error) {
+        return res.status(500).json({
+            succcess: false,
+            message: "Server"
+        })
+    }
+}

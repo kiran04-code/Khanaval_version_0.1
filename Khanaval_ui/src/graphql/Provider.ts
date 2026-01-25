@@ -91,7 +91,21 @@ query GetcurentMessdata{
       types
       imageUrl
       createdAt
+    },
+     myAllSubscribers{
+        id,
+    price
+    totalDays,
+    startAt,
+    RemainingDay
+    userId {
+        id,
+      first_name,
+      last_name,
+      number,
+      emailId
     }
+  }
     }
   }
 

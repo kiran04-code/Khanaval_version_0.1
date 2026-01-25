@@ -32,6 +32,10 @@ const UserShema = new mongoose.Schema({
     imageUrl: {
         type: String,
         required: true
+    },
+    myMess: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Subscription",
     }
 });
 export const user = mongoose.model("Users", UserShema);

@@ -1,305 +1,291 @@
-import { useContext, useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
+import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
-  UserPlus,
-  ArrowRight,
-  ArrowLeft,
-  Loader2,
-  User as UserIcon,
-  Phone,
-  Mail,
-  IndianRupee,
-  CalendarDays,
-  ShieldCheck,
-  SearchCheck,
-  Sparkle
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { 
+  UserPlus, Loader2, Phone, Search, 
+  IndianRupee, Calendar, Clock, AlertCircle, Mail, X, Trash2 
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useStateContex } from "@/context/State";
-
-export interface IUser {
-  emailId: string;
-  first_name: string;
-  last_name: string;
-  number: string;
-  imageUrl?: string;
-}
+import { Getmymess } from "@/hooks/PorviderMess";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function SubscriberManagement() {
   const { axioseInstace } = useStateContex();
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [step, setStep] = useState(1);
-  const [verifiedUser, setVerifiedUser] = useState<IUser | null>(null);
-  const [isValidating, setIsValidating] = useState(false);
-  const [newSubscriber, setNewSubscriber] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    plan: "30",
-    price: "",
-  });
-
   const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const { messdata } = Getmymess();
 
+  // State Management
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [selectedSub, setSelectedSub] = useState(null);
+  const [step, setStep] = useState(1);
+  const [isValidating, setIsValidating] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [verifiedUser, setVerifiedUser] = useState(null);
+  const [newSubscriber, setNewSubscriber] = useState({ phone: "", plan: "30", price: "" });
+  const [searchQuery, setSearchQuery] = useState("");
+  const [subuserId, setSubuserId] = useState("");
+  const [subId, setSubId] = useState("");
+
+  const subscribers = messdata?.myAllSubscribers || [];
+
+  // --- NEW: DATE FORMATTER FOR TIMESTAMP 1769382770327 ---
+  const formatDate = (val) => {
+    if (!val) return "N/A";
+    const date = new Date(isNaN(val) ? val : Number(val));
+    return date.toLocaleDateString('en-GB', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric'
+    });
+  };
+
+  // Search Logic
+  const filteredSubscribers = useMemo(() => {
+    return subscribers.filter((sub) => {
+      const user = sub.userId || {};
+      const fullName = `${user.first_name} ${user.last_name}`.toLowerCase();
+      const number = String(user.number || "").toLowerCase();
+      const email = String(user.email || "").toLowerCase();
+      return fullName.includes(searchQuery.toLowerCase()) || 
+             number.includes(searchQuery.toLowerCase()) || 
+             email.includes(searchQuery.toLowerCase());
+    });
+  }, [subscribers, searchQuery]);
+
+  // Handlers
   const handleCheckUser = async () => {
-    if (!newSubscriber.phone) {
-      toast({ 
-        title: "Phone Required", 
-        description: "Please enter a number to verify the user.", 
-        variant: "destructive" 
-      });
-      return;
-    }
-
+    if (!newSubscriber.phone) return;
     setIsValidating(true);
     try {
-      const { data } = await axioseInstace.post("/api/VerifiedUser", {
-        number: newSubscriber.phone
-      });
-
+      const { data } = await axioseInstace.post("/api/users/verify", { number: newSubscriber.phone });
       if (data.success) {
         setVerifiedUser(data.userData);
         setStep(2);
-        toast({ 
-            title: "Verification Successful", 
-            description: "Member found on platform." 
-        });
       } else {
-        toast({ 
-            title: "User Not Found", 
-            description: data.message || "User is not available on this platform.", 
-            variant: "destructive" 
-        });
+        toast({ title: "User Not Found", variant: "destructive" });
       }
     } catch (error) {
-      toast({ 
-        title: "Connection Error", 
-        description: "Could not reach the server.", 
-        variant: "destructive" 
+      toast({ title: "Verification Failed", variant: "destructive" });
+    } finally { setIsValidating(false); }
+  };
+
+  const handleFinalSubmit = async () => {
+    setIsSubmitting(true);
+    try {
+      const payload = {
+        userId: verifiedUser._id,
+        messId: messdata.id,
+        totalDays: Number(newSubscriber.plan),
+        price: Number(newSubscriber.price),
+      };
+      const { data } = await axioseInstace.post("/api/subscriptions/add", payload);
+      if (data.success) {
+        toast({ title: "Success", description: "Subscriber Added!" });
+        setIsAddModalOpen(false);
+        resetForm();
+        queryClient.invalidateQueries({ queryKey: ["get-mess"] });
+      }
+    } catch (error) {
+      toast({ title: "Error", variant: "destructive" });
+    } finally { setIsSubmitting(false); }
+  };
+
+  const handleDeleteSub = async () => {
+    if (!selectedSub) return;
+    setIsSubmitting(true);
+    try {
+      const { data } = await axioseInstace.post(`/api/subscriptions/remove`,{
+        sub:subId,
+        userId:subuserId
       });
-    } finally {
-      setIsValidating(false);
-    }
+      if (data.success) {
+        toast({ title: "Removed", description: "Student removed from register." });
+        setIsDeleteModalOpen(false);
+        queryClient.invalidateQueries({ queryKey: ["get-mess"] });
+      }
+    } catch (error) {
+      toast({ title: "Failed to delete", variant: "destructive" });
+    } finally { setIsSubmitting(false); setSelectedSub(null); }
   };
 
   const resetForm = () => {
     setStep(1);
     setVerifiedUser(null);
-    setNewSubscriber({ name: "", email: "", phone: "", plan: "30", price: "" });
+    setNewSubscriber({ phone: "", plan: "30", price: "" });
   };
 
   return (
-    <div className="p-6 max-w-5xl mx-auto">
-      {/* --- PAGE HEADER --- */}
- <div className="flex flex-col gap-8 p-6 md:p-10 rounded-[2.5rem] bg-gradient-to-br from-orange-50 via-white to-orange-100/30 border border-orange-100 shadow-xl shadow-orange-500/5 transition-all">
-  <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
-    
-    {/* Left Side: Title & Context */}
-    <div className="flex flex-col items-center text-center md:items-start md:text-left space-y-3">
-      <div className="flex items-center gap-2.5">
-        <div className="p-2 bg-orange-500 rounded-xl shadow-lg shadow-orange-200 animate-pulse-slow">
-          <Sparkle className="w-4 h-4 md:w-5 md:h-5 text-white" />
-        </div>
-        <span className="text-orange-600 font-black uppercase tracking-[0.2em] text-[10px] md:text-[11px]">
-          Management Portal
-        </span>
-      </div>
+    <div className="max-w-6xl mx-auto space-y-4 md:space-y-6 pb-24 px-2 md:px-0">
       
-      <div className="space-y-2">
-        <h2 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight">
-          Subscribers<span className="text-orange-500 ml-1">.</span>
-        </h2>
-        <p className="text-slate-500 text-sm md:text-base font-medium max-w-[280px] md:max-w-sm leading-relaxed">
-          Monitor your membership growth and manage active plans in real-time.
-        </p>
-      </div>
-    </div>
-
-    {/* Right Side: Primary Action */}
-    <div className="w-full md:w-auto">
-      <Button 
-        className="w-full md:w-auto h-14 md:h-16 px-8 md:px-10 rounded-[1.25rem] md:rounded-[1.5rem] bg-orange-500 hover:bg-orange-600 text-white shadow-xl shadow-orange-200 transition-all hover:-translate-y-1 active:scale-[0.97] gap-3 border-b-4 border-orange-700 group"
-        onClick={() => setIsAddModalOpen(true)}
-      >
-        <div className="bg-white/20 p-2 rounded-lg group-hover:rotate-12 transition-transform">
-          <UserPlus className="w-5 h-5 text-white" />
+      {/* 1. HEADER & SEARCH */}
+      <div className="bg-white p-4 md:p-6 rounded-[2.5rem] shadow-sm border border-slate-100 space-y-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <h2 className="text-xl md:text-2xl font-black text-slate-900 tracking-tight">Digital Register</h2>
+            <p className="text-slate-400 text-[10px] font-black uppercase tracking-[0.2em] mt-1">
+              {filteredSubscribers.length} Records Active
+            </p>
+          </div>
+          <Button onClick={() => setIsAddModalOpen(true)} className="bg-orange-600 hover:bg-orange-700 h-14 md:h-12 rounded-2xl font-black px-8 w-full md:w-auto">
+            <UserPlus className="mr-2 w-5 h-5" /> ADD STUDENT
+          </Button>
         </div>
-        <span className="font-black  text-[12px] md:text-lg tracking-tight uppercase">
-          Add New Subscriber
-        </span>
-      </Button>
-    </div>
-  </div>
 
-  {/* --- RESPONSIVE STATS BAR --- */}
-  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-0 pt-6 border-t border-orange-200/50">
-    {[
-      { label: "Total Members", value: "1,284", color: "text-slate-800" },
-      { label: "Active Plans", value: "856", color: "text-emerald-500" },
-      { label: "Expiring Soon", value: "24", color: "text-orange-500" },
-      { label: "Revenue", value: "₹42K", color: "text-slate-800" },
-    ].map((stat, idx) => (
-      <div 
-        key={idx} 
-        className={`flex flex-row md:flex-col justify-between md:justify-start items-center md:items-start px-2 md:px-6 ${
-          idx !== 0 ? "md:border-l border-orange-100" : ""
-        }`}
-      >
-        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
-          {stat.label}
-        </span>
-        <span className={`text-xl md:text-2xl font-black ${stat.color}`}>
-          {stat.value}
-        </span>
+        <div className="relative group">
+          <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-orange-500" />
+          <Input 
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search name, phone or email..."
+            className="h-14 md:h-16 pl-14 pr-12 rounded-[1.5rem] bg-slate-50 border-none font-bold text-slate-700 focus-visible:ring-2 focus-visible:ring-orange-500"
+          />
+          {searchQuery && (
+            <button onClick={() => setSearchQuery("")} className="absolute right-5 top-1/2 -translate-y-1/2 p-1 bg-slate-200 rounded-full">
+              <X className="w-3 h-3 text-slate-600" />
+            </button>
+          )}
+        </div>
       </div>
-    ))}
-  </div>
-</div>
 
-      {/* --- ADD SUBSCRIBER DIALOG --- */}
-      <Dialog open={isAddModalOpen} onOpenChange={(val) => { 
-          setIsAddModalOpen(val); 
-          if(!val) resetForm(); 
-      }}>
-        <DialogContent className="max-w-[400px] md:max-w-[400px] sm:max-w-[400px] w-[300px] p-0 overflow-hidden border-none rounded-[3rem] shadow-2xl bg-white">
-          
-          {/* DIALOG HEADER */}
-          <div className="bg-orange-500 p-8 text-white">
-            <div className="flex justify-between items-center mb-6">
-              <DialogTitle className="text-2xl font-black tracking-tight">
-                {step === 1 ? "User Verification" : "Plan Details"}
-              </DialogTitle>
-              <div className="px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-[10px] font-black uppercase">
-                Step 0{step}
+      {/* 2. SUBSCRIBER LIST */}
+      <div className="grid grid-cols-1 gap-4">
+        {filteredSubscribers.map((sub, i) => {
+          const percentage = Math.max(0, Math.min(100, (sub.RemainingDay / sub.totalDays) * 100));
+          return (
+            <Card key={i} className="border-none shadow-sm rounded-[2rem] bg-white overflow-hidden group">
+              <div className="p-4 md:p-6 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                
+                {/* Profile Section */}
+                <div className="flex items-center gap-5">
+                  <div className="relative flex-shrink-0">
+                    <svg className="w-16 h-16 transform -rotate-90">
+                      <circle cx="32" cy="32" r="28" stroke="currentColor" strokeWidth="5" fill="transparent" className="text-slate-50" />
+                      <circle cx="32" cy="32" r="28" stroke="currentColor" strokeWidth="5" fill="transparent" 
+                        strokeDasharray={175.9} strokeDashoffset={175.9 - (175.9 * percentage) / 100}
+                        className={`${sub.RemainingDay <= 5 ? 'text-red-500' : 'text-orange-500'} transition-all duration-700`} 
+                      />
+                    </svg>
+                    <div className="absolute inset-0 flex items-center justify-center text-[11px] font-black">{Math.round(percentage)}%</div>
+                  </div>
+
+                  <div className="space-y-1">
+                    <h3 className="font-black text-slate-900 text-lg uppercase tracking-tight">
+                      {sub.userId?.first_name} {sub.userId?.last_name}
+                    </h3>
+                    <div className="flex flex-wrap gap-x-4 text-slate-400">
+                      <div className="flex items-center gap-1.5">
+                        <Phone className="w-3 h-3" />
+                        <span className="text-[11px] font-bold">{sub.userId?.number}</span>
+                      </div>
+                      {/* --- UPDATED: Showing the Accurate Date --- */}
+                      <div className="flex items-center gap-1.5 text-emerald-600">
+                        <Calendar className="w-3 h-3" />
+                        <span className="text-[11px] font-black uppercase">{formatDate(sub.startAt)}</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <Mail className="w-3 h-3" />
+                        <span className="text-[11px] font-bold truncate max-w-[100px]">{sub.userId?.email}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Stats & Actions */}
+                <div className="flex items-center justify-between md:justify-end gap-6 md:gap-10 border-t md:border-none pt-4 md:pt-0">
+                  <div className="text-right">
+                    <p className={`text-3xl font-black leading-none ${sub.RemainingDay <= 5 ? 'text-red-500 animate-pulse' : 'text-slate-900'}`}>{sub.RemainingDay}</p>
+                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-1">Days Left</p>
+                  </div>
+
+                  <div className="flex flex-col items-center">
+                    <Badge className={`${sub.RemainingDay > 0 ? 'bg-emerald-500 text-white' : 'bg-red-500 text-white'} border-none font-black text-[10px] px-4 py-1.5 rounded-full`}>
+                      {sub.RemainingDay > 0 ? 'ACTIVE' : 'EXPIRED'}
+                    </Badge>
+                    <p className="text-[10px] font-bold text-slate-300 mt-1">₹{sub.price}</p>
+                  </div>
+
+                  <button 
+                    onClick={() => { setSelectedSub(sub); setIsDeleteModalOpen(true); setSubuserId(sub?.userId?.id);setSubId(sub?.id)}}
+                    className="p-3 bg-red-50 text-red-500 rounded-2xl hover:bg-red-500 hover:text-white transition-all duration-200"
+                  >
+                    <Trash2 className="w-5 h-5" />
+                  </button>
+                </div>
               </div>
+            </Card>
+          );
+        })}
+      </div>
+
+      {/* 3. DELETE CONFIRMATION DIALOG */}
+      <Dialog open={isDeleteModalOpen} onOpenChange={setIsDeleteModalOpen}>
+        <DialogContent className="w-[90%] max-w-[400px] rounded-[2.5rem] p-8 border-none">
+          <div className="text-center space-y-4">
+            <div className="w-20 h-20 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto">
+              <AlertCircle className="w-10 h-10" />
             </div>
-            <div className="flex gap-2">
-              <div className={`h-1.5 flex-1 rounded-full transition-all duration-500 ${step >= 1 ? "bg-white" : "bg-white/20"}`} />
-              <div className={`h-1.5 flex-1 rounded-full transition-all duration-500 ${step >= 2 ? "bg-white" : "bg-white/20"}`} />
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-black text-center">Remove Student?</DialogTitle>
+              <DialogDescription className="text-center font-bold text-slate-500">
+                Are you sure you want to remove <span className="text-slate-900">{selectedSub?.userId?.first_name}</span>? This will stop their meal plan immediately.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="flex gap-3 pt-4">
+              <Button variant="ghost" className="flex-1 h-14 rounded-2xl font-black text-slate-400" onClick={() => setIsDeleteModalOpen(false)}>CANCEL</Button>
+              <Button className="flex-1 h-14 bg-red-500 hover:bg-red-600 rounded-2xl font-black" onClick={handleDeleteSub} disabled={isSubmitting}>
+                {isSubmitting ? <Loader2 className="animate-spin" /> : "YES, REMOVE"}
+              </Button>
             </div>
           </div>
+        </DialogContent>
+      </Dialog>
 
-          <div className="p-8">
+      {/* 4. ADD MODAL */}
+      <Dialog open={isAddModalOpen} onOpenChange={(val) => { setIsAddModalOpen(val); if(!val) resetForm(); }}>
+        <DialogContent className="w-[95%] max-w-[420px] p-0 overflow-hidden rounded-[3rem] border-none shadow-2xl bg-white">
+          <div className="bg-slate-900 p-8 text-white">
+             <DialogTitle className="text-2xl font-black">Register Student</DialogTitle>
+             <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest mt-1">Step {step} of 2</p>
+          </div>
+          <div className="p-8 space-y-6">
             {step === 1 ? (
-              <div className="space-y-5 animate-in fade-in zoom-in-95 duration-300">
-                {/* INFO BOX */}
-                <div className="bg-orange-50 p-4 rounded-2xl border border-orange-100 flex gap-3">
-                  <SearchCheck className="w-5 h-5 text-orange-600 shrink-0 mt-0.5" />
-                  <div className="space-y-1">
-                    <p className="text-sm font-bold text-orange-900 uppercase tracking-tighter">Eligibility Check</p>
-                    <p className="text-xs text-orange-700 leading-relaxed font-medium">
-                      Verify if this user is available on the platform before creating a new subscription plan.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  <div className="space-y-1.5">
-                    <Label className="text-[10px] font-black uppercase text-slate-400 ml-1 tracking-widest">Registered Phone Number</Label>
-                    <div className="relative">
-                      <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-orange-400" />
-                      <Input
-                        placeholder="+91 XXXXX XXXXX"
-                        className="h-12 pl-11 rounded-2xl border-slate-100 bg-slate-50/50 focus:ring-orange-500 font-bold"
-                        onChange={(e) => setNewSubscriber({...newSubscriber, phone: e.target.value})}
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <Button 
-                  className="w-full h-14 rounded-2xl mt-4 bg-orange-500 hover:bg-orange-600 font-black shadow-xl shadow-orange-100 transition-all active:scale-[0.98]"
-                  onClick={handleCheckUser}
-                  disabled={isValidating}
-                >
-                  {isValidating ? (
-                    <div className="flex items-center gap-2">
-                      <Loader2 className="w-5 h-5 animate-spin" />
-                      <span>Checking Platform...</span>
-                    </div>
-                  ) : (
-                    <div className="flex items-center gap-2">
-                      <span>Check Viability</span>
-                      <ArrowRight className="w-4 h-4" />
-                    </div>
-                  )}
+              <div className="space-y-4">
+                <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Student Phone</Label>
+                <Input type="tel" placeholder="Enter number" className="h-16 rounded-[1.25rem] bg-slate-50 border-none font-black text-xl px-6" value={newSubscriber.phone} onChange={(e) => setNewSubscriber({...newSubscriber, phone: e.target.value})} />
+                <Button className="w-full h-16 bg-orange-600 hover:bg-orange-700 rounded-[1.25rem] font-black text-lg" onClick={handleCheckUser} disabled={isValidating}>
+                  {isValidating ? <Loader2 className="animate-spin" /> : "VERIFY USER"}
                 </Button>
-                
-                <p className="text-[10px] text-center text-slate-400 font-bold uppercase tracking-widest">
-                  Secure Server Validation
-                </p>
               </div>
             ) : (
-              /* --- STEP 2: DETAILS --- */
-              <div className="space-y-6 animate-in slide-in-from-right-8 duration-500">
-                {verifiedUser && (
-                  <div className="flex items-center gap-4 p-4 bg-slate-900 rounded-[2rem] text-white shadow-lg">
-                    <div className="w-12 h-12 rounded-xl bg-orange-500 flex items-center justify-center font-black text-xl">
-                      {verifiedUser.first_name.substring(0,1).toUpperCase()}
-                    </div>
-                    <div className="overflow-hidden">
-                      <p className="font-bold text-lg truncate leading-none mb-1">
-                        {verifiedUser.first_name} {verifiedUser.last_name}
-                      </p>
-                      <p className="text-[10px] text-orange-400 font-black tracking-widest uppercase">Verified Member</p>
-                    </div>
-                    <ShieldCheck className="ml-auto text-orange-500 w-6 h-6 shrink-0" />
-                  </div>
-                )}
-
+              <div className="space-y-6">
+                <div className="p-4 bg-slate-900 rounded-[1.25rem] flex items-center gap-4 text-white">
+                  <div className="w-12 h-12 bg-orange-600 rounded-xl flex items-center justify-center font-black text-xl">{verifiedUser?.first_name?.[0]}</div>
+                  <div><p className="font-black uppercase leading-tight">{verifiedUser?.first_name} {verifiedUser?.last_name}</p><p className="text-[10px] text-orange-400 font-bold">READY TO ADD</p></div>
+                </div>
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-1.5">
-                    <Label className="text-[10px] font-black uppercase text-slate-400 ml-1">Plan Duration</Label>
+                  <div className="space-y-2">
+                    <Label className="text-[10px] font-black text-slate-400">PLAN</Label>
                     <Select onValueChange={(v) => setNewSubscriber({...newSubscriber, plan: v})}>
-                      <SelectTrigger className="h-12 rounded-2xl border-slate-100 bg-slate-50/50 font-bold">
-                        <CalendarDays className="w-4 h-4 mr-2 text-orange-500" />
-                        <SelectValue placeholder="30 Days" />
-                      </SelectTrigger>
-                      <SelectContent className="rounded-2xl border-none shadow-xl font-bold">
-                        <SelectItem value="30">30 Days</SelectItem>
-                        <SelectItem value="60">60 Days</SelectItem>
-                        <SelectItem value="90">90 Days</SelectItem>
-                      </SelectContent>
+                      <SelectTrigger className="h-14 rounded-2xl bg-slate-50 border-none font-black"><SelectValue placeholder="30 Days" /></SelectTrigger>
+                      <SelectContent className="rounded-2xl"><SelectItem value="30">30 Days</SelectItem><SelectItem value="60">60 Days</SelectItem><SelectItem value="90">90 Days</SelectItem></SelectContent>
                     </Select>
                   </div>
-                  <div className="space-y-1.5">
-                    <Label className="text-[10px] font-black uppercase text-slate-400 ml-1">Total Price</Label>
-                    <div className="relative">
-                      <IndianRupee className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-orange-500" />
-                      <Input
-                        type="number"
-                        placeholder="0.00"
-                        className="h-12 pl-11 rounded-2xl border-slate-100 bg-slate-50/50 font-black text-slate-800"
-                        onChange={(e) => setNewSubscriber({...newSubscriber, price: e.target.value})}
-                      />
-                    </div>
+                  <div className="space-y-2">
+                    <Label className="text-[10px] font-black text-slate-400">PRICE (₹)</Label>
+                    <Input type="number" className="h-14 rounded-2xl bg-slate-50 border-none font-black" placeholder="2000" onChange={(e) => setNewSubscriber({...newSubscriber, price: e.target.value})} />
                   </div>
                 </div>
-
-                <div className="flex gap-3 pt-2">
-                  <Button variant="ghost" className="flex-1 h-14 rounded-2xl font-bold text-slate-400 hover:text-slate-600" onClick={() => setStep(1)}>
-                    Back
-                  </Button>
-                  <Button className="flex-[2] h-14 rounded-2xl bg-orange-500 hover:bg-orange-600 text-white font-black shadow-xl shadow-orange-100 transition-transform active:scale-95">
-                    Activate Now
-                  </Button>
+                <div className="flex gap-3">
+                  <Button variant="ghost" className="flex-1 h-14 rounded-2xl font-black text-slate-400" onClick={() => setStep(1)}>BACK</Button>
+                  <Button className="flex-[2] h-14 bg-orange-600 hover:bg-orange-700 rounded-2xl font-black" onClick={handleFinalSubmit} disabled={isSubmitting}>FINISH</Button>
                 </div>
               </div>
             )}
@@ -308,4 +294,4 @@ export default function SubscriberManagement() {
       </Dialog>
     </div>
   );
-}
+} 

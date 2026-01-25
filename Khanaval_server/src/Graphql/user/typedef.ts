@@ -16,5 +16,16 @@ type User {
     emailId:String!
     number:String
     imageUrl:String!
+    Subscriber:Boolean!
+    myMess:Subscriber
+}
+type Subscriber {
+  id:ID!
+  price:Int!,
+  totalDays:Int!,
+  RemainingDay:Int!,
+  messId:GetCurrentMess,
+  startAt:String
+  lastScannedAt:String
 }
 `;

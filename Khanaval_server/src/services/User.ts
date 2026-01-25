@@ -28,8 +28,8 @@ class UserService {
     }
     public static async userLogin(emailId: string) {
         try {
-            const existingUser = await  user.findOne({emailId})
-            if(!existingUser){
+            const existingUser = await user.findOne({ emailId })
+            if (!existingUser) {
                 return null
             }
             const token = await jwtService.createToken(existingUser)
@@ -40,7 +40,12 @@ class UserService {
     }
     public static async findcurrentUser(id: string) {
         try {
-            const userdata = await user.findById(id)
+            const userdata = await user.findById(id).populate({
+                path: "myMess",           // subsciption
+                populate: {
+                    path: "messId",        // MessSchema
+                }
+            })
             return userdata
         } catch (error) {
             throw Error("Backend findcurentUserError")

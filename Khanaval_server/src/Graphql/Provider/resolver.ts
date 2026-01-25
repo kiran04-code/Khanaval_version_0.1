@@ -41,11 +41,16 @@ const Query = {
         }
         const mess = await Mess.findOne({
             providerId: ctx.user._id,
-        }).lean()
+        }).populate({
+            path: "myAllSubscribers",
+            populate: {
+                path: "userId",                  // User inside Subscription
+            }
+        })
         if (!mess) {
             return mess
         }
-        if (!mess.identity || !mess.legal || !mess.media || !mess.location ) {
+        if (!mess.identity || !mess.legal || !mess.media || !mess.location) {
             throw new Error("Incomplete mess data");
         }
 
@@ -58,7 +63,8 @@ const Query = {
             messVerified: mess.messVerified,
             createdAt: mess.createdAt,
             MessQrcode: mess.MessQrcode,
-            Menu:mess.Menu
+            Menu: mess.Menu,
+            myAllSubscribers: mess.myAllSubscribers
         };
     },
 }

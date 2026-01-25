@@ -39,6 +39,7 @@ export type GetCurrentMess = {
   location: Locations;
   media: Medias;
   messVerified: Scalars['Boolean']['output'];
+  myAllSubscribers?: Maybe<Array<Maybe<SubscriberforMess>>>;
 };
 
 export type Identity = {
@@ -181,13 +182,36 @@ export type SignupResponseprovider = {
   success: Scalars['Boolean']['output'];
 };
 
+export type Subscriber = {
+  __typename?: 'Subscriber';
+  RemainingDay: Scalars['Int']['output'];
+  id: Scalars['ID']['output'];
+  lastScannedAt?: Maybe<Scalars['String']['output']>;
+  messId?: Maybe<GetCurrentMess>;
+  price: Scalars['Int']['output'];
+  startAt?: Maybe<Scalars['String']['output']>;
+  totalDays: Scalars['Int']['output'];
+};
+
+export type SubscriberforMess = {
+  __typename?: 'SubscriberforMess';
+  RemainingDay?: Maybe<Scalars['Int']['output']>;
+  id: Scalars['ID']['output'];
+  price: Scalars['Int']['output'];
+  startAt?: Maybe<Scalars['String']['output']>;
+  totalDays: Scalars['Int']['output'];
+  userId?: Maybe<User>;
+};
+
 export type User = {
   __typename?: 'User';
+  Subscriber: Scalars['Boolean']['output'];
   emailId: Scalars['String']['output'];
   first_name: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   imageUrl: Scalars['String']['output'];
   last_name: Scalars['String']['output'];
+  myMess?: Maybe<Subscriber>;
   number?: Maybe<Scalars['String']['output']>;
 };
 
@@ -214,6 +238,7 @@ export type Provider = {
 };
 
 export type Signupinput = {
+  FCMtoken: Scalars['String']['input'];
   number: Scalars['String']['input'];
   token: Scalars['String']['input'];
 };
@@ -268,7 +293,7 @@ export type CreatemesforproviderMutation = { __typename?: 'Mutation', CreateMess
 export type GetcurentMessdataQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetcurentMessdataQuery = { __typename?: 'Query', getproviderMessData?: { __typename?: 'GetCurrentMess', id: string, messVerified: boolean, createdAt: string, MessQrcode: string, identity: { __typename?: 'Identitys', name: string, startTime: string, endTime: string, dietaryType: string, operatingMode?: string | null }, legal: { __typename?: 'Legals', fssaiNumber: string }, media: { __typename?: 'Medias', cover: string, kitchen: string, dining: string }, location: { __typename?: 'Locations', address: string, houseNo: string, society: string, landmark: string, suburb?: string | null, city: string, state: string, postcode: string, lat: number, lng: number }, Menu?: Array<{ __typename?: 'menu', _id?: string | null, types?: string | null, imageUrl?: string | null, createdAt?: string | null } | null> | null } | null };
+export type GetcurentMessdataQuery = { __typename?: 'Query', getproviderMessData?: { __typename?: 'GetCurrentMess', id: string, messVerified: boolean, createdAt: string, MessQrcode: string, identity: { __typename?: 'Identitys', name: string, startTime: string, endTime: string, dietaryType: string, operatingMode?: string | null }, legal: { __typename?: 'Legals', fssaiNumber: string }, media: { __typename?: 'Medias', cover: string, kitchen: string, dining: string }, location: { __typename?: 'Locations', address: string, houseNo: string, society: string, landmark: string, suburb?: string | null, city: string, state: string, postcode: string, lat: number, lng: number }, Menu?: Array<{ __typename?: 'menu', _id?: string | null, types?: string | null, imageUrl?: string | null, createdAt?: string | null } | null> | null, myAllSubscribers?: Array<{ __typename?: 'SubscriberforMess', id: string, price: number, totalDays: number, startAt?: string | null, RemainingDay?: number | null, userId?: { __typename?: 'User', id: string, first_name: string, last_name: string, number?: string | null, emailId: string } | null } | null> | null } | null };
 
 export type VerifiedUserGoogleQueryVariables = Exact<{
   payload: Signupinput;
@@ -287,7 +312,7 @@ export type VerifiedUsersigninGoogleQuery = { __typename?: 'Query', verifiedgood
 export type GetcurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetcurrentUserQuery = { __typename?: 'Query', getcurrentUser?: { __typename?: 'User', id: string, number?: string | null, first_name: string, last_name: string, emailId: string, imageUrl: string } | null };
+export type GetcurrentUserQuery = { __typename?: 'Query', getcurrentUser?: { __typename?: 'User', id: string, number?: string | null, first_name: string, last_name: string, emailId: string, Subscriber: boolean, imageUrl: string, myMess?: { __typename?: 'Subscriber', id: string, price: number, RemainingDay: number, totalDays: number, startAt?: string | null, lastScannedAt?: string | null, messId?: { __typename?: 'GetCurrentMess', id: string, identity: { __typename?: 'Identitys', name: string, dietaryType: string, operatingMode?: string | null }, location: { __typename?: 'Locations', address: string, city: string, landmark: string } } | null } | null } | null };
 
 
 export const ProviderverficationOtpQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ProviderverficationOTPQuery"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"number"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ProviderverficationOTP"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"number"},"value":{"kind":"Variable","name":{"kind":"Name","value":"number"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}},{"kind":"Field","name":{"kind":"Name","value":"message"}}]}}]}}]} as unknown as DocumentNode<ProviderverficationOtpQueryQuery, ProviderverficationOtpQueryQueryVariables>;
@@ -296,10 +321,10 @@ export const ProviderverficationOtpQueryForLoginDocument = {"kind":"Document","d
 export const ProviderverficationQueryForLoginDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ProviderverficationQueryFORLogin"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"payload"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"loginpinputp"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ProviderverficationLogin"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"payload"},"value":{"kind":"Variable","name":{"kind":"Name","value":"payload"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}},{"kind":"Field","name":{"kind":"Name","value":"message"}},{"kind":"Field","name":{"kind":"Name","value":"token"}}]}}]}}]} as unknown as DocumentNode<ProviderverficationQueryForLoginQuery, ProviderverficationQueryForLoginQueryVariables>;
 export const GetCurrentDataDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetCurrentData"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getProviderdata"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"OwnerName"}},{"kind":"Field","name":{"kind":"Name","value":"number"}},{"kind":"Field","name":{"kind":"Name","value":"MessRegister"}}]}}]}}]} as unknown as DocumentNode<GetCurrentDataQuery, GetCurrentDataQueryVariables>;
 export const CreatemesforproviderDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"Createmesforprovider"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"payload"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateMessdata"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"CreateMessProvider"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"payload"},"value":{"kind":"Variable","name":{"kind":"Name","value":"payload"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}},{"kind":"Field","name":{"kind":"Name","value":"message"}}]}}]}}]} as unknown as DocumentNode<CreatemesforproviderMutation, CreatemesforproviderMutationVariables>;
-export const GetcurentMessdataDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetcurentMessdata"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getproviderMessData"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"identity"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"startTime"}},{"kind":"Field","name":{"kind":"Name","value":"endTime"}},{"kind":"Field","name":{"kind":"Name","value":"dietaryType"}},{"kind":"Field","name":{"kind":"Name","value":"operatingMode"}}]}},{"kind":"Field","name":{"kind":"Name","value":"legal"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fssaiNumber"}}]}},{"kind":"Field","name":{"kind":"Name","value":"media"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"cover"}},{"kind":"Field","name":{"kind":"Name","value":"kitchen"}},{"kind":"Field","name":{"kind":"Name","value":"dining"}}]}},{"kind":"Field","name":{"kind":"Name","value":"location"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"address"}},{"kind":"Field","name":{"kind":"Name","value":"houseNo"}},{"kind":"Field","name":{"kind":"Name","value":"society"}},{"kind":"Field","name":{"kind":"Name","value":"landmark"}},{"kind":"Field","name":{"kind":"Name","value":"suburb"}},{"kind":"Field","name":{"kind":"Name","value":"city"}},{"kind":"Field","name":{"kind":"Name","value":"state"}},{"kind":"Field","name":{"kind":"Name","value":"postcode"}},{"kind":"Field","name":{"kind":"Name","value":"lat"}},{"kind":"Field","name":{"kind":"Name","value":"lng"}}]}},{"kind":"Field","name":{"kind":"Name","value":"messVerified"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"MessQrcode"}},{"kind":"Field","name":{"kind":"Name","value":"Menu"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"types"}},{"kind":"Field","name":{"kind":"Name","value":"imageUrl"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]}}]}}]} as unknown as DocumentNode<GetcurentMessdataQuery, GetcurentMessdataQueryVariables>;
+export const GetcurentMessdataDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetcurentMessdata"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getproviderMessData"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"identity"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"startTime"}},{"kind":"Field","name":{"kind":"Name","value":"endTime"}},{"kind":"Field","name":{"kind":"Name","value":"dietaryType"}},{"kind":"Field","name":{"kind":"Name","value":"operatingMode"}}]}},{"kind":"Field","name":{"kind":"Name","value":"legal"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fssaiNumber"}}]}},{"kind":"Field","name":{"kind":"Name","value":"media"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"cover"}},{"kind":"Field","name":{"kind":"Name","value":"kitchen"}},{"kind":"Field","name":{"kind":"Name","value":"dining"}}]}},{"kind":"Field","name":{"kind":"Name","value":"location"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"address"}},{"kind":"Field","name":{"kind":"Name","value":"houseNo"}},{"kind":"Field","name":{"kind":"Name","value":"society"}},{"kind":"Field","name":{"kind":"Name","value":"landmark"}},{"kind":"Field","name":{"kind":"Name","value":"suburb"}},{"kind":"Field","name":{"kind":"Name","value":"city"}},{"kind":"Field","name":{"kind":"Name","value":"state"}},{"kind":"Field","name":{"kind":"Name","value":"postcode"}},{"kind":"Field","name":{"kind":"Name","value":"lat"}},{"kind":"Field","name":{"kind":"Name","value":"lng"}}]}},{"kind":"Field","name":{"kind":"Name","value":"messVerified"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"MessQrcode"}},{"kind":"Field","name":{"kind":"Name","value":"Menu"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"types"}},{"kind":"Field","name":{"kind":"Name","value":"imageUrl"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}},{"kind":"Field","name":{"kind":"Name","value":"myAllSubscribers"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"price"}},{"kind":"Field","name":{"kind":"Name","value":"totalDays"}},{"kind":"Field","name":{"kind":"Name","value":"startAt"}},{"kind":"Field","name":{"kind":"Name","value":"RemainingDay"}},{"kind":"Field","name":{"kind":"Name","value":"userId"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"first_name"}},{"kind":"Field","name":{"kind":"Name","value":"last_name"}},{"kind":"Field","name":{"kind":"Name","value":"number"}},{"kind":"Field","name":{"kind":"Name","value":"emailId"}}]}}]}}]}}]}}]} as unknown as DocumentNode<GetcurentMessdataQuery, GetcurentMessdataQueryVariables>;
 export const VerifiedUserGoogleDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"VerifiedUserGoogle"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"payload"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"signupinput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"verifiedgoodtokenandnumberforSignup"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"payload"},"value":{"kind":"Variable","name":{"kind":"Name","value":"payload"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}},{"kind":"Field","name":{"kind":"Name","value":"token"}},{"kind":"Field","name":{"kind":"Name","value":"message"}}]}}]}}]} as unknown as DocumentNode<VerifiedUserGoogleQuery, VerifiedUserGoogleQueryVariables>;
 export const VerifiedUsersigninGoogleDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"VerifiedUsersigninGoogle"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"token"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"verifiedgoodtokenandnumberforSignin"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"token"},"value":{"kind":"Variable","name":{"kind":"Name","value":"token"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}},{"kind":"Field","name":{"kind":"Name","value":"token"}},{"kind":"Field","name":{"kind":"Name","value":"message"}}]}}]}}]} as unknown as DocumentNode<VerifiedUsersigninGoogleQuery, VerifiedUsersigninGoogleQueryVariables>;
-export const GetcurrentUserDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetcurrentUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getcurrentUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"number"}},{"kind":"Field","name":{"kind":"Name","value":"first_name"}},{"kind":"Field","name":{"kind":"Name","value":"last_name"}},{"kind":"Field","name":{"kind":"Name","value":"emailId"}},{"kind":"Field","name":{"kind":"Name","value":"imageUrl"}}]}}]}}]} as unknown as DocumentNode<GetcurrentUserQuery, GetcurrentUserQueryVariables>;
+export const GetcurrentUserDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetcurrentUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getcurrentUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"number"}},{"kind":"Field","name":{"kind":"Name","value":"first_name"}},{"kind":"Field","name":{"kind":"Name","value":"last_name"}},{"kind":"Field","name":{"kind":"Name","value":"emailId"}},{"kind":"Field","name":{"kind":"Name","value":"Subscriber"}},{"kind":"Field","name":{"kind":"Name","value":"imageUrl"}},{"kind":"Field","name":{"kind":"Name","value":"myMess"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"price"}},{"kind":"Field","name":{"kind":"Name","value":"RemainingDay"}},{"kind":"Field","name":{"kind":"Name","value":"totalDays"}},{"kind":"Field","name":{"kind":"Name","value":"startAt"}},{"kind":"Field","name":{"kind":"Name","value":"lastScannedAt"}},{"kind":"Field","name":{"kind":"Name","value":"messId"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"identity"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"dietaryType"}},{"kind":"Field","name":{"kind":"Name","value":"operatingMode"}}]}},{"kind":"Field","name":{"kind":"Name","value":"location"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"address"}},{"kind":"Field","name":{"kind":"Name","value":"city"}},{"kind":"Field","name":{"kind":"Name","value":"landmark"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<GetcurrentUserQuery, GetcurrentUserQueryVariables>;
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: { input: string; output: string; }
@@ -328,6 +353,7 @@ export type GetCurrentMess = {
   location: Locations;
   media: Medias;
   messVerified: Scalars['Boolean']['output'];
+  myAllSubscribers?: Maybe<Array<Maybe<SubscriberforMess>>>;
 };
 
 export type Identity = {
@@ -470,13 +496,36 @@ export type SignupResponseprovider = {
   success: Scalars['Boolean']['output'];
 };
 
+export type Subscriber = {
+  __typename?: 'Subscriber';
+  RemainingDay: Scalars['Int']['output'];
+  id: Scalars['ID']['output'];
+  lastScannedAt?: Maybe<Scalars['String']['output']>;
+  messId?: Maybe<GetCurrentMess>;
+  price: Scalars['Int']['output'];
+  startAt?: Maybe<Scalars['String']['output']>;
+  totalDays: Scalars['Int']['output'];
+};
+
+export type SubscriberforMess = {
+  __typename?: 'SubscriberforMess';
+  RemainingDay?: Maybe<Scalars['Int']['output']>;
+  id: Scalars['ID']['output'];
+  price: Scalars['Int']['output'];
+  startAt?: Maybe<Scalars['String']['output']>;
+  totalDays: Scalars['Int']['output'];
+  userId?: Maybe<User>;
+};
+
 export type User = {
   __typename?: 'User';
+  Subscriber: Scalars['Boolean']['output'];
   emailId: Scalars['String']['output'];
   first_name: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   imageUrl: Scalars['String']['output'];
   last_name: Scalars['String']['output'];
+  myMess?: Maybe<Subscriber>;
   number?: Maybe<Scalars['String']['output']>;
 };
 
@@ -503,6 +552,7 @@ export type Provider = {
 };
 
 export type Signupinput = {
+  FCMtoken: Scalars['String']['input'];
   number: Scalars['String']['input'];
   token: Scalars['String']['input'];
 };
@@ -557,7 +607,7 @@ export type CreatemesforproviderMutation = { __typename?: 'Mutation', CreateMess
 export type GetcurentMessdataQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetcurentMessdataQuery = { __typename?: 'Query', getproviderMessData?: { __typename?: 'GetCurrentMess', id: string, messVerified: boolean, createdAt: string, MessQrcode: string, identity: { __typename?: 'Identitys', name: string, startTime: string, endTime: string, dietaryType: string, operatingMode?: string | null }, legal: { __typename?: 'Legals', fssaiNumber: string }, media: { __typename?: 'Medias', cover: string, kitchen: string, dining: string }, location: { __typename?: 'Locations', address: string, houseNo: string, society: string, landmark: string, suburb?: string | null, city: string, state: string, postcode: string, lat: number, lng: number }, Menu?: Array<{ __typename?: 'menu', _id?: string | null, types?: string | null, imageUrl?: string | null, createdAt?: string | null } | null> | null } | null };
+export type GetcurentMessdataQuery = { __typename?: 'Query', getproviderMessData?: { __typename?: 'GetCurrentMess', id: string, messVerified: boolean, createdAt: string, MessQrcode: string, identity: { __typename?: 'Identitys', name: string, startTime: string, endTime: string, dietaryType: string, operatingMode?: string | null }, legal: { __typename?: 'Legals', fssaiNumber: string }, media: { __typename?: 'Medias', cover: string, kitchen: string, dining: string }, location: { __typename?: 'Locations', address: string, houseNo: string, society: string, landmark: string, suburb?: string | null, city: string, state: string, postcode: string, lat: number, lng: number }, Menu?: Array<{ __typename?: 'menu', _id?: string | null, types?: string | null, imageUrl?: string | null, createdAt?: string | null } | null> | null, myAllSubscribers?: Array<{ __typename?: 'SubscriberforMess', id: string, price: number, totalDays: number, startAt?: string | null, RemainingDay?: number | null, userId?: { __typename?: 'User', id: string, first_name: string, last_name: string, number?: string | null, emailId: string } | null } | null> | null } | null };
 
 export type VerifiedUserGoogleQueryVariables = Exact<{
   payload: Signupinput;
@@ -576,7 +626,7 @@ export type VerifiedUsersigninGoogleQuery = { __typename?: 'Query', verifiedgood
 export type GetcurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetcurrentUserQuery = { __typename?: 'Query', getcurrentUser?: { __typename?: 'User', id: string, number?: string | null, first_name: string, last_name: string, emailId: string, imageUrl: string } | null };
+export type GetcurrentUserQuery = { __typename?: 'Query', getcurrentUser?: { __typename?: 'User', id: string, number?: string | null, first_name: string, last_name: string, emailId: string, Subscriber: boolean, imageUrl: string, myMess?: { __typename?: 'Subscriber', id: string, price: number, RemainingDay: number, totalDays: number, startAt?: string | null, lastScannedAt?: string | null, messId?: { __typename?: 'GetCurrentMess', id: string, identity: { __typename?: 'Identitys', name: string, dietaryType: string, operatingMode?: string | null }, location: { __typename?: 'Locations', address: string, city: string, landmark: string } } | null } | null } | null };
 
 
 export const ProviderverficationOtpQueryDocument = gql`
@@ -876,6 +926,20 @@ export const GetcurentMessdataDocument = gql`
       imageUrl
       createdAt
     }
+    myAllSubscribers {
+      id
+      price
+      totalDays
+      startAt
+      RemainingDay
+      userId {
+        id
+        first_name
+        last_name
+        number
+        emailId
+      }
+    }
   }
 }
     `;
@@ -1012,7 +1076,29 @@ export const GetcurrentUserDocument = gql`
     first_name
     last_name
     emailId
+    Subscriber
     imageUrl
+    myMess {
+      id
+      price
+      RemainingDay
+      totalDays
+      startAt
+      lastScannedAt
+      messId {
+        id
+        identity {
+          name
+          dietaryType
+          operatingMode
+        }
+        location {
+          address
+          city
+          landmark
+        }
+      }
+    }
   }
 }
     `;

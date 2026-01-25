@@ -111,7 +111,13 @@ const providerSchema = new mongoose.Schema({
     ],
     MessQrcode: {
         type: String,
-    }
+    },
+    myAllSubscribers: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Subscription",
+        }
+    ]
 }, { timestamps: true });
 const Mess = mongoose.model("MessSchema", providerSchema);
 export default Mess;

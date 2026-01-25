@@ -92,6 +92,7 @@ export declare const resolvers: {
                 types?: "breakfast" | "dinner" | null;
                 menuDate?: NativeDate | null;
             }>;
+            myAllSubscribers: mongoose.Types.ObjectId[];
         } | null>;
     };
     Mutation: {

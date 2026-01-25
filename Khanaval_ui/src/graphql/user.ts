@@ -28,7 +28,29 @@ query GetcurrentUser{
   first_name,
   last_name,
   emailId,
-  imageUrl
+  Subscriber,
+  imageUrl,
+   myMess {
+    id,
+    price,
+    RemainingDay,
+    totalDays,
+    startAt,
+    lastScannedAt
+   messId {
+    id
+    identity {
+      name,
+      dietaryType,
+      operatingMode
+    },
+    location {
+      address,
+      city,
+      landmark,
+    }
+   }
+  } 
   }
 }
 

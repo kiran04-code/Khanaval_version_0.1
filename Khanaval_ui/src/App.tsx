@@ -24,6 +24,7 @@ import MessDetails from "./pages/messDeatils";
 import HowItWorks from "./pages/HowitWork";
 import HelpSupport from "./pages/HelpSupport";
 import FeedbackForm from "./pages/FeedBackFrom";
+import MealRedeemPage from "./pages/MealReademPage";
 const queryClient = new QueryClient();
 
 const App = () => {
@@ -62,6 +63,7 @@ const App = () => {
             <Route path="/scan-qr" element={<QRScanPages/>} />
             <Route path="/messsDetails/:messId" element={<MessDetails/>} />
             <Route path="/how-it-works" element={<HowItWorks/>} />
+            <Route path="/MealRedeem/:scanMessId" element={<MealRedeemPage/>} />
             <Route path="/HelpSupport" element={<HelpSupport/>} />
             <Route path="/tiffin" element={<UserDashboard />} />
             <Route path="/FeedBack" element={<FeedbackForm />} />

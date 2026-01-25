@@ -1,5 +1,5 @@
 import express from "express";
-import { Addmenus, BufferimagetoURlimage, DeletetheMenu, finderUserByNumber, getAllDATA, getAllFeedback, getAllProvider, getAllUser, GetValidMess, NotificationsPUSH, sendFeedback, sendMessageToAllUser, submitFeedback, verifiyMess } from "../controller/Provoder.js";
+import { Addmenus, AddToSubscriber, BufferimagetoURlimage, DeletetheMenu, finderUserByNumber, finUderAndDelete, getAllDATA, getAllFeedback, getAllProvider, getAllUser, GetValidMess, NotificationsPUSH, sendFeedback, sendMessageToAllUser, submitFeedback, verifiyMess } from "../controller/Provoder.js";
 import { upload } from "../config/multer.js";
 import { Provider } from "../model/Provider.js";
 const providerRoutes = express.Router();
@@ -17,9 +17,11 @@ providerRoutes.get("/getAllUser", getAllUser);
 providerRoutes.get("/getAllProvider", getAllProvider);
 providerRoutes.post("/sendFeedback", sendFeedback);
 providerRoutes.post("/ProviderNotify", NotificationsPUSH);
-providerRoutes.post("/VerifiedUser", finderUserByNumber);
+providerRoutes.post("/users/verify", finderUserByNumber);
 providerRoutes.post("/UserNotify", sendMessageToAllUser);
 providerRoutes.post("/getFeedBack", submitFeedback);
 providerRoutes.get("/getAllFeedBack", getAllFeedback);
+providerRoutes.post("/subscriptions/add", AddToSubscriber);
+providerRoutes.post("/subscriptions/remove", finUderAndDelete);
 export default providerRoutes;
 //# sourceMappingURL=Provider.js.map

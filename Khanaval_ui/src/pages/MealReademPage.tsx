@@ -34,11 +34,11 @@ export default function MealRedeemPage() {
   const handleRedeem = async () => {
     setLoading(true);
     try {
-    //   const { data } = await axioseInstace.post("/api/meals/redeem", {
-    //     messId: scanMessId,
-    //     userId: user?._id || user?.id
-    //   });
-    //   if (data.success) setRedeemed(true);
+      // const { data } = await axioseInstace.post("/api/meals/redeem", {
+      //   messId: scanMessId,
+      //   userId: user?._id || user?.id
+      // });
+      // if (data.success) setRedeemed(true);
       setRedeemed(true)
     } catch (error) {
       toast({ 
@@ -71,19 +71,45 @@ export default function MealRedeemPage() {
     );
   }
 
+  // --- IMPROVED PHONE-LIKE SUCCESS STATE ---
   if (redeemed) {
     return (
-      <div className="h-screen bg-orange-600 flex flex-col items-center justify-center p-8 transition-all">
-        <div className="relative mb-6">
-          <div className="absolute inset-0 bg-white/30 blur-3xl rounded-full scale-150 animate-pulse" />
-          <div className="relative w-28 h-28 bg-white rounded-full flex items-center justify-center shadow-2xl animate-in zoom-in duration-500">
-            <CheckCircle2 className="w-14 h-14 text-orange-600" strokeWidth={3} />
+      <div className="h-screen bg-orange-600 flex items-center justify-center p-6 transition-all duration-500">
+        <div className="w-full max-w-xs bg-white rounded-[3rem] p-8 shadow-[0_40px_80px_-15px_rgba(0,0,0,0.3)] flex flex-col items-center animate-in fade-in zoom-in slide-in-from-bottom-10 duration-500">
+          
+          <div className="relative mb-8 mt-4">
+            {/* Soft pulse ring */}
+            <div className="absolute inset-0 bg-emerald-100 rounded-full scale-150 animate-ping opacity-20" />
+            <div className="relative w-24 h-24 bg-emerald-500 rounded-full flex items-center justify-center shadow-lg shadow-emerald-200">
+              <CheckCircle2 className="w-12 h-12 text-white" strokeWidth={3} />
+            </div>
           </div>
+
+          <div className="text-center space-y-2">
+            <h1 className="text-2xl font-black text-slate-900 tracking-tight">VERIFIED</h1>
+            <p className="text-slate-400 font-bold uppercase tracking-[0.2em] text-[10px]">Digital Receipt #{(Math.random() * 10000).toFixed(0)}</p>
+          </div>
+
+          <div className="w-full border-t-2 border-dashed border-slate-100 my-8 relative">
+            <div className="absolute -left-10 -top-3 w-6 h-6 bg-orange-600 rounded-full" />
+            <div className="absolute -right-10 -top-3 w-6 h-6 bg-orange-600 rounded-full" />
+          </div>
+
+          <div className="w-full space-y-3 mb-4">
+            <div className="flex justify-between items-center text-[11px] font-bold uppercase tracking-wider text-slate-400">
+              <span>Status</span>
+              <span className="text-emerald-600">Success</span>
+            </div>
+            <div className="flex justify-between items-center text-[11px] font-bold uppercase tracking-wider text-slate-400">
+              <span>Balance</span>
+              <span className="text-slate-900">{myMess.RemainingDay - 1} Meals Left</span>
+            </div>
+          </div>
+
+          <p className="text-[9px] font-black text-orange-500 uppercase tracking-widest mt-6 animate-pulse">
+            Closing Pass...
+          </p>
         </div>
-        <h1 className="text-3xl font-black text-white tracking-tighter italic">REDEEMED!</h1>
-        <p className="text-orange-100 font-bold uppercase tracking-[0.3em] text-[10px] mt-4 animate-pulse">
-          Redirecting to profile...
-        </p>
       </div>
     );
   }

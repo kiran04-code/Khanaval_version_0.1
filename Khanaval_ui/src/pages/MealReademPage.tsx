@@ -2,11 +2,10 @@ import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { 
   Utensils, CheckCircle2, XCircle, ArrowLeft, 
-  MapPin, Clock, Loader2, ShieldCheck, Zap,
-  ChevronRight, CalendarDays
+  MapPin, Clock, Loader2, ShieldCheck, 
+  ChevronRight, Fingerprint, Receipt, Info
 } from "lucide-react";
 import { useCurrentUser } from "@/hooks/user-hook";
 import { useStateContex } from "@/context/State";
@@ -24,7 +23,6 @@ export default function MealRedeemPage() {
 
   const myMess = user?.myMess;
   const isCorrectMess = myMess?.messId?.id === scanMessId;
-  const isExpired = myMess?.RemainingDay <= 0;
 
   const handleRedeem = async () => {
     setLoading(true);
@@ -35,12 +33,11 @@ export default function MealRedeemPage() {
       });
       if (data.success) {
         setRedeemed(true);
-        toast({ title: "Enjoy your meal!", description: "Redemption successful." });
       }
     } catch (error) {
       toast({ 
-        title: "Access Denied", 
-        description: error.response?.data?.message || "Could not verify your meal today.",
+        title: "Verification Failed", 
+        description: error.response?.data?.message || "Internal validation error.",
         variant: "destructive" 
       });
     } finally {
@@ -48,174 +45,157 @@ export default function MealRedeemPage() {
     }
   };
 
-  // --- ERROR STATE: Wrong Mess ---
   if (!isCorrectMess) {
     return (
-      <div className="min-h-screen bg-[#FFF5F5] flex items-center justify-center p-6">
-        <div className="w-full max-w-md space-y-6 text-center">
-          <div className="bg-white p-10 rounded-[3rem] shadow-xl border-4 border-red-100">
-            <div className="w-24 h-24 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-6">
-              <XCircle className="w-12 h-12" />
-            </div>
-            <h2 className="text-3xl font-black text-slate-900 mb-2 tracking-tight">Access Denied</h2>
-            <p className="text-slate-500 font-bold mb-8">
-              This QR code belongs to <span className="text-red-600 font-black underline italic">another mess</span>. 
-              You are currently subscribed to:
-            </p>
-            <div className="p-4 bg-orange-50 rounded-2xl border-2 border-orange-100 mb-8">
-              <p className="text-orange-600 font-black text-xl">{myMess?.messId?.identity?.name || "No Mess Found"}</p>
-              <p className="text-orange-400 text-xs font-bold uppercase tracking-widest">{myMess?.messId?.location?.landmark}</p>
-            </div>
-            <Button 
-              onClick={() => navigate(-1)} 
-              className="w-full h-16 rounded-2xl bg-slate-900 text-white font-black hover:scale-[1.02] transition-transform"
-            >
-              <ArrowLeft className="mr-2 w-5 h-5" /> TAKE ME BACK
-            </Button>
+      <div className="min-h-screen bg-white flex items-center justify-center p-8">
+        <div className="max-w-sm w-full text-center">
+          <div className="mb-8 inline-flex p-6 bg-red-50 rounded-[2.5rem] text-red-500">
+            <XCircle className="w-16 h-16" strokeWidth={1.5} />
           </div>
+          <h2 className="text-3xl font-black text-slate-900 mb-4 tracking-tight">Invalid Location</h2>
+          <p className="text-slate-500 font-medium leading-relaxed mb-8">
+            This QR does not match your active plan. You are registered at <span className="text-slate-900 font-bold underline">{myMess?.messId?.identity?.name}</span>.
+          </p>
+          <Button 
+            onClick={() => navigate(-1)} 
+            className="w-full h-16 rounded-3xl bg-slate-900 text-white font-bold shadow-2xl hover:bg-slate-800 transition-all"
+          >
+            Return to Dashboard
+          </Button>
         </div>
       </div>
     );
   }
 
-  // --- SUCCESS STATE: After Redemption ---
   if (redeemed) {
     return (
-      <div className="min-h-screen bg-emerald-500 flex items-center justify-center p-6 overflow-hidden">
-        <div className="relative text-center space-y-8 z-10">
-          <div className="relative">
-            <div className="absolute inset-0 bg-white/20 blur-3xl rounded-full scale-150 animate-pulse" />
-            <div className="w-40 h-40 bg-white rounded-full flex items-center justify-center mx-auto shadow-2xl relative">
-              <CheckCircle2 className="w-20 h-20 text-emerald-500" />
-            </div>
-          </div>
-          <div className="space-y-2">
-            <h1 className="text-5xl font-black text-white tracking-tighter italic">VALIDATED!</h1>
-            <p className="text-emerald-100 font-black uppercase tracking-[0.3em] text-sm">Meal Pass Redeemed</p>
-          </div>
-          <div className="pt-4 flex flex-col gap-3">
-            <Button onClick={() => navigate("/profile")} className="bg-slate-900 text-white font-black rounded-2xl h-16 px-12 shadow-2xl hover:bg-slate-800">
-               DONE & CLOSE
-            </Button>
+      <div className="min-h-screen bg-slate-900 flex flex-col items-center justify-center p-8 text-white">
+        <div className="relative mb-10">
+          <div className="absolute inset-0 bg-emerald-500 blur-[80px] opacity-40 animate-pulse" />
+          <div className="relative w-32 h-32 bg-emerald-500 rounded-full flex items-center justify-center shadow-[0_0_50px_rgba(16,185,129,0.4)]">
+            <CheckCircle2 className="w-16 h-16 text-white" strokeWidth={2.5} />
           </div>
         </div>
+        <h1 className="text-4xl font-black tracking-tighter mb-2 italic">VERIFIED</h1>
+        <p className="text-slate-400 font-bold uppercase tracking-[0.3em] text-[10px] mb-12">Access Granted • Enjoy your meal</p>
+        <Button 
+          onClick={() => navigate("/profile")} 
+          className="bg-white text-slate-900 font-black rounded-2xl h-14 px-12 hover:scale-105 transition-transform"
+        >
+          CLOSE PASS
+        </Button>
       </div>
     );
   }
 
-  // --- MAIN REDEEM UI ---
   return (
-    <div className="min-h-screen bg-slate-50 pb-12 font-sans selection:bg-orange-100">
-      {/* Dynamic Header */}
-      <div className="h-64 bg-slate-900 rounded-b-[4rem] relative overflow-hidden flex flex-col justify-center items-center text-center px-6">
-        <div className="absolute top-0 left-0 w-full h-full opacity-20 pointer-events-none">
-          <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-orange-500 blur-[100px] rounded-full" />
-          <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-emerald-500 blur-[100px] rounded-full" />
+    <div className="min-h-screen bg-slate-50 font-sans selection:bg-orange-100 pb-10">
+      {/* Premium Gradient Backdrop */}
+      <div className="h-80 bg-slate-900 relative overflow-hidden flex flex-col items-center pt-16">
+        <div className="absolute top-0 left-0 w-full h-full">
+          <div className="absolute top-[-20%] left-[-10%] w-[70%] h-[70%] bg-orange-600/20 blur-[120px] rounded-full" />
+          <div className="absolute bottom-[-20%] right-[-10%] w-[70%] h-[70%] bg-indigo-600/20 blur-[120px] rounded-full" />
         </div>
         
         <button 
           onClick={() => navigate(-1)} 
-          className="absolute top-8 left-6 p-4 bg-white/10 hover:bg-white/20 rounded-2xl backdrop-blur-xl text-white transition-all active:scale-90"
+          className="absolute top-8 left-6 w-12 h-12 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded-full backdrop-blur-md text-white border border-white/10 transition-all"
         >
-          <ArrowLeft className="w-6 h-6" />
+          <ArrowLeft className="w-5 h-5" />
         </button>
-        
-        <Badge className="bg-emerald-500 text-white border-none py-1.5 px-4 rounded-full font-black text-[10px] uppercase tracking-widest animate-pulse mb-3">
-          Verifying Identity...
-        </Badge>
-        <h1 className="text-white text-3xl font-black tracking-tight leading-none">Confirm Attendance</h1>
+
+        <div className="relative z-10 text-center px-6">
+          <p className="text-orange-500 font-black uppercase tracking-[0.4em] text-[10px] mb-3">Identity Verified</p>
+          <h1 className="text-white text-4xl font-black tracking-tight leading-tight">Meal Check-in</h1>
+        </div>
       </div>
 
-      <div className="container max-w-md mx-auto px-6 -mt-16">
-        <Card className="border-none shadow-[0_50px_100px_-20px_rgba(0,0,0,0.15)] rounded-[45px] overflow-hidden bg-white">
+      {/* The "Pass" Interface */}
+      <div className="max-w-md mx-auto px-6 -mt-24 relative z-20">
+        <Card className="border-none shadow-[0_40px_100px_-20px_rgba(0,0,0,0.2)] rounded-[3rem] overflow-hidden bg-white">
           <CardContent className="p-0">
             
-            {/* Upper Ticket Section */}
-            <div className="p-8 pb-6 relative">
-              <div className="flex justify-between items-start mb-6">
-                <div className="w-16 h-16 bg-orange-600 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-orange-200">
-                  <Utensils className="w-8 h-8" />
+            {/* Header / Brand */}
+            <div className="p-8 pb-10 bg-white">
+              <div className="flex justify-between items-center mb-8">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-slate-900 rounded-2xl flex items-center justify-center">
+                    <Utensils className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-black text-slate-900 leading-none">{myMess.messId?.identity?.name}</h2>
+                    <p className="text-slate-400 text-[10px] font-black uppercase mt-1 tracking-widest">{myMess.messId?.identity?.dietaryType}</p>
+                  </div>
+                </div>
+                <Receipt className="w-6 h-6 text-slate-200" />
+              </div>
+
+              {/* Data Grid */}
+              <div className="grid grid-cols-2 gap-y-6 border-t border-slate-50 pt-8">
+                <div>
+                  <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Student</p>
+                  <p className="font-black text-slate-800 uppercase">{user?.first_name} {user?.last_name}</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Digital Ticket #8291</p>
-                  <p className="font-black text-slate-900 text-lg">{new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })}</p>
+                  <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Pass Status</p>
+                  <div className="inline-flex items-center gap-1 text-emerald-600 font-black text-xs bg-emerald-50 px-3 py-1 rounded-full">
+                    <ShieldCheck className="w-3 h-3" /> ACTIVE
+                  </div>
+                </div>
+                <div>
+                  <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Session</p>
+                  <p className="font-black text-slate-800 uppercase">{new Date().getHours() < 16 ? "Lunch" : "Dinner"}</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Valid Until</p>
+                  <p className="font-black text-slate-800 uppercase">{myMess.RemainingDay} Days Left</p>
                 </div>
               </div>
-              
-              <h2 className="text-3xl font-black text-slate-900 leading-tight mb-1 uppercase italic tracking-tighter">
-                {myMess.messId?.identity?.name}
-              </h2>
-              <p className="flex items-center gap-1.5 text-slate-400 font-bold text-xs uppercase">
-                <MapPin className="w-3.5 h-3.5 text-orange-500" /> {myMess.messId?.location?.landmark}
-              </p>
             </div>
 
-            {/* Perforation Line */}
-            <div className="flex items-center gap-0 px-2 overflow-hidden">
-               <div className="w-6 h-6 rounded-full bg-slate-50 -ml-4 shadow-inner" />
-               <div className="flex-1 border-t-4 border-dashed border-slate-50 mx-2" />
-               <div className="w-6 h-6 rounded-full bg-slate-50 -mr-4 shadow-inner" />
+            {/* Perforation Divider */}
+            <div className="relative h-4 bg-slate-50 flex items-center">
+               <div className="absolute -left-3 w-6 h-6 rounded-full bg-slate-50 shadow-inner" />
+               <div className="w-full border-t-2 border-dashed border-slate-200 mx-4" />
+               <div className="absolute -right-3 w-6 h-6 rounded-full bg-slate-50 shadow-inner" />
             </div>
 
-            {/* Lower Details Section */}
-            <div className="p-8 pt-6 space-y-6">
-              
-              <div className="grid grid-cols-2 gap-4">
-                <div className="bg-slate-50 p-4 rounded-3xl">
-                  <p className="text-[9px] font-black text-slate-400 uppercase mb-1">Pass Holder</p>
-                  <p className="font-black text-slate-800 text-sm truncate">{user?.first_name} {user?.last_name}</p>
-                </div>
-                <div className="bg-emerald-50 p-4 rounded-3xl border border-emerald-100/50">
-                  <p className="text-[9px] font-black text-emerald-600 uppercase mb-1">Status</p>
-                  <p className="font-black text-emerald-700 text-sm">AUTHORIZED</p>
-                </div>
-              </div>
-
-              <div className="bg-slate-900 p-6 rounded-[35px] flex items-center justify-between text-white shadow-xl">
-                 <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center">
-                      <Zap className="w-6 h-6 text-orange-400 fill-orange-400" />
-                    </div>
-                    <div>
-                      <p className="text-2xl font-black leading-none">{myMess.RemainingDay}</p>
-                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-tighter">Meals Left</p>
-                    </div>
-                 </div>
-                 <div className="h-10 w-[1px] bg-white/10" />
-                 <div className="text-right">
-                    <div className="flex items-center gap-1.5 text-orange-400 justify-end mb-0.5">
-                      <Clock className="w-3.5 h-3.5" />
-                      <span className="text-xs font-black uppercase tracking-tight">Dinner/Lunch</span>
-                    </div>
-                    <p className="text-[10px] font-bold text-slate-400">SESSION OPEN</p>
-                 </div>
-              </div>
-
-              <div className="space-y-3">
-                <Button 
-                  onClick={handleRedeem}
-                  disabled={loading || isExpired}
-                  className="w-full h-20 bg-orange-600 hover:bg-orange-700 text-white rounded-[2rem] shadow-2xl shadow-orange-200 transition-all flex items-center justify-center group active:scale-[0.98]"
-                >
-                  {loading ? (
-                    <Loader2 className="animate-spin w-8 h-8" />
-                  ) : (
-                    <div className="flex items-center justify-between w-full px-4">
-                      <div className="text-left">
-                        <p className="text-lg font-black tracking-tight uppercase">Redeem Now</p>
-                        <p className="text-[10px] font-bold opacity-70 uppercase tracking-widest">Slide to confirm</p>
-                      </div>
-                      <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center group-hover:translate-x-1 transition-transform">
-                        <ChevronRight className="w-7 h-7" />
-                      </div>
-                    </div>
-                  )}
-                </Button>
-                
-                <p className="text-center text-[10px] font-bold text-slate-400 flex items-center justify-center gap-1.5 uppercase tracking-widest">
-                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" /> Encrypted Attendance Scan
+            {/* Call to Action Section */}
+            <div className="p-8 pt-10 space-y-8">
+              <div className="flex items-start gap-4 p-4 bg-orange-50 rounded-[2rem] border border-orange-100/50">
+                <Info className="w-5 h-5 text-orange-600 mt-0.5" />
+                <p className="text-xs font-bold text-orange-800/80 leading-relaxed">
+                  By clicking redeem, one meal session will be deducted from your <span className="font-black">Digital Register</span>.
                 </p>
               </div>
+
+              <div className="relative group">
+                <div className="absolute -inset-1 bg-gradient-to-r from-orange-600 to-indigo-600 rounded-[2.5rem] blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200" />
+                <Button 
+                  onClick={handleRedeem}
+                  disabled={loading}
+                  className="relative w-full h-24 bg-slate-900 hover:bg-slate-800 text-white rounded-[2.2rem] shadow-2xl flex items-center justify-between px-8 group overflow-hidden transition-all active:scale-[0.97]"
+                >
+                  {loading ? (
+                    <Loader2 className="animate-spin w-8 h-8 mx-auto" />
+                  ) : (
+                    <>
+                      <div className="flex items-center gap-5">
+
+                        <div className="text-left">
+                          <p className="text-xl font-black tracking-tight italic">REDEEM PASS</p>
+                          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Tap to process</p>
+                        </div>
+                      </div>
+                      <ChevronRight className="w-8 h-8 text-slate-500 group-hover:translate-x-2 group-hover:text-white transition-all" />
+                    </>
+                  )}
+                </Button>
+              </div>
+
+              <p className="text-center text-[9px] font-black text-slate-300 flex items-center justify-center gap-2 uppercase tracking-[0.2em]">
+                 <ShieldCheck className="w-4 h-4" /> Military-Grade Security Verified
+              </p>
             </div>
           </CardContent>
         </Card>

@@ -5,48 +5,48 @@ const Footer = () => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="relative bg-white text-slate-950 pt-32 pb-12 overflow-hidden border-t border-slate-100">
+    <footer className="relative bg-white text-slate-950 pt-16 pb-8 overflow-hidden border-t border-slate-100">
       <div className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-orange-50/50 rounded-full blur-[140px] pointer-events-none" />
       <div className="absolute -bottom-20 -left-20 w-[400px] h-[400px] bg-slate-50 rounded-full blur-[100px] pointer-events-none" />
 
       <div className="container mx-auto px-6 relative z-10">
       
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-20 mb-28">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 mb-12">
           
           {/* Brand & Headline */}
-          <div className="lg:col-span-6 space-y-12">
-            <div className="space-y-6">
-                <img 
-              src="/logo.png" 
-              alt="Khanaaval Logo" 
-              className="h-16 md:h-25 object-contain drop-shadow-sm hover:scale-105 transition-transform duration-500" 
-            />
-              <h2 className="text-5xl md:text-7xl font-black tracking-tighter leading-[0.9] uppercase">
+          <div className="lg:col-span-6 space-y-8">
+            <div className="space-y-4">
+              <img 
+                src="/logo.png" 
+                alt="Khanaaval Logo" 
+                className="h-12 md:h-16 object-contain drop-shadow-sm hover:scale-105 transition-transform duration-500" 
+              />
+              <h2 className="text-4xl md:text-6xl font-black tracking-tighter leading-[0.9] uppercase">
                 Elevating <br />
                 <span className="text-slate-300 hover:text-primary transition-colors duration-700 cursor-default">Daily Dining.</span>
               </h2>
-              <p className="text-slate-500 text-xl max-w-md font-medium leading-relaxed">
+              <p className="text-slate-500 text-lg max-w-md font-medium leading-relaxed">
                 India’s most sophisticated mess discovery network. Redefining the student meal experience.
               </p>
             </div>
-            <div className="grid sm:grid-cols-2 gap-10">
-              <div className="space-y-3">
+            <div className="grid sm:grid-cols-2 gap-6">
+              <div className="space-y-1">
                 <p className="text-[10px] font-black uppercase tracking-[0.5em] text-slate-400">Inquiries</p>
-                <a href="tel:8788113738" className="text-xl font-bold hover:tracking-widest transition-all duration-500 block">
+                <a href="tel:8788113738" className="text-lg font-bold hover:tracking-widest transition-all duration-500 block">
                   87881 13738
                 </a>
               </div>
-              <div className="space-y-3">
+              <div className="space-y-1">
                 <p className="text-[10px] font-black uppercase tracking-[0.5em] text-slate-400">Email Us</p>
-                <a href="mailto:hello@khanaval.com" className="text-[15px] md:text-xl font-bold hover:tracking-widest transition-all duration-500 block border-b-2 border-slate-900 w-fit">
-                  @khanaaval.com@gmail.com
+                <a href="mailto:hello@khanaval.com" className="text-[14px] md:text-lg font-bold hover:tracking-widest transition-all duration-500 block border-b-2 border-slate-900 w-fit">
+                  hello@khanaaval.com
                 </a>
               </div>
             </div>
           </div>
 
           {/* Navigation Links */}
-          <div className="lg:col-span-6 grid grid-cols-2 md:grid-cols-3 gap-12">
+          <div className="lg:col-span-6 grid grid-cols-2 md:grid-cols-3 gap-8">
             <FooterColumn title="Platform">
               <FooterLink to="/mess">Discovery</FooterLink>
               <FooterLink to="/how-it-works">Standard</FooterLink>
@@ -67,15 +67,13 @@ const Footer = () => {
           </div>
         </div>
 
-
-
         {/* BOTTOM UTILITY BAR */}
-        <div className="pt-5 border-t border-slate-100 flex flex-col md:flex-row justify-between items-center gap-10">
-          <div className="flex flex-col md:flex-row items-center gap-8">
+        <div className="pt-5 border-t border-slate-100 flex flex-col md:flex-row justify-between items-center gap-6">
+          <div className="flex flex-col md:flex-row items-center gap-6">
             <p className="text-[10px] font-black tracking-[0.4em] text-slate-400 uppercase">
               © {currentYear} Khanaaval
             </p>
-            <div className="flex items-center gap-3 px-4 py-1.5 rounded-full border border-slate-100 shadow-sm">
+            <div className="flex items-center gap-3 px-4 py-1 rounded-full border border-slate-100 shadow-sm">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
@@ -84,7 +82,7 @@ const Footer = () => {
             </div>
           </div>
 
-          <div className="flex flex-wrap justify-center gap-10 text-[10px] font-black tracking-[0.3em] text-slate-400">
+          <div className="flex flex-wrap justify-center gap-6 text-[10px] font-black tracking-[0.3em] text-slate-400">
             <Link to="/privacy" className="hover:text-slate-900 transition-colors">PRIVACY</Link>
             <Link to="/terms" className="hover:text-slate-900 transition-colors">TERMS</Link>
             <div className="flex items-center gap-2 text-slate-950 bg-slate-50 px-3 py-1 rounded">
@@ -98,11 +96,10 @@ const Footer = () => {
   );
 };
 
-// Sub-components for cleaner structure
 const FooterColumn = ({ title, children }) => (
-  <div className="space-y-10">
+  <div className="space-y-6">
     <h4 className="text-[10px] font-black uppercase tracking-[0.6em] text-slate-300">{title}</h4>
-    <ul className="space-y-5">{children}</ul>
+    <ul className="space-y-3">{children}</ul>
   </div>
 );
 

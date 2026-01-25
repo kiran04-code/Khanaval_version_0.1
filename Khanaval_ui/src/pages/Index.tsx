@@ -23,12 +23,13 @@ import {
   ShieldAlert
 } from "lucide-react";
 
-import Footer from "@/components/layout/footer";
+
 import { useEffect, useState } from "react";
 import { UserProviderdata } from "@/hooks/Provider";
 import { GetALLmess } from "@/hooks/MessData";
 import { calculateDistance } from "./components/Distance";
 import { useStateContex } from "@/context/State";
+import Footer from "@/components/layout/footer";
 const features = [
   {
     icon: <Search className="w-6 h-6" />,

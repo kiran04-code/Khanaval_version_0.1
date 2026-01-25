@@ -27,7 +27,7 @@ app.use((req, res, next) => {
     next();
 })
 app.get("/", (req: Request, res: Response) => {
-    res.send("Backend is Wroking Properly 🌐!")
+    res.send("Backend is Wroking Properly of Khanaval.com🌐!")
 })
 // Graphql
 app.use("/graphql", expressMiddleware(await StartGraphql(),{

@@ -80,7 +80,7 @@ export default function UserDashboard() {
       })
       .sort((a, b) => a.calculatedDistance - b.calculatedDistance); 
   }, [AllMESS, searchQuery, activeTab, userlat, userlng]);
-
+ console.log(AllMESS)
   return (
     <div className="min-h-screen bg-[#FDFDFF] pb-24 md:pb-12">
       

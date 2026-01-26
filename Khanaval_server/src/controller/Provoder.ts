@@ -308,7 +308,6 @@ export const sendFeedback = async (req: Request, res: Response) => {
 export const finderUserByNumber = async (req: Request, res: Response) => {
     try {
         const { number } = req.body;
-        console.log(number)
         const data = await user.findOne({ number: number })
         if (!data) {
             return res.json({
@@ -470,7 +469,6 @@ export const MarkMealAttendece = async (req: Request, res: Response) => {
             },
             { new: true }
         );
-        console.log(data)
         return res.status(200).json({
             success: true,
             message: "Reedem Successfull"
@@ -485,13 +483,15 @@ export const MarkMealAttendece = async (req: Request, res: Response) => {
 
 export const updatedtheMonthy = async (req: Request, res: Response) => {
     try {
-        const {price,messId} = req.body
-        await Mess.findByIdAndUpdate(messId,{
-            MontlyPrices:price
+        const { price, messId } = req.body
+        await Mess.findByIdAndUpdate(messId, {
+            MontlyPrices: price
         })
+        const cachekey = "AllMESS"
+        await redisclient.del(cachekey)
         return res.json({
             success: true,
-            message:"Price Updated"
+            message: "Price Updated"
         })
     } catch (error) {
         return res.json({

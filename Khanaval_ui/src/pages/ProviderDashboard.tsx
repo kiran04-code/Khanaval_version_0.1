@@ -13,7 +13,8 @@ import {
   LayoutDashboard, Utensils, Users, QrCode, Wallet,
   X, TrendingUp, CheckCircle, Users2, CalendarCheck,
   Menu, RefreshCw, Clock, Phone, Activity,
-  Calendar, IndianRupee, Save, Sparkles, Loader2
+  Calendar, IndianRupee, Save, Sparkles, Loader2,
+  PlusCircle, ArrowRight, Store, CheckCircle2
 } from "lucide-react";
 import { UserProviderdata } from "@/hooks/Provider";
 import { ProviderProfile } from "./ProviderProfile";
@@ -24,6 +25,9 @@ import SubscriberRequest from "./Subsciber";
 
 import { useStateContex } from "@/context/State";
 import { toast } from "@/hooks/use-toast";
+import Unverified from "./components/Unverfied";
+import Unverifieds from "./components/Unverfied";
+import UnregisteredState from "./components/UnrigisterMess";
 
 type TabType = "dashboard" | "menu" | "subscribers" | "scanner" | "earnings" | "Profile" | "MonthlySubscriptionRequest";
 
@@ -38,13 +42,14 @@ export default function ProviderDashboard() {
   const { messdata } = Getmymess();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { axioseInstace } = useStateContex();
 
-  // Sync globalPrice with messdata when it loads
   useEffect(() => {
     if (messdata?.monthlyPrice) {
       setGlobalPrice(messdata.monthlyPrice.toString());
     }
   }, [messdata]);
+
   const isRegistered = Providerdata?.MessRegister !== "false";
   const subscribers = messdata?.myAllSubscribers || [];
 
@@ -55,11 +60,12 @@ export default function ProviderDashboard() {
       const timeB = new Date(isNaN(b.lastScannedAt) ? b.lastScannedAt : Number(b.lastScannedAt)).getTime();
       return timeB - timeA;
     });
-    const {axioseInstace}  = useStateContex()
+
   const totalEarnings = subscribers.reduce((acc: number, sub: any) => acc + (sub.price || 0), 0);
+
   const handleUpdatePrice = async () => {
     if (!globalPrice || Number(globalPrice) <= 0) {
-      alert("Please enter a valid amount");
+      toast({ title: "Please enter a valid amount", variant: "destructive" });
       return;
     }
     setIsUpdating(true);
@@ -68,16 +74,14 @@ export default function ProviderDashboard() {
         price: Number(globalPrice),
         messId: messdata?.id
       });
-      console.log(data)
       if (data.success) {
-        toast({title:`${data.message}`})
+        toast({ title: `${data.message}` });
         await queryClient.invalidateQueries({ queryKey: ["get-mess"] });
       } else {
-         toast({title:`${data.message}`,variant:"destructive"})
+        toast({ title: `${data.message}`, variant: "destructive" });
       }
     } catch (error) {
-      console.error("Update failed", error);
-      alert("Failed to update price. Please try again.");
+      toast({ title: "Update failed", variant: "destructive" });
     } finally {
       setIsUpdating(false);
     }
@@ -97,13 +101,10 @@ export default function ProviderDashboard() {
     const timeStr = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
     const dateStr = date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
 
-    let relative = "";
-    if (diffInSec < 60) relative = "Just now";
-    else if (diffInSec < 3600) relative = `${Math.floor(diffInSec / 60)}m ago`;
-    else if (diffInSec < 86400) relative = `${Math.floor(diffInSec / 3600)}h ago`;
-    else relative = dateStr;
-
-    return `${relative} (${dateStr}, ${timeStr})`;
+    if (diffInSec < 60) return `Just now (${timeStr})`;
+    if (diffInSec < 3600) return `${Math.floor(diffInSec / 60)}m ago (${timeStr})`;
+    if (diffInSec < 86400) return `${Math.floor(diffInSec / 3600)}h ago (${timeStr})`;
+    return `${dateStr}, ${timeStr}`;
   };
 
   const dynamicStats = [
@@ -117,17 +118,26 @@ export default function ProviderDashboard() {
     setActiveTab(tabId);
     setSidebarOpen(false);
   };
+
   const getPageTitle = () => {
-    const item = navItems.find((i) => i.id === activeTab);
-    return item?.label || "Dashboard";
+    return navItems.find((i) => i.id === activeTab)?.label || "Dashboard";
   };
+
+  // 1. UNREGISTERED STATE (IMPROVED UI)
+  if (!isRegistered) {
+    return <UnregisteredState/>
+  }
+
+  // 2. VERIFICATION PENDING
   if (messdata && messdata?.messVerified === false) return <Unverfied />;
+
+  // 3. MAIN DASHBOARD
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col lg:flex-row">
       <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-slate-200 transform transition-transform duration-300 lg:translate-x-0 lg:static ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}>
         <div className="p-6 border-b border-slate-100 flex items-center justify-between">
           <Link to="/" className="w-[120px] lg:w-[150px]">
-            <img src="/logo.png" alt="logo" className="w-full h-auto" />
+             <img src="/logo.png" alt="logo" className="w-full h-auto" />
           </Link>
           <button onClick={() => setSidebarOpen(false)} className="lg:hidden p-2 text-slate-400">
             <X className="w-5 h-5" />
@@ -137,7 +147,7 @@ export default function ProviderDashboard() {
           {navItems.map((item) => (
             <button
               key={item.id}
-              onClick={() => handleNavClick(item.id)}
+              onClick={() => handleNavClick(item.id as TabType)}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${activeTab === item.id
                 ? "bg-orange-50 text-orange-600 shadow-sm shadow-orange-100"
                 : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
@@ -149,12 +159,12 @@ export default function ProviderDashboard() {
           ))}
         </nav>
       </aside>
+
       {sidebarOpen && (
         <div className="fixed inset-0 bg-black/20 z-40 lg:hidden backdrop-blur-sm" onClick={() => setSidebarOpen(false)} />
       )}
 
       <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        {/* HEADER */}
         <header className="sticky top-0 bg-white/80 backdrop-blur-md border-b border-slate-200 p-4 flex items-center justify-between z-30">
           <div className="flex items-center gap-3">
             <button onClick={() => setSidebarOpen(true)} className="lg:hidden p-2 bg-slate-50 rounded-lg">
@@ -165,11 +175,10 @@ export default function ProviderDashboard() {
         </header>
 
         <div className="p-4 md:p-8 overflow-y-auto">
-          {activeTab === "dashboard" && isRegistered && (
+          {activeTab === "dashboard" && (
             <div className="space-y-6 lg:space-y-8 animate-in fade-in duration-500">
-
-              {/* --- PRICING CARD --- */}
-              <Card className="border-none shadow-xl rounded-[2rem] bg-slate-900 text-white overflow-hidden relative border border-slate-800">
+              {/* PRICING CARD */}
+              <Card className="border-none shadow-xl rounded-[2rem] bg-slate-900 text-white overflow-hidden relative">
                 <CardContent className="p-6 lg:p-8">
                   <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
                     <div className="space-y-2">
@@ -180,7 +189,7 @@ export default function ProviderDashboard() {
                         <h2 className="text-lg font-black italic uppercase tracking-tighter">Mess Subscription</h2>
                       </div>
                       <div className="flex items-center gap-2">
-                        <p className="text-slate-400 text-xs font-bold uppercase tracking-widest">Live Monthly Rate:</p>
+                        <p className="text-slate-400 text-xs font-bold uppercase tracking-widest">Live Rate:</p>
                         <Badge variant="outline" className="text-emerald-400 border-emerald-400/30 bg-emerald-400/10 font-black">
                           ₹{messdata?.MontlyPrices || "0"}/mo
                         </Badge>
@@ -188,7 +197,7 @@ export default function ProviderDashboard() {
                     </div>
 
                     <div className="flex items-center gap-3 bg-white/5 p-2.5 rounded-[1.5rem] backdrop-blur-md border border-white/10">
-                      <div className="relative group">
+                      <div className="relative">
                         <IndianRupee className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-orange-500" />
                         <Input
                           type="number"
@@ -203,11 +212,7 @@ export default function ProviderDashboard() {
                         disabled={isUpdating}
                         className="h-12 bg-orange-600 hover:bg-orange-500 text-white font-black px-6 rounded-xl transition-all shadow-lg active:scale-95 flex gap-2 min-w-[140px]"
                       >
-                        {isUpdating ? (
-                          <Loader2 className="w-4 h-4 animate-spin" />
-                        ) : (
-                          <Save className="w-4 h-4" />
-                        )}
+                        {isUpdating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                         <span>{isUpdating ? "SAVING..." : "UPDATE"}</span>
                       </Button>
                     </div>
@@ -238,31 +243,31 @@ export default function ProviderDashboard() {
                     </Button>
                   </div>
 
-                  <Card className="border-none shadow-sm rounded-[24px] lg:rounded-3xl overflow-hidden bg-white">
+                  <Card className="border-none shadow-sm rounded-[24px] overflow-hidden bg-white">
                     <CardContent className="p-0">
                       <div className="divide-y divide-slate-50 max-h-[450px] overflow-y-auto">
                         {recentScansData.length > 0 ? (
                           recentScansData.map((scan: any) => (
                             <div key={scan.id} className="flex items-center justify-between p-4 lg:p-5 hover:bg-slate-50/50 transition-colors">
                               <div className="flex items-center gap-3 lg:gap-4 min-w-0">
-                                <div className="w-10 h-10 lg:w-12 lg:h-12 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center font-black text-base border border-slate-200 shrink-0">
+                                <div className="w-10 h-10 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center font-black border border-slate-200 shrink-0">
                                   {scan.userId?.first_name?.[0] || "U"}
                                 </div>
                                 <div className="min-w-0">
                                   <p className="font-black text-slate-900 text-xs lg:text-sm capitalize truncate">{scan.userId?.first_name} {scan.userId?.last_name}</p>
                                   <div className="flex items-center gap-1 mt-0.5">
                                     <Phone className="w-2.5 h-2.5 text-slate-400" />
-                                    <p className="text-[10px] lg:text-[11px] font-bold text-slate-500 tracking-wider">{scan.userId?.number || "No Number"}</p>
+                                    <p className="text-[10px] font-bold text-slate-500">{scan.userId?.number || "No Number"}</p>
                                   </div>
                                   <div className="flex items-start gap-1 mt-0.5">
                                     <Clock className="w-2.5 h-2.5 text-orange-500 mt-0.5" />
-                                    <p className="text-[9px] lg:text-[10px] font-bold text-slate-400 uppercase tracking-tighter">{formatRecentTime(scan.lastScannedAt)}</p>
+                                    <p className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter">{formatRecentTime(scan.lastScannedAt)}</p>
                                   </div>
                                 </div>
                               </div>
                               <div className="flex flex-col items-end gap-1 shrink-0 ml-2">
-                                <Badge className="bg-emerald-50 text-emerald-600 border-none text-[8px] lg:text-[9px] font-black px-2 py-0.5">VERIFIED</Badge>
-                                <p className="text-[8px] lg:text-[9px] font-bold text-slate-300 uppercase tracking-widest">Left: {scan.RemainingDay}d</p>
+                                <Badge className="bg-emerald-50 text-emerald-600 border-none text-[8px] font-black px-2 py-0.5">VERIFIED</Badge>
+                                <p className="text-[8px] font-bold text-slate-300 uppercase">Left: {scan.RemainingDay}d</p>
                               </div>
                             </div>
                           ))
@@ -278,11 +283,11 @@ export default function ProviderDashboard() {
                 </div>
 
                 <div className="space-y-4">
-                  <Card className="p-6 lg:p-8 rounded-[24px] lg:rounded-[2.5rem] border-none shadow-xl bg-orange-600 text-white group overflow-hidden relative">
+                  <Card className="p-6 rounded-[2.5rem] border-none shadow-xl bg-orange-600 text-white group overflow-hidden relative">
                     <div className="relative z-10">
-                      <h3 className="font-black text-xl lg:text-2xl mb-1">Today's Menu</h3>
-                      <p className="text-[10px] lg:text-xs text-orange-100 mb-6 font-bold uppercase tracking-widest">Update your students</p>
-                      <Button onClick={() => setActiveTab("menu")} variant="secondary" className="w-full h-12 lg:h-14 rounded-xl font-black bg-white text-orange-600 hover:bg-orange-50 shadow-lg text-xs lg:text-sm">
+                      <h3 className="font-black text-xl mb-1">Today's Menu</h3>
+                      <p className="text-[10px] text-orange-100 mb-6 font-bold uppercase tracking-widest">Update your students</p>
+                      <Button onClick={() => setActiveTab("menu")} variant="secondary" className="w-full h-12 rounded-xl font-black bg-white text-orange-600 hover:bg-orange-50 shadow-lg text-xs">
                         MANAGE LIVE MENU
                       </Button>
                     </div>
@@ -293,17 +298,13 @@ export default function ProviderDashboard() {
             </div>
           )}
 
-          {/* TAB RENDERING */}
+          {/* TAB CONTENT RENDERING */}
           <div className="mt-4">
-            {isRegistered && (
-              <>
-                {activeTab === "menu" && <MenuManagement />}
-                {activeTab === "scanner" && <QRScanner />}
-                {activeTab === "subscribers" && <SubscriberManagement />}
-                {activeTab === "Profile" && <ProviderProfile />}
-                {activeTab === "MonthlySubscriptionRequest" && <SubscriberRequest />}
-              </>
-            )}
+            {activeTab === "menu" && <MenuManagement />}
+            {activeTab === "scanner" && <QRScanner />}
+            {activeTab === "subscribers" && <SubscriberManagement />}
+            {activeTab === "Profile" && <ProviderProfile />}
+            {activeTab === "MonthlySubscriptionRequest" && <SubscriberRequest />}
           </div>
         </div>
       </main>
@@ -312,10 +313,10 @@ export default function ProviderDashboard() {
 }
 
 const navItems = [
-  { id: "dashboard" as TabType, icon: LayoutDashboard, label: "Live Dashboard" },
-  { id: "MonthlySubscriptionRequest" as TabType, icon: CalendarCheck, label: "Price Requests" },
-  { id: "menu" as TabType, icon: Utensils, label: "Daily Menu" },
-  { id: "subscribers" as TabType, icon: Users, label: "Student Register" },
-  { id: "scanner" as TabType, icon: QrCode, label: "QR Scanner" },
-  { id: "Profile" as TabType, icon: Users2, label: "Settings" },
+  { id: "dashboard", icon: LayoutDashboard, label: "Live Dashboard" },
+  { id: "MonthlySubscriptionRequest", icon: CalendarCheck, label: "Price Requests" },
+  { id: "menu", icon: Utensils, label: "Daily Menu" },
+  { id: "subscribers", icon: Users, label: "Student Register" },
+  { id: "scanner", icon: QrCode, label: "QR Scanner" },
+  { id: "Profile", icon: Users2, label: "Settings" },
 ];

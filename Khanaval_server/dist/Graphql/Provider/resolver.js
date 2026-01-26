@@ -73,6 +73,8 @@ const Mutation = {
                     message: "Mess is Alredy Ragister on this Number"
                 };
             }
+            const cachekey = "AllMESS";
+            await redisclient.del(cachekey);
             const data = await Mess.create({
                 providerId: new mongoose.Types.ObjectId(payload.providerId),
                 identity: {
@@ -96,8 +98,6 @@ const Mutation = {
                     fssaiNumber: payload.legal.fssaiNumber
                 }
             });
-            const cachekey = "AllMESS";
-            await redisclient.del(cachekey);
             const qrcode = await Qrcodegenerator(data._id);
             await Mess.findByIdAndUpdate(data._id, { MessQrcode: qrcode });
             await Provider.findByIdAndUpdate(idx.user._id, { MessRegister: true });

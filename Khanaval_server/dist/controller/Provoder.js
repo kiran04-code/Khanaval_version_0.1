@@ -281,7 +281,6 @@ export const sendFeedback = async (req, res) => {
 export const finderUserByNumber = async (req, res) => {
     try {
         const { number } = req.body;
-        console.log(number);
         const data = await user.findOne({ number: number });
         if (!data) {
             return res.json({
@@ -428,7 +427,6 @@ export const MarkMealAttendece = async (req, res) => {
                 },
             },
         }, { new: true });
-        console.log(data);
         return res.status(200).json({
             success: true,
             message: "Reedem Successfull"
@@ -447,6 +445,8 @@ export const updatedtheMonthy = async (req, res) => {
         await Mess.findByIdAndUpdate(messId, {
             MontlyPrices: price
         });
+        const cachekey = "AllMESS";
+        await redisclient.del(cachekey);
         return res.json({
             success: true,
             message: "Price Updated"

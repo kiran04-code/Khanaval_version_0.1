@@ -17,7 +17,7 @@ export default function KhanavalProfile() {
   const total = myMess?.totalDays || 1; 
   const remaining = myMess?.RemainingDay || 0;
 
-  // --- NEW: RELATIVE TIME FORMATTER ---
+  // --- UPDATED: RELATIVE TIME + FULL DATE/TIME FORMATTER ---
   const formatRelativeTime = (val) => {
     if (!val) return "Never scanned";
     const date = new Date(isNaN(val) ? val : Number(val));
@@ -26,16 +26,20 @@ export default function KhanavalProfile() {
     
     // Time string for the exact time
     const timeStr = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+    // Date string for clarity
+    const dayStr = date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
 
-    if (diffInSeconds < 60) return `Just now (${timeStr})`;
-    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago (${timeStr})`;
-    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago (${timeStr})`;
-    
-    const days = Math.floor(diffInSeconds / 86400);
-    if (days === 1) return `Yesterday (${timeStr})`;
-    if (days < 7) return `${days} days ago`;
-    
-    return date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
+    let relative = "";
+    if (diffInSeconds < 60) relative = "Just now";
+    else if (diffInSeconds < 3600) relative = `${Math.floor(diffInSeconds / 60)}m ago`;
+    else if (diffInSeconds < 86400) relative = `${Math.floor(diffInSeconds / 3600)}h ago`;
+    else {
+      const days = Math.floor(diffInSeconds / 86400);
+      relative = days === 1 ? "Yesterday" : `${days} days ago`;
+    }
+
+    // Returns combined format: "2h ago (26 Jan, 01:30 PM)"
+    return `${relative} (${dayStr}, ${timeStr})`;
   };
 
   const formatDate = (val) => {
@@ -99,11 +103,11 @@ export default function KhanavalProfile() {
             onClick={() => navigate("/scan-qr")}
             className="w-full mb-8 bg-slate-900 hover:bg-orange-600 text-white rounded-[32px] p-6 shadow-2xl flex items-center justify-between group transition-all transform active:scale-95 border-b-4 border-slate-950 active:border-b-0"
           >
-            <div className="flex items-center gap-5">
-              <div className="bg-orange-500 p-4 rounded-2xl shadow-inner group-hover:bg-white group-hover:text-orange-600 transition-colors">
+            <div className="flex items-center gap-5 text-left">
+              <div className="bg-orange-500 p-4 rounded-2xl shadow-inner group-hover:bg-white group-hover:text-orange-600 transition-colors shrink-0">
                 <QrCode className="w-8 h-8" />
               </div>
-              <div className="text-left">
+              <div>
                 <p className="text-[clamp(1rem,4.5vw,1.25rem)] font-black tracking-tight leading-none">Check-in for Meal</p>
                 <p className="text-slate-400 group-hover:text-orange-100 text-[clamp(0.6rem,2.5vw,0.75rem)] font-bold uppercase mt-1.5 flex items-center gap-1.5">
                   <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
@@ -111,7 +115,7 @@ export default function KhanavalProfile() {
                 </p>
               </div>
             </div>
-            <div className="h-12 w-12 rounded-full border border-slate-700 flex items-center justify-center group-hover:bg-orange-500 group-hover:border-orange-400 transition-all">
+            <div className="h-12 w-12 rounded-full border border-slate-700 flex items-center justify-center group-hover:bg-orange-500 group-hover:border-orange-400 transition-all shrink-0 ml-2">
               <ChevronRight className="w-6 h-6 text-white group-hover:translate-x-1 transition-transform" />
             </div>
           </button>
@@ -121,9 +125,9 @@ export default function KhanavalProfile() {
         {myMess ? (
           <Card className={`border-none shadow-[0_30px_60px_-15px_rgba(249,115,22,0.15)] rounded-[40px] overflow-hidden bg-white mb-8 border ${isExpiringSoon ? 'ring-2 ring-red-500/20' : 'border-orange-50'}`}>
             <CardContent className="p-8">
-              <div className="flex items-center justify-between mb-8">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
                 <div className="flex items-center gap-4">
-                  <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${isExpiringSoon ? 'bg-red-50' : 'bg-orange-50'}`}>
+                  <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 ${isExpiringSoon ? 'bg-red-50' : 'bg-orange-50'}`}>
                     <UtensilsCrossed className={`w-7 h-7 ${isExpiringSoon ? 'text-red-500' : 'text-orange-500'}`} />
                   </div>
                   <div>
@@ -134,17 +138,17 @@ export default function KhanavalProfile() {
                         <span className="text-[clamp(0.55rem,2.2vw,0.65rem)] font-black uppercase tracking-wider">Started: {formatDate(myMess.startAt)}</span>
                       </div>
                       
-                      {/* LAST SCAN UI ADDED HERE */}
-                      <div className="flex items-center gap-1 text-orange-500">
-                        <Clock className="w-3 h-3" />
-                        <span className="text-[clamp(0.55rem,2.2vw,0.65rem)] font-black uppercase tracking-wider">
+                      {/* UPDATED LAST SCAN SECTION */}
+                      <div className="flex items-start gap-1 text-orange-500">
+                        <Clock className="w-3 h-3 mt-0.5" />
+                        <span className="text-[clamp(0.55rem,2.2vw,0.65rem)] font-black uppercase tracking-wider leading-relaxed">
                           Last Scan: {formatRelativeTime(myMess.lastScannedAt)}
                         </span>
                       </div>
                     </div>
                   </div>
                 </div>
-                <div className="text-right">
+                <div className="sm:text-right w-full sm:w-auto border-t sm:border-t-0 border-slate-50 pt-3 sm:pt-0">
                   <p className="text-[clamp(0.55rem,2.2vw,0.65rem)] font-black text-slate-300 uppercase">Price</p>
                   <p className="text-slate-900 font-black text-[clamp(1rem,4.5vw,1.125rem)]">₹{myMess.price}</p>
                 </div>
@@ -162,7 +166,6 @@ export default function KhanavalProfile() {
                   <p className="text-[clamp(0.55rem,2.2vw,0.65rem)] font-bold text-slate-400 uppercase tracking-widest">Plan: {total} Days</p>
                 </div>
 
-                {/* Radial Loader */}
                 <div className="relative w-20 h-20 sm:w-24 sm:h-24">
                   <svg className="w-full h-full transform -rotate-90">
                     <circle cx="50%" cy="50%" r="34" stroke="currentColor" strokeWidth="8" fill="transparent" className="text-slate-200" />

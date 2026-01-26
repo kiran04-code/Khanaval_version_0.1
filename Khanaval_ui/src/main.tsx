@@ -7,7 +7,7 @@ import { StateContextProvider } from "./context/State.tsx";
 const clinet = new QueryClient()
 createRoot(document.getElementById("root")!).render(
     <StateContextProvider>
-        <GoogleOAuthProvider clientId="572931689498-m0f9tsrn7gephcjmfb9ntp3qj44qq08b.apps.googleusercontent.com">
+        <GoogleOAuthProvider clientId="19575799004-fe207037b8fou93toidb1461mvcrit4a.apps.googleusercontent.com">
             <QueryClientProvider client={clinet}>
                 <App />
             </QueryClientProvider>

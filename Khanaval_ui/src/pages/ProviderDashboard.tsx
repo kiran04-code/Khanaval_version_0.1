@@ -50,15 +50,26 @@ export default function ProviderDashboard() {
     setTimeout(() => setIsRefreshing(false), 800);
   };
 
+  // --- UPDATED: DATE & TIME BOTH INCLUDED ---
   const formatRecentTime = (val: any) => {
     if (!val) return "N/A";
     const date = new Date(isNaN(val) ? val : Number(val));
     const now = new Date();
     const diffInSec = Math.floor((now.getTime() - date.getTime()) / 1000);
-    if (diffInSec < 60) return "Just now";
-    if (diffInSec < 3600) return `${Math.floor(diffInSec / 60)}m ago`;
-    if (diffInSec < 86400) return `${Math.floor(diffInSec / 3600)}h ago`;
-    return date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
+    
+    // Format: 01:30 PM
+    const timeStr = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+    // Format: 26 Jan
+    const dateStr = date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
+
+    let relative = "";
+    if (diffInSec < 60) relative = "Just now";
+    else if (diffInSec < 3600) relative = `${Math.floor(diffInSec / 60)}m ago`;
+    else if (diffInSec < 86400) relative = `${Math.floor(diffInSec / 3600)}h ago`;
+    else relative = dateStr;
+
+    // Returns: "5m ago (26 Jan, 01:30 PM)"
+    return `${relative} (${dateStr}, ${timeStr})`;
   };
 
   const dynamicStats = [
@@ -139,7 +150,6 @@ export default function ProviderDashboard() {
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
                 <div className="lg:col-span-2 space-y-4">
                   
-                  {/* NEW SYNC SECTION ABOVE CARD */}
                   <div className="flex items-center justify-between px-2">
                     <div className="flex items-center gap-2">
                       <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-orange-100">
@@ -179,10 +189,10 @@ export default function ProviderDashboard() {
                                       {scan.userId?.number || "No Number"}
                                     </p>
                                   </div>
-                                  <div className="flex items-center gap-1 mt-0.5">
-                                    <Clock className="w-2.5 h-2.5 text-orange-500" />
-                                    <p className="text-[9px] lg:text-[10px] font-bold text-slate-400 uppercase tracking-tighter">
-                                      Scanned {formatRecentTime(scan.lastScannedAt)}
+                                  <div className="flex items-start gap-1 mt-0.5">
+                                    <Clock className="w-2.5 h-2.5 text-orange-500 mt-0.5" />
+                                    <p className="text-[9px] lg:text-[10px] font-bold text-slate-400 uppercase tracking-tighter leading-relaxed">
+                                      {formatRecentTime(scan.lastScannedAt)}
                                     </p>
                                   </div>
                                 </div>

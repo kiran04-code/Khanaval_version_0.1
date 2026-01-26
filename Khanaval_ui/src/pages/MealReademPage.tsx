@@ -141,7 +141,7 @@ export default function MealRedeemPage() {
                             </div>
                             <div className="flex justify-between items-center border-t border-slate-200 pt-3">
                                 <span className="text-[11px] font-bold text-slate-400 uppercase">Remaining Meals</span>
-                                <span className="text-xl font-black text-slate-900">{myMess.RemainingDay - 1}</span>
+                                <span className="text-xl font-black text-slate-900">{myMess.RemainingDay }</span>
                             </div>
                         </div>
                     </div>

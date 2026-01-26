@@ -3,8 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { 
-  Search, Bell, MapPin, ChevronDown, Clock, QrCode, 
-  Utensils, Home, User, Navigation, X, Beef, Leaf 
+  Search, Bell, MapPin, ChevronDown, QrCode, 
+  Home, User, Navigation, X, Beef, Leaf, IndianRupee 
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { GetALLmess } from "@/hooks/MessData";
@@ -17,16 +17,12 @@ const MessCard = React.lazy(() => import("./components/MessCard"));
 // --- SKELETON COMPONENT ---
 const MessCardSkeleton = () => (
   <div className="min-w-[85vw] sm:min-w-[320px] md:min-w-0 shrink-0 snap-center">
-    <div className="bg-white rounded-[2.5rem] p-4 h-[420px] shadow-sm animate-pulse flex flex-col gap-4 border border-slate-50">
-      <div className="bg-slate-200 h-1/2 w-full rounded-[2rem]" />
-      <div className="space-y-3 px-2">
-        <div className="h-6 bg-slate-200 rounded-md w-3/4" />
-        <div className="h-4 bg-slate-100 rounded-md w-1/2" />
-        <div className="h-10 bg-slate-50 rounded-xl w-full mt-4" />
-        <div className="flex justify-between items-center mt-6">
-           <div className="h-8 bg-slate-100 rounded-lg w-20" />
-           <div className="h-10 bg-slate-200 rounded-xl w-32" />
-        </div>
+    <div className="bg-white rounded-[2rem] p-4 h-[350px] shadow-sm animate-pulse flex flex-col gap-4 border border-slate-50">
+      <div className="bg-slate-200 h-[40%] w-full rounded-[1.5rem]" />
+      <div className="space-y-3 px-2 flex-1">
+        <div className="h-5 bg-slate-200 rounded-md w-3/4" />
+        <div className="h-3 bg-slate-100 rounded-md w-1/2" />
+        <div className="h-8 bg-slate-50 rounded-xl w-full mt-4" />
       </div>
     </div>
   </div>
@@ -51,7 +47,7 @@ const QuickActionBadge = ({ icon: Icon, label, active, onClick }) => (
 export default function UserDashboard() {
   const navigate = useNavigate();
   const { AllMESS, isLoading } = GetALLmess(); 
-  const {user } = useCurrentUser(); 
+  const { user } = useCurrentUser(); 
 
   const { userlat, userlng } = useStateContex(); 
   const [activeTab, setActiveTab] = useState("nearby"); 
@@ -59,31 +55,45 @@ export default function UserDashboard() {
 
   const processedMesses = useMemo(() => {
     if (!AllMESS) return [];
+    
     return AllMESS
       .map(mess => {
         const dist = calculateDistance(userlat, userlng, mess.location?.lat, mess.location?.lng);
-        return { ...mess, calculatedDistance: parseFloat(dist) || 0 };
+        // Ensure price is a number for sorting, default to infinity if no price to put them at the end
+        const price = mess.MontlyPrices ? Number(mess.MontlyPrices) : Infinity;
+        return { ...mess, calculatedDistance: parseFloat(dist) || 0, sortPrice: price };
       })
       .filter(mess => {
         if (!mess.messVerified) return false;
+        
+        const query = searchQuery.toLowerCase();
         const matchesSearch = 
-          mess.identity?.name?.toLowerCase().includes(searchQuery.toLowerCase()) || 
-          mess.location?.landmark?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          mess.location?.society?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          mess.location?.address?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-           mess.location?.city?.toLowerCase().includes(searchQuery.toLowerCase());
+          mess.identity?.name?.toLowerCase().includes(query) || 
+          mess.location?.landmark?.toLowerCase().includes(query) ||
+          mess.location?.society?.toLowerCase().includes(query) ||
+          mess.location?.city?.toLowerCase().includes(query);
+
         let matchesTab = true;
-        if (activeTab === "nearby") matchesTab = true;
         if (activeTab === "veg") matchesTab = mess.identity?.dietaryType === "Pure Veg";
         if (activeTab === "nonveg") matchesTab = mess.identity?.dietaryType === "Pure Non-Veg" || mess.identity?.dietaryType === "Veg & Non-Veg";
+        // "price" and "nearby" tabs show all types but affect sorting below
+        
         return matchesSearch && matchesTab;
       })
-      .sort((a, b) => a.calculatedDistance - b.calculatedDistance); 
+      .sort((a, b) => {
+        // Primary Sort Logic
+        if (activeTab === "price") {
+          return a.MontlyPrices - b.MontlyPrices;
+        }
+        // Default sort by distance
+        return a.calculatedDistance - b.calculatedDistance;
+      }); 
   }, [AllMESS, searchQuery, activeTab, userlat, userlng]);
- console.log(AllMESS)
+
   return (
     <div className="min-h-screen bg-[#FDFDFF] pb-24 md:pb-12">
       
+      {/* --- DESKTOP HEADER --- */}
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-2xl border-b border-slate-100/60 hidden md:block">
         <div className="container mx-auto px-6 h-20 flex items-center justify-between gap-10">
           <Link to="/" className="w-[170px]">
@@ -115,18 +125,19 @@ export default function UserDashboard() {
 
           <div className="flex items-center gap-4">
             <Button variant="ghost" size="icon" className="rounded-2xl bg-slate-50"><Bell className="w-5 h-5" /></Button>
-           {
-            user &&  <div 
-              className="w-10 h-10 rounded-2xl bg-orange-100 cursor-pointer overflow-hidden border-2 border-white shadow-md" 
-              onClick={() => navigate("/profile")}
-            >
-              <img src="https://img.freepik.com/free-vector/smiling-young-man-illustration_1308-174669.jpg?semt=ais_hybrid&w=740&q=80" alt="user" />
-            </div>
-           }
+            {user && (
+              <div 
+                className="w-10 h-10 rounded-2xl bg-orange-100 cursor-pointer overflow-hidden border-2 border-white shadow-md" 
+                onClick={() => navigate("/profile")}
+              >
+                <img src="https://img.freepik.com/free-vector/smiling-young-man-illustration_1308-174669.jpg?semt=ais_hybrid&w=740&q=80" alt="user" />
+              </div>
+            )}
           </div>
         </div>
       </header>
 
+      {/* --- MOBILE HEADER --- */}
       <div className="md:hidden sticky top-0 z-50 bg-white px-4 pt-4 pb-3 shadow-sm">
         <div className="flex items-center justify-between mb-3">
           <Link to="/" className="w-[140px]">
@@ -135,7 +146,7 @@ export default function UserDashboard() {
           <div className="flex items-center gap-2">
             <Button variant="ghost" size="icon" className="rounded-full"><Bell className="w-5 h-5" /></Button>
             <div className="w-8 h-8 rounded-full bg-slate-100 overflow-hidden" onClick={() => navigate("/profile")}>
-                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Rahul" alt="user" />
+              <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Rahul" alt="user" />
             </div>
           </div>
         </div>
@@ -151,13 +162,20 @@ export default function UserDashboard() {
       </div>
 
       <main className="container mx-auto px-4 md:px-6 pt-6 md:pt-10 max-w-7xl">
-      
+        
+        {/* --- TABS / FILTERS --- */}
         <div className="flex gap-3 overflow-x-auto no-scrollbar pb-8 -mx-4 px-4 md:mx-0 md:px-0">
           <QuickActionBadge 
             icon={Navigation} 
             label="Nearby" 
             active={activeTab === "nearby"} 
             onClick={() => setActiveTab("nearby")} 
+          />
+          <QuickActionBadge 
+            icon={IndianRupee} 
+            label="Lowest Price" 
+            active={activeTab === "price"} 
+            onClick={() => setActiveTab("price")} 
           />
           <QuickActionBadge 
             icon={Leaf} 
@@ -173,6 +191,7 @@ export default function UserDashboard() {
           />
         </div>
 
+        {/* --- MESS GRID --- */}
         <div className="
           flex overflow-x-auto gap-5 pb-10 -mx-4 px-4 no-scrollbar
           snap-x-mandatory scroll-smooth
@@ -211,6 +230,8 @@ export default function UserDashboard() {
           )}
         </div>
       </main>
+
+      {/* --- MOBILE BOTTOM NAV --- */}
       <nav className="fixed bottom-0 left-0 right-0 z-[100] bg-white/90 backdrop-blur-xl border-t border-slate-100 px-8 py-4 md:hidden flex justify-between items-center">
         <button 
           onClick={() => navigate("/")}

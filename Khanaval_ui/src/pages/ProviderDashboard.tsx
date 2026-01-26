@@ -125,7 +125,7 @@ export default function ProviderDashboard() {
 
   // 1. UNREGISTERED STATE (IMPROVED UI)
   if (!isRegistered) {
-    return <UnregisteredState/>
+    return <UnregisteredState />
   }
 
   // 2. VERIFICATION PENDING
@@ -137,7 +137,7 @@ export default function ProviderDashboard() {
       <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-slate-200 transform transition-transform duration-300 lg:translate-x-0 lg:static ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}>
         <div className="p-6 border-b border-slate-100 flex items-center justify-between">
           <Link to="/" className="w-[120px] lg:w-[150px]">
-             <img src="/logo.png" alt="logo" className="w-full h-auto" />
+            <img src="/logo.png" alt="logo" className="w-full h-auto" />
           </Link>
           <button onClick={() => setSidebarOpen(false)} className="lg:hidden p-2 text-slate-400">
             <X className="w-5 h-5" />
@@ -178,46 +178,64 @@ export default function ProviderDashboard() {
           {activeTab === "dashboard" && (
             <div className="space-y-6 lg:space-y-8 animate-in fade-in duration-500">
               {/* PRICING CARD */}
-              <Card className="border-none shadow-xl rounded-[2rem] bg-slate-900 text-white overflow-hidden relative">
-                <CardContent className="p-6 lg:p-8">
+              <Card className="border-none shadow-xl rounded-[1.5rem] md:rounded-[2rem] bg-slate-900 text-white overflow-hidden relative">
+                <CardContent className="p-5 sm:p-6 lg:p-8">
                   <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
-                    <div className="space-y-2">
+
+                    {/* LEFT SECTION: Title and Live Rate */}
+                    <div className="space-y-3">
                       <div className="flex items-center gap-2">
-                        <div className="p-1.5 bg-orange-500/20 rounded-lg">
+                        <div className="p-1.5 bg-orange-500/20 rounded-lg shrink-0">
                           <Sparkles className="w-4 h-4 text-orange-500" />
                         </div>
-                        <h2 className="text-lg font-black italic uppercase tracking-tighter">Mess Subscription</h2>
+                        <h2 className="text-base sm:text-lg font-black italic uppercase tracking-tighter">
+                          Mess Subscription
+                        </h2>
                       </div>
+
                       <div className="flex items-center gap-2">
-                        <p className="text-slate-400 text-xs font-bold uppercase tracking-widest">Live Rate:</p>
-                        <Badge variant="outline" className="text-emerald-400 border-emerald-400/30 bg-emerald-400/10 font-black">
+                        <p className="text-slate-400 text-[10px] sm:text-xs font-bold uppercase tracking-widest">
+                          Live Rate:
+                        </p>
+                        <Badge variant="outline" className="text-emerald-400 border-emerald-400/30 bg-emerald-400/10 font-black py-0.5">
                           ₹{messdata?.MontlyPrices || "0"}/mo
                         </Badge>
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-3 bg-white/5 p-2.5 rounded-[1.5rem] backdrop-blur-md border border-white/10">
-                      <div className="relative">
-                        <IndianRupee className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-orange-500" />
+                    {/* RIGHT SECTION: Price Input and Update Button */}
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 bg-white/5 p-2 sm:p-2.5 rounded-2xl sm:rounded-[1.5rem] backdrop-blur-md border border-white/10">
+                      <div className="relative flex-1 sm:flex-none">
+                        <IndianRupee className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-orange-500 z-20" />
                         <Input
                           type="number"
                           placeholder="Set Price"
                           value={globalPrice}
                           onChange={(e) => setGlobalPrice(e.target.value)}
-                          className="w-32 lg:w-40 h-12 bg-slate-800/50 border-slate-700 text-white pl-9 font-black text-lg rounded-xl focus-visible:ring-orange-500"
+                          className="w-full sm:w-32 lg:w-40 h-11 sm:h-12 bg-slate-800/50 border-slate-700 text-white pl-9 font-black text-lg rounded-xl focus-visible:ring-orange-500"
                         />
                       </div>
+
                       <Button
                         onClick={handleUpdatePrice}
                         disabled={isUpdating}
-                        className="h-12 bg-orange-600 hover:bg-orange-500 text-white font-black px-6 rounded-xl transition-all shadow-lg active:scale-95 flex gap-2 min-w-[140px]"
+                        className="h-11 sm:h-12 bg-orange-600 hover:bg-orange-500 text-white font-black px-6 rounded-xl transition-all shadow-lg active:scale-95 flex items-center justify-center gap-2 min-w-full sm:min-w-[140px]"
                       >
-                        {isUpdating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-                        <span>{isUpdating ? "SAVING..." : "UPDATE"}</span>
+                        {isUpdating ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <Save className="w-4 h-4" />
+                        )}
+                        <span className="text-xs sm:text-sm">
+                          {isUpdating ? "SAVING..." : "UPDATE"}
+                        </span>
                       </Button>
                     </div>
+
                   </div>
-                  <Calendar className="absolute -bottom-8 -left-8 w-32 h-32 text-white/[0.03] -rotate-12" />
+
+                  {/* BACKGROUND ICON */}
+                  <Calendar className="absolute -bottom-6 -left-6 sm:-bottom-8 sm:-left-8 w-24 h-24 sm:w-32 sm:h-32 text-white/[0.03] -rotate-12 pointer-events-none" />
                 </CardContent>
               </Card>
 
@@ -316,7 +334,7 @@ const navItems = [
   { id: "dashboard", icon: LayoutDashboard, label: "Live Dashboard" },
   { id: "MonthlySubscriptionRequest", icon: CalendarCheck, label: "Price Requests" },
   { id: "menu", icon: Utensils, label: "Daily Menu" },
-  { id: "subscribers", icon: Users, label: "Student Register" },
+  { id: "subscribers", icon: Users, label: "Custumer Register" },
   { id: "scanner", icon: QrCode, label: "QR Scanner" },
   { id: "Profile", icon: Users2, label: "Settings" },
 ];

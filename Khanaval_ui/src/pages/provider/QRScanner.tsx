@@ -1,182 +1,155 @@
 import { useEffect, useState } from "react";
-import QRCode from "qrcode"; // Make sure to: npm install qrcode
+import QRCode from "qrcode";
 import jsPDF from "jspdf";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Download, CheckCircle2, UserCheck, ShieldCheck, Loader2, Zap } from "lucide-react";
+import { Printer } from "lucide-react";
 import { Getmymess } from "@/hooks/PorviderMess";
 
 export default function SubscriberCheckInQR() {
   const { messdata } = Getmymess();
   const [qrBase64, setQrBase64] = useState<string>("");
-  const [isGenerating, setIsGenerating] = useState(false);
+  const messName = messdata?.identity?.name || "RADHE MESS";
 
-  const messName = messdata?.identity?.name || "Premium Mess";
-
-  // --- GENERATE QR ON THE FLY (Fixes the Download Error) ---
   useEffect(() => {
-    // We generate the QR locally using the mess ID. 
-    // This removes the need to fetch an external image.
-    const generateLocalQR = async () => {
+    const generateQR = async () => {
       try {
-        const dataToEncode = JSON.stringify({
-          action: "MARK_ATTENDANCE",
-          messId: messdata?.id || "default",
-          name: messName
-        });
-
-        const base64 = await QRCode.toDataURL(dataToEncode, {
+        const base64 = await QRCode.toDataURL(messdata?.MessQrcode || "default", {
           width: 1000,
           margin: 1,
-          color: {
-            dark: "#000000",
-            light: "#FFFFFF",
-          },
+          color: { dark: "#000000", light: "#FFFFFF" },
         });
         setQrBase64(base64);
       } catch (err) {
-        console.error("QR Generation failed", err);
+        console.error(err);
       }
     };
+    if (messdata) generateQR();
+  }, [messdata]);
 
-    if (messdata) generateLocalQR();
-  }, [messdata, messName]);
+  const downloadPdf = () => {
+    const doc = new jsPDF("p", "mm", "a4");
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const centerX = pageWidth / 2;
 
-  const downloadPoster = () => {
-    if (!qrBase64) return;
+    // 1. Top Orange Border
+    doc.setFillColor(255, 140, 0);
+    doc.rect(0, 0, pageWidth, 15, "F");
+
+    // 2. KHANAAVAL - FIXED CENTERING
+    const title = "KHANAAVAL";
+    const fontSize = 42;
+    const charSpacing = 4;
     
-    setIsGenerating(true);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(fontSize);
+    doc.setTextColor(0, 0, 0);
+
+    // Manual Calculation for true center with character spacing
+    // jsPDF's getTextWidth doesn't account for charSpace properly in alignment
+    const textWidth = doc.getTextWidth(title);
+    const totalExtraSpace = (title.length - 1) * charSpacing;
+    const actualTotalWidth = textWidth + totalExtraSpace;
+    const startX = (pageWidth - actualTotalWidth) / 2;
+
+    doc.text(title, startX, 45, { charSpace: charSpacing });
+
+    // 3. MESS NAME BOX (Centered below heading)
+    const btnWidth = 110;
+    const btnHeight = 16;
+    const btnY = 58;
     
-    // Using a slight timeout to let the UI show the loader
-    setTimeout(() => {
-      const doc = new jsPDF("p", "mm", "a4");
-      const center = 105;
+    doc.setFillColor(31, 41, 55); // Match image dark blue/gray
+    doc.roundedRect(centerX - (btnWidth / 2), btnY, btnWidth, btnHeight, 4, 4, "F");
+    
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(18);
+    // Center the mess name inside the dark box
+    doc.text(messName.toUpperCase(), centerX, btnY + 10.5, { 
+      align: "center",
+      charSpace: 1 
+    });
 
-      // 1. Premium Orange Background
-      doc.setFillColor(255, 140, 0); 
-      doc.rect(0, 0, 210, 297, "F");
-      
-      // 2. Main White Card Area
-      doc.setFillColor(255, 255, 255);
-      doc.roundedRect(8, 8, 194, 281, 10, 10, "F");
+    // 4. QR CODE (Centered)
+    if (qrBase64) {
+      const qrSize = 110;
+      const qrY = 85;
+      // Border around QR
+      doc.setDrawColor(230, 230, 230);
+      doc.rect(centerX - (qrSize / 2) - 2, qrY - 2, qrSize + 4, qrSize + 4, "S");
+      doc.addImage(qrBase64, "PNG", centerX - (qrSize / 2), qrY, qrSize, qrSize);
+    }
 
-      // 3. Header Branding
-      doc.setTextColor(255, 140, 0);
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(38);
-      doc.text("KHANAAVAL", center, 32, { align: "center", charSpace: 3 });
-      
-      doc.setFontSize(10);
-      doc.setTextColor(140, 140, 140);
-      doc.setFont("helvetica", "normal");
-      doc.text("SMART DIGITAL ATTENDANCE SYSTEM", center, 40, { align: "center" });
+    // 5. SCAN TO CHECK-IN
+    doc.setTextColor(255, 140, 0);
+    doc.setFontSize(32);
+    doc.text("SCAN TO CHECK-IN", centerX, 220, { align: "center" });
 
-      // 4. Mess Name Display
-      doc.setFillColor(250, 250, 250);
-      doc.roundedRect(30, 55, 150, 25, 5, 5, "F");
-      doc.setDrawColor(255, 140, 0);
-      doc.setLineWidth(0.5);
-      doc.roundedRect(30, 55, 150, 25, 5, 5, "D");
-      
-      doc.setTextColor(40, 40, 40);
-      doc.setFontSize(22);
-      doc.text(messdata?.identity?.name, center, 72, { align: "center" });
+    // 6. Subtext
+    doc.setTextColor(100, 116, 139);
+    doc.setFontSize(14);
+    doc.setFont("helvetica", "normal");
+    doc.text("Mark your attendance instantly for today's meal.", centerX, 230, { align: "center" });
 
-      // 5. QR Code Area
-      doc.addImage(messdata?.MessQrcode, "PNG", 45, 95, 120, 120);
+    // 7. Footer Instructions
+    const footerWidth = 170;
+    const footerY = 250;
+    doc.setFillColor(248, 250, 252);
+    doc.setDrawColor(226, 232, 240);
+    doc.roundedRect(centerX - (footerWidth / 2), footerY, footerWidth, 20, 4, 4, "FD");
+    
+    doc.setTextColor(15, 23, 42);
+    doc.setFontSize(11);
+    doc.setFont("helvetica", "bold");
+    doc.text("1. OPEN APP", centerX - 55, footerY + 12, { align: "center" });
+    doc.text("2. SCAN QR", centerX, footerY + 12, { align: "center" });
+    doc.text("3. EAT WELL", centerX + 55, footerY + 12, { align: "center" });
 
-      // 6. Professional Call to Action
-      doc.setFontSize(24);
-      doc.setTextColor(255, 140, 0);
-      doc.text("SCAN TO CHECK-IN", center, 235, { align: "center" });
-
-      doc.setFontSize(14);
-      doc.setTextColor(80, 80, 80);
-      doc.text("Subscribers: Mark your daily meal instantly", center, 245, { align: "center" });
-
-      // 7. Footer Instructions
-      doc.setFillColor(245, 245, 245);
-      doc.roundedRect(20, 260, 170, 22, 5, 5, "F");
-      
-      doc.setFontSize(10);
-      doc.setTextColor(100, 100, 100);
-      doc.text("Open Khanaval App • Scan Code • Attendance Marked", center, 273, { align: "center" });
-
-      doc.save(`CheckIn-${messName}.pdf`);
-      setIsGenerating(false);
-    }, 500);
+    doc.save(`${messName}-Poster.pdf`);
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
-      <Card className="max-w-md w-full shadow-2xl border-none rounded-[3rem] overflow-hidden bg-white ring-1 ring-black/5">
-        {/* Top Header Section */}
-        <div className="bg-[#FF8C00] p-10 text-center text-white relative">
-          <div className="absolute top-4 right-6 opacity-20"><Zap className="w-12 h-12" /></div>
-          <div className="flex justify-center mb-4">
-            <div className="bg-white/20 p-3 rounded-2xl backdrop-blur-md border border-white/30">
-              <ShieldCheck className="w-8 h-8" />
+    <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-4">
+      {/* UI Preview Card */}
+      <div className="w-[450px] bg-white rounded-2xl shadow-2xl overflow-hidden relative border-t-[20px] border-[#FF8C00]">
+        <Card className="border-none shadow-none">
+          <CardContent className="pt-12 pb-16 flex flex-col items-center">
+            <h1 className="text-4xl font-black tracking-[0.4em] text-black mb-8 text-center ml-[0.4em]">
+              KHANAAVAL
+            </h1>
+            
+            <div className="bg-[#1F2937] px-10 py-3 rounded-xl mb-12 min-w-[220px] text-center">
+              <span className="text-white text-lg font-bold tracking-widest block uppercase">
+                {messName}
+              </span>
             </div>
-          </div>
-          <h1 className="text-3xl font-black tracking-[0.2em]">KHANAVAL</h1>
-          <p className="text-orange-100 text-[10px] font-bold uppercase tracking-widest mt-2">Attendance Point</p>
-        </div>
 
-        <CardContent className="p-8">
-          <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold text-slate-800">{messdata?.identity?.name}</h2>
-            <p className="text-slate-400 text-sm mt-1">Ready for Subscriber Scans</p>
-          </div>
-
-          {/* QR Container */}
-          <div className="relative p-2 bg-gradient-to-b from-slate-100 to-white rounded-[2rem] border border-slate-200 shadow-inner">
-            <div className="bg-white p-6 rounded-[1.8rem] shadow-sm">
-              {messdata ? (
-                <img src={messdata?.MessQrcode} alt="Check-in QR" className="w-full h-auto" />
-              ) : (
-                <div className="aspect-square flex items-center justify-center text-slate-300">
-                  <Loader2 className="w-10 h-10 animate-spin" />
-                </div>
-              )}
+            <div className="w-72 h-72 mb-12 bg-white p-2 border shadow-sm flex items-center justify-center">
+              {qrBase64 && <img src={qrBase64} alt="QR" className="w-full h-full" />}
             </div>
-          </div>
 
-          {/* Information Badges */}
-          <div className="mt-8 grid grid-cols-2 gap-3">
-            <div className="flex items-center gap-2 px-4 py-3 bg-slate-50 rounded-2xl border border-slate-100">
-        
-              <span className="text-[11px] font-bold text-slate-600 uppercase">Subscribers</span>
+            <h2 className="text-[#FF8C00] text-3xl font-black mb-3 uppercase tracking-tight">
+              Scan to Check-In
+            </h2>
+            <p className="text-slate-500 text-base mb-12">
+              Mark your attendance instantly for today's meal.
+            </p>
+
+            <div className="w-full bg-slate-50 py-5 px-8 rounded-2xl flex justify-between text-[11px] font-black text-slate-800 border">
+              <span>1. OPEN APP</span>
+              <span className="border-x border-slate-200 px-4">2. SCAN QR</span>
+              <span>3. EAT WELL</span>
             </div>
-            <div className="flex items-center gap-2 px-4 py-3 bg-slate-50 rounded-2xl border border-slate-100">
+          </CardContent>
+        </Card>
+      </div>
 
-              <span className="text-[10px] font-bold text-slate-600 uppercase">Secure Log</span>
-            </div>
-          </div>
-
-          {/* Main Action */}
-          <Button 
-            onClick={downloadPoster}
-            disabled={!qrBase64 || isGenerating}
-            className="w-full mt-8 h-16  bg-slate-900 hover:bg-black text-white rounded-2xl text-[12px] font-bold shadow-xl shadow-slate-200 transition-all active:scale-95 flex items-center justify-center"
-          >
-            {isGenerating ? (
-              <>
-                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                Generating Poster...
-              </>
-            ) : (
-              <>
-                <Download className="mr-2 text-[12px]  h-5 w-5" />
-                Download Print Poster
-              </>
-            )}
-          </Button>
-
-          <p className="text-center mt-6 text-[10px] text-slate-400 font-bold uppercase tracking-widest">
-            Scan • Verify • Eat
-          </p>
-        </CardContent>
-      </Card>
+      <Button 
+        onClick={downloadPdf} 
+        className="mt-8 bg-[#FF8C00] hover:bg-orange-600 h-14 px-10 rounded-2xl text-lg font-bold shadow-lg"
+      >
+        <Printer className="mr-2 w-6 h-6" /> Download Print PDF
+      </Button>
     </div>
   );
 }

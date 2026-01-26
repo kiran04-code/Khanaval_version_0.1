@@ -336,5 +336,5 @@ const navItems = [
   { id: "menu", icon: Utensils, label: "Daily Menu" },
   { id: "subscribers", icon: Users, label: "Custumer Register" },
   { id: "scanner", icon: QrCode, label: "QR Scanner" },
-  { id: "Profile", icon: Users2, label: "Settings" },
+  { id: "Profile", icon: Users2, label: "Profile" },
 ];

@@ -30,6 +30,7 @@ import { GetALLmess } from "@/hooks/MessData";
 import { calculateDistance } from "./components/Distance";
 import { useStateContex } from "@/context/State";
 import Footer from "@/components/layout/footer";
+import { useCurrentUser } from "@/hooks/user-hook";
 const features = [
   {
     icon: <Search className="w-6 h-6" />,
@@ -137,6 +138,7 @@ const MessSkeleton = ({ isLarge }) => (
 const Index = () => {
   const [isLoading, setIsLoading] = useState(true);
   const { Providerdata } = UserProviderdata()
+  const { user } = useCurrentUser()
   const navigate = useNavigate()
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -144,8 +146,8 @@ const Index = () => {
     }, 5000);
     return () => clearTimeout(timer);
   }, []);
-const {AllMESS} = GetALLmess()
-const {userlat,userlng} = useStateContex()
+  const { AllMESS } = GetALLmess()
+  const { userlat, userlng } = useStateContex()
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -205,7 +207,7 @@ const {userlat,userlng} = useStateContex()
                     Find Verified Mess
                   </Button>
                 </Link>
-                <Button onClick={()=>navigate("/how-it-works")} variant="ghost" size="xl" className="w-full sm:w-auto">
+                <Button onClick={() => navigate("/how-it-works")} variant="ghost" size="xl" className="w-full sm:w-auto">
                   How it works
                 </Button>
               </div>
@@ -302,9 +304,13 @@ const {userlat,userlng} = useStateContex()
             ))}
           </div>
           <div className="mt-24 text-center">
-            <Button size="xl" className="rounded-2xl px-12 py-7 text-lg font-bold shadow-[0_20px_50px_rgba(var(--primary-rgb),0.3)] hover:scale-105 transition-all">
-              Get Started Now
-            </Button>
+            {
+              user ||  Providerdata ? <Button onClick={()=>navigate("/mess")} size="xl" className="rounded-2xl px-12 py-7 text-lg font-bold shadow-[0_20px_50px_rgba(var(--primary-rgb),0.3)]  transition-all">
+                Get Started Now
+              </Button> : <Button onClick={()=>navigate("/auth")} size="xl" className="rounded-2xl px-12 py-7 text-lg font-bold shadow-[0_20px_50px_rgba(var(--primary-rgb),0.3)]  transition-all">
+                Get Started Now
+              </Button>
+            }
           </div>
         </div>
       </section>
@@ -346,7 +352,7 @@ const {userlat,userlng} = useStateContex()
             {/* BENTO GRID AREA: SHOW SKELETON OR DATA */}
             <div className="relative min-h-[500px]">
               <div className="grid grid-cols-2 lg:grid-cols-2 gap-3 md:gap-4">
-                {AllMESS.length<0 ? (
+                {AllMESS.length < 0 ? (
                   <>
                     <MessSkeleton isLarge={true} />
                     <MessSkeleton isLarge={false} />
@@ -388,7 +394,7 @@ const {userlat,userlng} = useStateContex()
                             <span className="font-bold text-white">4.2</span>
                           </div>
                           <span>•</span>
-                          <span className="font-medium">{calculateDistance(userlat,userlng,mess.location.lat,mess.location.lng)} KM</span>
+                          <span className="font-medium">{calculateDistance(userlat, userlng, mess.location.lat, mess.location.lng)} KM</span>
                         </div>
                       </div>
                     </Card>

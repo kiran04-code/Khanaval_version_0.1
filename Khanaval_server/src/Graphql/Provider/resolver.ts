@@ -56,6 +56,7 @@ const Query = {
 
         return {
             id: mess._id.toString(),
+            MontlyPrices:mess.MontlyPrices,
             identity: mess.identity,
             legal: mess.legal,
             media: mess.media,

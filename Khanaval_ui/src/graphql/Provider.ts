@@ -56,6 +56,7 @@ export const GET_MY_MESS = gql `
 query GetcurentMessdata{
      getproviderMessData {
      id,
+     MontlyPrices,
      identity {
       name
       startTime

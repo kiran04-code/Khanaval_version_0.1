@@ -35,6 +35,7 @@ declare const Mess: mongoose.Model<{
         ratingInStar?: number | null;
     }>;
     myAllSubscribers: mongoose.Types.ObjectId[];
+    MontlyPrices?: number | null;
     identity?: {
         name: string;
         startTime?: string | null;
@@ -101,6 +102,7 @@ declare const Mess: mongoose.Model<{
         ratingInStar?: number | null;
     }>;
     myAllSubscribers: mongoose.Types.ObjectId[];
+    MontlyPrices?: number | null;
     identity?: {
         name: string;
         startTime?: string | null;
@@ -169,6 +171,7 @@ declare const Mess: mongoose.Model<{
         ratingInStar?: number | null;
     }>;
     myAllSubscribers: mongoose.Types.ObjectId[];
+    MontlyPrices?: number | null;
     identity?: {
         name: string;
         startTime?: string | null;
@@ -241,6 +244,7 @@ declare const Mess: mongoose.Model<{
         ratingInStar?: number | null;
     }>;
     myAllSubscribers: mongoose.Types.ObjectId[];
+    MontlyPrices?: number | null;
     identity?: {
         name: string;
         startTime?: string | null;
@@ -305,6 +309,7 @@ declare const Mess: mongoose.Model<{
         ratingInStar?: number | null;
     }>;
     myAllSubscribers: mongoose.Types.ObjectId[];
+    MontlyPrices?: number | null;
     identity?: {
         name: string;
         startTime?: string | null;
@@ -373,6 +378,7 @@ declare const Mess: mongoose.Model<{
         ratingInStar?: number | null;
     }>;
     myAllSubscribers: mongoose.Types.ObjectId[];
+    MontlyPrices?: number | null;
     identity?: {
         name: string;
         startTime?: string | null;
@@ -446,6 +452,7 @@ declare const Mess: mongoose.Model<{
             ratingInStar?: number | null;
         }>;
         myAllSubscribers: mongoose.Types.ObjectId[];
+        MontlyPrices?: number | null;
         identity?: {
             name: string;
             startTime?: string | null;
@@ -514,6 +521,7 @@ declare const Mess: mongoose.Model<{
             ratingInStar?: number | null;
         }>;
         myAllSubscribers: mongoose.Types.ObjectId[];
+        MontlyPrices?: number | null;
         identity?: {
             name: string;
             startTime?: string | null;
@@ -585,6 +593,7 @@ declare const Mess: mongoose.Model<{
         ratingInStar?: number | null;
     }>;
     myAllSubscribers: mongoose.Types.ObjectId[];
+    MontlyPrices?: number | null;
     identity?: {
         name: string;
         startTime?: string | null;
@@ -655,6 +664,7 @@ declare const Mess: mongoose.Model<{
         ratingInStar?: number | null;
     }>;
     myAllSubscribers: mongoose.Types.ObjectId[];
+    MontlyPrices?: number | null;
     identity?: {
         name: string;
         startTime?: string | null;

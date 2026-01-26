@@ -57,6 +57,7 @@ input Identity {
 type  GetCurrentMess{
   id:ID!
   identity:Identitys!
+  MontlyPrices:Int
   legal:Legals!
   media:Medias!
   location:Locations!

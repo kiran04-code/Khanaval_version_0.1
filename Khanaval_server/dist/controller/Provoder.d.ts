@@ -16,4 +16,5 @@ export declare const getAllFeedback: (req: Request, res: Response) => Promise<Re
 export declare const AddToSubscriber: (req: Request, res: Response) => Promise<Response<any, Record<string, any>>>;
 export declare const finUderAndDelete: (req: Request, res: Response) => Promise<Response<any, Record<string, any>>>;
 export declare const MarkMealAttendece: (req: Request, res: Response) => Promise<Response<any, Record<string, any>>>;
+export declare const updatedtheMonthy: (req: Request, res: Response) => Promise<Response<any, Record<string, any>>>;
 //# sourceMappingURL=Provoder.d.ts.map

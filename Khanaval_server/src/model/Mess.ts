@@ -2,6 +2,9 @@ import mongoose from "mongoose";
 
 const providerSchema = new mongoose.Schema(
     {
+        MontlyPrices: {
+            type:Number,
+        },
         providerId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Provider",
@@ -111,7 +114,7 @@ const providerSchema = new mongoose.Schema(
                 ratingInStar: {
                     type: Number
                 },
-                 createdAt: {
+                createdAt: {
                     type: Date,
                     default: Date.now,
                 }
@@ -122,15 +125,15 @@ const providerSchema = new mongoose.Schema(
             type: String,
         },
         myAllSubscribers: [
-         {
-           type: mongoose.Schema.Types.ObjectId,
-           ref: "Subscription",
-         }
-       ]
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "Subscription",
+            }
+        ]
     },
     { timestamps: true }
 );
 
- const Mess = mongoose.model("MessSchema", providerSchema);
+const Mess = mongoose.model("MessSchema", providerSchema);
 
 export default Mess

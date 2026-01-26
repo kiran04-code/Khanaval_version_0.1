@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Instagram, Mail, Linkedin, ArrowUpRight, Globe, ChevronRight, MapPin, TwitchIcon } from "lucide-react";
+import { Instagram, Mail, Linkedin, ArrowUpRight, Globe, ChevronRight, MapPin, TwitchIcon, XIcon } from "lucide-react";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -39,7 +39,7 @@ const Footer = () => {
               <div className="space-y-1">
                 <p className="text-[10px] font-black uppercase tracking-[0.5em] text-slate-400">Email Us</p>
                 <a href="mailto:hello@khanaval.com" className="text-[14px] md:text-lg font-bold hover:tracking-widest transition-all duration-500 block border-b-2 border-slate-900 w-fit">
-                  hello@khanaaval.com
+                  khanaaval.com@gmail.com
                 </a>
               </div>
             </div>
@@ -60,8 +60,9 @@ const Footer = () => {
             </FooterColumn>
 
             <FooterColumn title="Studio">
-              <FooterLink to="#" isExternal icon={<Instagram size={14}/>}>Instagram</FooterLink>
-              <FooterLink to="#" isExternal icon={<Linkedin size={14}/>}>LinkedIn</FooterLink>
+              <FooterLink to="https://www.instagram.com/khanaaval_?igsh=dnhseXRtcTNieHE4" isExternal icon={<Instagram size={14}/>}>Instagram</FooterLink>
+              <FooterLink to="https://www.linkedin.com/company/khanaaval/" isExternal icon={<Linkedin size={14}/>}>LinkedIn</FooterLink>
+              <FooterLink to="https://x.com/khanaaval" isExternal icon={<XIcon size={14}/>}>Twitter</FooterLink>
               <FooterLink to="/FeedBack" isExternal icon={<TwitchIcon size={14}/>} >Feedback</FooterLink>
             </FooterColumn>
           </div>

@@ -441,4 +441,22 @@ export const MarkMealAttendece = async (req, res) => {
         });
     }
 };
+export const updatedtheMonthy = async (req, res) => {
+    try {
+        const { price, messId } = req.body;
+        await Mess.findByIdAndUpdate(messId, {
+            MontlyPrices: price
+        });
+        return res.json({
+            success: true,
+            message: "Price Updated"
+        });
+    }
+    catch (error) {
+        return res.json({
+            success: false,
+            message: "Server Error"
+        });
+    }
+};
 //# sourceMappingURL=Provoder.js.map

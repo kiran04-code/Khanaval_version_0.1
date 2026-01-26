@@ -46,6 +46,7 @@ export declare const Provider: {
             }) | null>;
             getproviderMessData: (parent: any, {}: {}, ctx: import("../user/types.js").GraphqlContext) => Promise<{
                 id: string;
+                MontlyPrices: number | null | undefined;
                 identity: {
                     name: string;
                     startTime?: string | null;

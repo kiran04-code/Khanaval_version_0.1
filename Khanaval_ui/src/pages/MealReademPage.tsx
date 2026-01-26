@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import {
     Utensils, CheckCircle2, XCircle, ArrowLeft,
     Loader2, ShieldCheck, ChevronRight, Info,
-    Zap, Calendar, IndianRupee
+    Zap, IndianRupee, AlertCircle
 } from "lucide-react";
 import { useCurrentUser } from "@/hooks/user-hook";
 import { useStateContex } from "@/context/State";
@@ -24,8 +24,24 @@ export default function MealRedeemPage() {
     const [redeemed, setRedeemed] = useState(false);
 
     const myMess = user?.myMess;
+    const allScans = myMess?.allScans || [];
 
-    // Helper to determine session based on Indian Mess timing
+    const getTodayScansCount = () => {
+        const startOfToday = new Date();
+        startOfToday.setHours(0, 0, 0, 0);
+        const todayTimestamp = startOfToday.getTime();
+
+        const scansToday = allScans.filter(scan => {
+            const scanTime = Number(scan.scannedAt);
+            return scanTime >= todayTimestamp;
+        });
+
+        return scansToday.length;
+    };
+
+    const todayScansCount = getTodayScansCount();
+    const isCapacityOver = todayScansCount >= 2;
+
     const getMealSession = () => {
         const hour = new Date().getHours();
         if (hour >= 5 && hour < 11) return "BREAKFAST";
@@ -46,6 +62,15 @@ export default function MealRedeemPage() {
     }, [redeemed, navigate]);
 
     const handleRedeem = async () => {
+        if (isCapacityOver) {
+            toast({
+                title: "Redeem Capacity Over",
+                description: "You have already scanned 2 times today.",
+                variant: "destructive"
+            });
+            return;
+        }
+
         setLoading(true);
         try {
             const { data } = await axioseInstace.post("/api/meals/redeem", {
@@ -100,7 +125,6 @@ export default function MealRedeemPage() {
             <div className="h-screen bg-emerald-500 flex items-center justify-center p-6 overflow-hidden">
                 <div className="w-full max-w-sm bg-white rounded-[2.5rem] shadow-2xl overflow-hidden animate-in slide-in-from-bottom-20 duration-700">
                     <div className="h-3 bg-emerald-600 w-full" />
-                    
                     <div className="p-8 flex flex-col items-center">
                         <div className="relative mb-6">
                             <div className="absolute inset-0 bg-emerald-100 rounded-full scale-150 animate-ping opacity-30" />
@@ -108,28 +132,17 @@ export default function MealRedeemPage() {
                                 <CheckCircle2 className="w-10 h-10 text-white" strokeWidth={3} />
                             </div>
                         </div>
-
                         <h1 className="text-2xl font-black text-slate-900 tracking-tight mb-1">MEAL VERIFIED</h1>
-                        <p className="text-slate-400 font-bold uppercase tracking-widest text-[10px] mb-6">Token: {(Math.random() * 100000).toFixed(0)}</p>
-
+                        <p className="text-slate-400 font-bold uppercase tracking-widest text-[10px] mb-6">Success</p>
                         <div className="w-full space-y-4 bg-slate-50 p-6 rounded-3xl border border-slate-100">
                             <div className="flex justify-between items-center">
                                 <span className="text-[11px] font-bold text-slate-400 uppercase">Session</span>
-                                <span className="text-[11px] font-black text-emerald-600 uppercase italic">
-                                    {getMealSession()}
-                                </span>
+                                <span className="text-[11px] font-black text-emerald-600 uppercase italic">{getMealSession()}</span>
                             </div>
                             <div className="flex justify-between items-center border-t border-slate-200 pt-3">
                                 <span className="text-[11px] font-bold text-slate-400 uppercase">Remaining Meals</span>
                                 <span className="text-xl font-black text-slate-900">{myMess.RemainingDay - 1}</span>
                             </div>
-                        </div>
-
-                        <div className="mt-8 flex flex-col items-center text-center">
-                            <div className="flex gap-1 mb-4">
-                                {[1,2,3,4,5].map(i => <div key={i} className="w-1.5 h-1.5 bg-emerald-200 rounded-full" />)}
-                            </div>
-                            <p className="text-[10px] font-black text-slate-400 uppercase">Enjoy your meal!</p>
                         </div>
                     </div>
                 </div>
@@ -146,7 +159,6 @@ export default function MealRedeemPage() {
                 >
                     <ArrowLeft className="w-5 h-5" />
                 </button>
-
                 <div className="text-center relative z-10">
                     <p className="text-orange-100 font-black uppercase tracking-[0.3em] text-[9px] mb-1">Smart Check-in</p>
                     <h1 className="text-white text-3xl font-black tracking-tighter uppercase italic">Redeem Meal</h1>
@@ -180,40 +192,48 @@ export default function MealRedeemPage() {
                                     <p className="text-base font-black text-slate-900">{myMess.RemainingDay} Days</p>
                                 </div>
                                 <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 text-right">
-                                    <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Session</p>
-                                    <p className="text-base font-black text-orange-600 italic uppercase">
-                                        {getMealSession()}
+                                    <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Usage Today</p>
+                                    <p className={`text-base font-black ${isCapacityOver ? 'text-red-600' : 'text-slate-900'}`}>
+                                        {todayScansCount} / 2
                                     </p>
                                 </div>
                             </div>
 
-                            <div className="bg-orange-50 rounded-2xl p-4 flex items-start gap-3">
-                                <Info className="w-4 h-4 text-orange-600 shrink-0" />
-                                <p className="text-[10px] font-bold text-orange-900/80 leading-relaxed">
-                                    Tapping redeem will deduct <span className="font-black">1 Meal</span> for <span className="font-black underline">{getMealSession()}</span>.
-                                </p>
-                            </div>
+                            {isCapacityOver ? (
+                                <div className="bg-red-50 rounded-2xl p-4 flex items-start gap-3 border border-red-200">
+                                    <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
+                                    <p className="text-[10px] font-bold text-red-900 leading-relaxed">
+                                        <span className="font-black uppercase">Capacity Over:</span> You have already scanned 2 times today. Please try again tomorrow.
+                                    </p>
+                                </div>
+                            ) : (
+                                <div className="bg-orange-50 rounded-2xl p-4 flex items-start gap-3">
+                                    <Info className="w-4 h-4 text-orange-600 shrink-0" />
+                                    <p className="text-[10px] font-bold text-orange-900/80 leading-relaxed">
+                                        Tapping redeem will deduct <span className="font-black">1 Meal</span> for <span className="font-black underline">{getMealSession()}</span>.
+                                    </p>
+                                </div>
+                            )}
                         </div>
 
                         <div className="mt-auto pt-6">
                             <Button
                                 onClick={handleRedeem}
-                                disabled={loading}
-                                className="w-full h-16 bg-orange-600 hover:bg-orange-700 text-white rounded-2xl shadow-lg transition-all flex items-center justify-between px-6 active:scale-95"
+                                disabled={loading || isCapacityOver}
+                                className={`w-full h-16 rounded-2xl shadow-lg transition-all flex items-center justify-between px-6 active:scale-95 
+                                    ${isCapacityOver ? 'bg-slate-200 text-slate-400 cursor-not-allowed' : 'bg-orange-600 hover:bg-orange-700 text-white'}`}
                             >
                                 {loading ? (
                                     <Loader2 className="animate-spin w-6 h-6 mx-auto" />
                                 ) : (
                                     <>
-                                        <span className="font-black italic tracking-tight">CONFIRM {getMealSession()}</span>
+                                        <span className="font-black italic tracking-tight">
+                                            {isCapacityOver ? "DAILY LIMIT REACHED" : `CONFIRM ${getMealSession()}`}
+                                        </span>
                                         <ChevronRight className="w-5 h-5" />
                                     </>
                                 )}
                             </Button>
-                            <div className="flex items-center justify-center gap-2 mt-4">
-                                <ShieldCheck className="w-3 h-3 text-slate-300" />
-                                <p className="text-[8px] font-black text-slate-300 uppercase tracking-widest">Secure Verification</p>
-                            </div>
                         </div>
                     </CardContent>
                 </Card>

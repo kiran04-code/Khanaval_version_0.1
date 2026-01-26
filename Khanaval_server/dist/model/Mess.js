@@ -1,5 +1,8 @@
 import mongoose from "mongoose";
 const providerSchema = new mongoose.Schema({
+    MontlyPrices: {
+        type: Number,
+    },
     providerId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Provider",

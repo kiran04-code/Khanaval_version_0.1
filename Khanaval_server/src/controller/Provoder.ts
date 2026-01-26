@@ -482,3 +482,21 @@ export const MarkMealAttendece = async (req: Request, res: Response) => {
         })
     }
 }
+
+export const updatedtheMonthy = async (req: Request, res: Response) => {
+    try {
+        const {price,messId} = req.body
+        await Mess.findByIdAndUpdate(messId,{
+            MontlyPrices:price
+        })
+        return res.json({
+            success: true,
+            message:"Price Updated"
+        })
+    } catch (error) {
+        return res.json({
+            success: false,
+            message: "Server Error"
+        })
+    }
+}

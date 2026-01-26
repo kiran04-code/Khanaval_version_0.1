@@ -128,7 +128,7 @@ export default function UpdishOnboarding() {
         }
 
         if (step === 4) {
-            if (!fssai || fssai.length !== 14) {
+            if (!fssai || fssai.length !== 10) {
                 return showToast("Please enter a valid number");
             }
             handleSubmit();
@@ -376,8 +376,8 @@ export default function UpdishOnboarding() {
                                     placeholder="Mobile Number"
                                     maxLength={14}
                                 />
-                                {fssai.length > 0 && fssai.length < 14 && (
-                                    <p className="text-[10px] text-red-500 font-medium">Needs {14 - fssai.length} more digits</p>
+                                {fssai.length > 0 && fssai.length < 10 && (
+                                    <p className="text-[10px] text-red-500 font-medium">Needs {10 - fssai.length} more digits</p>
                                 )}
                             </div>
                         </div>

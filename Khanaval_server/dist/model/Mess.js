@@ -22,8 +22,8 @@ const providerSchema = new mongoose.Schema({
         fssaiNumber: {
             type: String,
             required: true,
-            minlength: 14,
-            maxlength: 14,
+            minlength: 10,
+            maxlength: 10,
         },
     },
     media: {

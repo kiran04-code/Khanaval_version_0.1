@@ -17,16 +17,13 @@ export default function KhanavalProfile() {
   const total = myMess?.totalDays || 1; 
   const remaining = myMess?.RemainingDay || 0;
 
-  // --- UPDATED: RELATIVE TIME + FULL DATE/TIME FORMATTER ---
   const formatRelativeTime = (val) => {
     if (!val) return "Never scanned";
     const date = new Date(isNaN(val) ? val : Number(val));
     const now = new Date();
     const diffInSeconds = Math.floor((now - date) / 1000);
     
-    // Time string for the exact time
     const timeStr = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
-    // Date string for clarity
     const dayStr = date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
 
     let relative = "";
@@ -38,7 +35,6 @@ export default function KhanavalProfile() {
       relative = days === 1 ? "Yesterday" : `${days} days ago`;
     }
 
-    // Returns combined format: "2h ago (26 Jan, 01:30 PM)"
     return `${relative} (${dayStr}, ${timeStr})`;
   };
 
@@ -109,7 +105,7 @@ export default function KhanavalProfile() {
               </div>
               <div>
                 <p className="text-[clamp(1rem,4.5vw,1.25rem)] font-black tracking-tight leading-none">Check-in for Meal</p>
-                <p className="text-slate-400 group-hover:text-orange-100 text-[clamp(0.6rem,2.5vw,0.75rem)] font-bold uppercase mt-1.5 flex items-center gap-1.5">
+                <p className="text-slate-400 group-hover:text-orange-100 text-[clamp(0.6rem,2.5vw,0.75rem)] font-bold uppercase mt-1.5 flex items-center gap-1.5 whitespace-nowrap">
                   <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
                   Scan QR at {myMess.messId?.identity?.name || "Mess"}
                 </p>
@@ -125,30 +121,29 @@ export default function KhanavalProfile() {
         {myMess ? (
           <Card className={`border-none shadow-[0_30px_60px_-15px_rgba(249,115,22,0.15)] rounded-[40px] overflow-hidden bg-white mb-8 border ${isExpiringSoon ? 'ring-2 ring-red-500/20' : 'border-orange-50'}`}>
             <CardContent className="p-8">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
-                <div className="flex items-center gap-4">
+              <div className="flex flex-row items-center justify-between gap-4 mb-8">
+                <div className="flex items-center gap-4 min-w-0">
                   <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 ${isExpiringSoon ? 'bg-red-50' : 'bg-orange-50'}`}>
                     <UtensilsCrossed className={`w-7 h-7 ${isExpiringSoon ? 'text-red-500' : 'text-orange-500'}`} />
                   </div>
-                  <div>
-                    <h3 className="text-[clamp(1rem,4.5vw,1.25rem)] font-black text-slate-900 leading-tight">{myMess.messId?.identity?.name || "Mess"}</h3>
+                  <div className="min-w-0">
+                    <h3 className="text-[clamp(1rem,4.5vw,1.25rem)] font-black text-slate-900 leading-tight truncate">{myMess.messId?.identity?.name || "Mess"}</h3>
                     <div className="flex flex-col gap-0.5 mt-1">
-                      <div className="flex items-center gap-1 text-emerald-600">
-                        <Calendar className="w-3 h-3" />
-                        <span className="text-[clamp(0.55rem,2.2vw,0.65rem)] font-black uppercase tracking-wider">Started: {formatDate(myMess.startAt)}</span>
+                      <div className="flex items-center gap-1 text-emerald-600 whitespace-nowrap">
+                        <Calendar className="w-3 h-3 shrink-0" />
+                        <span className="text-[clamp(0.5rem,2vw,0.65rem)] font-black uppercase tracking-wider">Started: {formatDate(myMess.startAt)}</span>
                       </div>
                       
-                      {/* UPDATED LAST SCAN SECTION */}
-                      <div className="flex items-start gap-1 text-orange-500">
-                        <Clock className="w-3 h-3 mt-0.5" />
-                        <span className="text-[clamp(0.55rem,2.2vw,0.65rem)] font-black uppercase tracking-wider leading-relaxed">
+                      <div className="flex items-center gap-1 text-orange-500 whitespace-nowrap">
+                        <Clock className="w-3 h-3 shrink-0" />
+                        <span className="text-[clamp(0.5rem,2vw,0.65rem)] font-black uppercase tracking-wider">
                           Last Scan: {formatRelativeTime(myMess.lastScannedAt)}
                         </span>
                       </div>
                     </div>
                   </div>
                 </div>
-                <div className="sm:text-right w-full sm:w-auto border-t sm:border-t-0 border-slate-50 pt-3 sm:pt-0">
+                <div className="text-right shrink-0">
                   <p className="text-[clamp(0.55rem,2.2vw,0.65rem)] font-black text-slate-300 uppercase">Price</p>
                   <p className="text-slate-900 font-black text-[clamp(1rem,4.5vw,1.125rem)]">₹{myMess.price}</p>
                 </div>

@@ -11,7 +11,7 @@ import SubscriberManagement from "./provider/SubscriberManagement";
 import {
   LayoutDashboard, Utensils, Users, QrCode, Wallet, 
   X, TrendingUp, CheckCircle, Users2, CalendarCheck, 
-  PlusCircle, BookOpen, Menu
+  PlusCircle, Menu, RefreshCw, Clock
 } from "lucide-react";
 import { UserProviderdata } from "@/hooks/Provider";
 import { ProviderProfile } from "./ProviderProfile";
@@ -24,22 +24,55 @@ type TabType = "dashboard" | "menu" | "subscribers" | "scanner" | "earnings" | "
 export default function ProviderDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<TabType>("dashboard");
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
   const { Providerdata } = UserProviderdata();
   const { messdata } = Getmymess();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
-  // --- LOGIC ---
+  // --- LOGIC: DATA EXTRACTION ---
   const isRegistered = Providerdata?.MessRegister !== "false";
   const subscribers = messdata?.myAllSubscribers || [];
-  const recentScans = messdata?.recentScans || []; // Fetching live scans from hook
+  
+  // Filter and sort subscribers who have scanned recently
+  const recentScansData = subscribers
+    .filter((sub: any) => sub.lastScannedAt !== null)
+    .sort((a: any, b: any) => {
+        const timeA = new Date(isNaN(a.lastScannedAt) ? a.lastScannedAt : Number(a.lastScannedAt)).getTime();
+        const timeB = new Date(isNaN(b.lastScannedAt) ? b.lastScannedAt : Number(b.lastScannedAt)).getTime();
+        return timeB - timeA;
+    });
+
   const totalEarnings = subscribers.reduce((acc: number, sub: any) => acc + (sub.price || 0), 0);
 
-  // Dynamic Stats
+  // --- REFRESH HANDLER ---
+  const handleManualRefresh = async () => {
+    setIsRefreshing(true);
+    // This triggers a new network request for mess data
+    await queryClient.invalidateQueries({ queryKey: ["get-mess"] }); 
+    setTimeout(() => setIsRefreshing(false), 800);
+  };
+
+  // --- RELATIVE TIME FORMATTER ---
+  const formatRecentTime = (val: any) => {
+    if (!val) return "N/A";
+    const date = new Date(isNaN(val) ? val : Number(val));
+    const now = new Date();
+    const diffInSec = Math.floor((now.getTime() - date.getTime()) / 1000);
+
+    if (diffInSec < 60) return "Just now";
+    if (diffInSec < 3600) return `${Math.floor(diffInSec / 60)}m ago`;
+    if (diffInSec < 86400) return `${Math.floor(diffInSec / 3600)}h ago`;
+    
+    return date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
+  };
+
   const dynamicStats = [
     { icon: <Users className="w-5 h-5 text-blue-600" />, value: subscribers.length, label: "Total Students" },
-    { icon: <CheckCircle className="w-5 h-5 text-emerald-600" />, value: recentScans.length, label: "Today Scanned" },
+    { icon: <CheckCircle className="w-5 h-5 text-emerald-600" />, value: recentScansData.length, label: "Total Scans" },
     { icon: <Wallet className="w-5 h-5 text-orange-600" />, value: `₹${(totalEarnings / 1000).toFixed(1)}k`, label: "Revenue" },
-    { icon: <TrendingUp className="w-5 h-5 text-purple-600" />, value: "Active", label: "System Status" },
+    { icon: <TrendingUp className="w-5 h-5 text-purple-600" />, value: "Active", label: "Status" },
   ];
 
   const handleNavClick = (tabId: TabType) => {
@@ -101,31 +134,20 @@ export default function ProviderDashboard() {
               </div>
             </div>
           </div>
+          
+          {/* SYNC/RELOAD BUTTON */}
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={handleManualRefresh}
+            className="rounded-xl border-slate-200 text-slate-600 hover:bg-orange-50 hover:text-orange-600 transition-all"
+          >
+            <RefreshCw className={`w-4 h-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
+            <span className="text-[10px] font-black uppercase">Sync Data</span>
+          </Button>
         </header>
 
         <div className="p-4 md:p-8 overflow-y-auto">
-          {/* ONBOARDING BANNER */}
-          {!isRegistered && (
-            <div className="mb-8 animate-in slide-in-from-top-4 duration-700">
-              <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-[32px] p-8 text-white relative overflow-hidden shadow-2xl">
-                <div className="relative z-10 lg:flex items-center justify-between gap-8">
-                  <div className="space-y-4 max-w-xl">
-                    <Badge className="bg-orange-600 text-white border-none text-[10px] font-black uppercase px-3 py-1">Business Setup</Badge>
-                    <h2 className="text-3xl md:text-4xl font-black leading-tight">
-                      Manage Monthly Students <br />
-                      <span className="text-orange-500">Without Pen & Book</span>
-                    </h2>
-                    <Button onClick={() => navigate("/provider/messsResgiter")} className="bg-orange-600 hover:bg-orange-700 text-white font-black px-8 py-6 rounded-2xl shadow-lg">
-                      <PlusCircle className="w-5 h-5 mr-2" /> REGISTER YOUR MESS
-                    </Button>
-                  </div>
-                </div>
-                <Utensils className="absolute -bottom-10 -right-10 w-64 h-64 text-white/5 -rotate-12" />
-              </div>
-            </div>
-          )}
-
-          {/* DASHBOARD CONTENT */}
           {activeTab === "dashboard" && isRegistered && (
             <div className="space-y-8 animate-in fade-in duration-500">
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -135,38 +157,55 @@ export default function ProviderDashboard() {
               </div>
 
               <div className="grid lg:grid-cols-3 gap-8">
-                <Card className="lg:col-span-2 border-none shadow-sm rounded-3xl overflow-hidden">
+                {/* RECENT SCAN LIST */}
+                <Card className="lg:col-span-2 border-none shadow-sm rounded-3xl overflow-hidden bg-white">
                   <CardContent className="p-0">
-                    <div className="p-6 border-b border-slate-50 flex items-center justify-between bg-white">
+                    <div className="p-6 border-b border-slate-50 flex items-center justify-between">
                       <h2 className="font-black text-slate-900 flex items-center gap-2">
                         <CalendarCheck className="w-5 h-5 text-orange-600" />
                         Live Scan Activity 
                         <Badge className="ml-2 bg-orange-100 text-orange-600 border-none font-black">
-                          {recentScans.length} Recent
+                          {recentScansData.length} Total
                         </Badge>
                       </h2>
                     </div>
                     
-                    <div className="bg-white divide-y divide-slate-50">
-                      {recentScans.length > 0 ? (
-                        recentScans.map((scan: any, i: number) => (
-                          <div key={i} className="flex items-center justify-between p-5 hover:bg-slate-50 transition-colors">
+                    <div className="divide-y divide-slate-50 max-h-[500px] overflow-y-auto">
+                      {recentScansData.length > 0 ? (
+                        recentScansData.map((scan: any) => (
+                          <div key={scan.id} className="flex items-center justify-between p-5 hover:bg-slate-50/50 transition-colors">
                             <div className="flex items-center gap-4">
-                              <div className="w-10 h-10 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center font-black">
-                                {scan.name?.[0] || "U"}
+                              <div className="w-12 h-12 rounded-2xl bg-slate-100 text-slate-600 flex items-center justify-center font-black text-lg border border-slate-200">
+                                {scan.userId?.first_name?.[0] || "U"}
                               </div>
                               <div>
-                                <p className="font-black text-slate-900 text-sm capitalize">{scan.name}</p>
-                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter italic">Checked in {scan.time}</p>
+                                <p className="font-black text-slate-900 text-sm capitalize">
+                                  {scan.userId?.first_name} {scan.userId?.last_name}
+                                </p>
+                                <div className="flex items-center gap-1.5 mt-0.5">
+                                  <Clock className="w-3 h-3 text-orange-500" />
+                                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">
+                                    Scanned {formatRecentTime(scan.lastScannedAt)}
+                                  </p>
+                                </div>
                               </div>
                             </div>
-                            <Badge className="bg-emerald-50 text-emerald-600 border-none text-[9px] font-black px-3 py-1">VERIFIED SCAN</Badge>
+                            <div className="flex flex-col items-end gap-1">
+                              <Badge className="bg-emerald-50 text-emerald-600 border-none text-[9px] font-black px-3 py-1">
+                                VERIFIED
+                              </Badge>
+                              <p className="text-[9px] font-bold text-slate-300 uppercase tracking-widest">
+                                Remaining: {scan.RemainingDay} Days
+                              </p>
+                            </div>
                           </div>
                         ))
                       ) : (
-                        <div className="p-20 text-center">
-                          <QrCode className="w-12 h-12 text-slate-200 mx-auto mb-3" />
-                          <p className="text-slate-400 font-bold italic">No scans recorded today yet.</p>
+                        <div className="p-24 text-center">
+                          <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                             <QrCode className="w-8 h-8 text-slate-200" />
+                          </div>
+                          <p className="text-slate-400 font-bold italic">No students have scanned today.</p>
                         </div>
                       )}
                     </div>
@@ -193,7 +232,7 @@ export default function ProviderDashboard() {
             </div>
           )}
 
-          {/* TAB CONTENT RENDERING */}
+          {/* TAB CONTENT */}
           <div className="mt-4">
             {isRegistered && (
               <>

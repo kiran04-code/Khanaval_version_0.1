@@ -17,6 +17,27 @@ export default function KhanavalProfile() {
   const total = myMess?.totalDays || 1; 
   const remaining = myMess?.RemainingDay || 0;
 
+  // --- NEW: RELATIVE TIME FORMATTER ---
+  const formatRelativeTime = (val) => {
+    if (!val) return "Never scanned";
+    const date = new Date(isNaN(val) ? val : Number(val));
+    const now = new Date();
+    const diffInSeconds = Math.floor((now - date) / 1000);
+    
+    // Time string for the exact time
+    const timeStr = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+
+    if (diffInSeconds < 60) return `Just now (${timeStr})`;
+    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago (${timeStr})`;
+    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago (${timeStr})`;
+    
+    const days = Math.floor(diffInSeconds / 86400);
+    if (days === 1) return `Yesterday (${timeStr})`;
+    if (days < 7) return `${days} days ago`;
+    
+    return date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
+  };
+
   const formatDate = (val) => {
     if (!val) return "N/A";
     const date = new Date(isNaN(val) ? val : Number(val));
@@ -43,7 +64,6 @@ export default function KhanavalProfile() {
 
   return (
     <div className="min-h-screen bg-[#FFFBF9] pb-24 selection:bg-orange-100">
-      {/* 1. Header Section */}
       <div className="relative h-48 bg-gradient-to-r from-orange-600 to-orange-400 overflow-hidden">
         <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/food.png')]" />
         <div className="absolute -bottom-16 left-0 right-0 h-32 bg-[#FFFBF9] rounded-[100%] scale-x-125" />
@@ -97,21 +117,7 @@ export default function KhanavalProfile() {
           </button>
         )}
 
-        {/* Expiry Reminder */}
-        {myMess && isExpiringSoon && (
-          <div className="mb-6 animate-bounce bg-red-50 border border-red-100 p-4 rounded-[24px] flex items-center gap-3 shadow-sm">
-            <div className="bg-red-500 p-2 rounded-xl">
-              <AlertTriangle className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <p className="text-red-800 font-black text-[clamp(0.75rem,3vw,0.875rem)]">Subscription Expiring!</p>
-              <p className="text-red-600 text-[clamp(0.6rem,2.5vw,0.7rem)] font-black uppercase tracking-tight">Expires in {remaining} {remaining === 1 ? 'day' : 'days'}</p>
-            </div>
-          </div>
-        )}
-
-        <h2 className="text-[clamp(0.6rem,2.5vw,0.7rem)] font-black text-orange-500 uppercase tracking-[0.2em] mb-4 ml-2">Active Subscription</h2>
-
+        {/* Active Subscription Card */}
         {myMess ? (
           <Card className={`border-none shadow-[0_30px_60px_-15px_rgba(249,115,22,0.15)] rounded-[40px] overflow-hidden bg-white mb-8 border ${isExpiringSoon ? 'ring-2 ring-red-500/20' : 'border-orange-50'}`}>
             <CardContent className="p-8">
@@ -122,9 +128,19 @@ export default function KhanavalProfile() {
                   </div>
                   <div>
                     <h3 className="text-[clamp(1rem,4.5vw,1.25rem)] font-black text-slate-900 leading-tight">{myMess.messId?.identity?.name || "Mess"}</h3>
-                    <div className="flex items-center gap-1 mt-1 text-emerald-600">
-                      <Calendar className="w-3 h-3" />
-                      <span className="text-[clamp(0.55rem,2.2vw,0.65rem)] font-black uppercase tracking-wider">Started: {formatDate(myMess.startAt)}</span>
+                    <div className="flex flex-col gap-0.5 mt-1">
+                      <div className="flex items-center gap-1 text-emerald-600">
+                        <Calendar className="w-3 h-3" />
+                        <span className="text-[clamp(0.55rem,2.2vw,0.65rem)] font-black uppercase tracking-wider">Started: {formatDate(myMess.startAt)}</span>
+                      </div>
+                      
+                      {/* LAST SCAN UI ADDED HERE */}
+                      <div className="flex items-center gap-1 text-orange-500">
+                        <Clock className="w-3 h-3" />
+                        <span className="text-[clamp(0.55rem,2.2vw,0.65rem)] font-black uppercase tracking-wider">
+                          Last Scan: {formatRelativeTime(myMess.lastScannedAt)}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -161,7 +177,7 @@ export default function KhanavalProfile() {
                     />
                   </svg>
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <Clock className={`w-5 h-5 ${isExpiringSoon ? 'text-red-500' : 'text-orange-500'}`} />
+                    <History className={`w-5 h-5 ${isExpiringSoon ? 'text-red-500' : 'text-orange-500'}`} />
                   </div>
                 </div>
               </div>
@@ -207,4 +223,4 @@ export default function KhanavalProfile() {
       </div>
     </div>
   );
-} 
+}

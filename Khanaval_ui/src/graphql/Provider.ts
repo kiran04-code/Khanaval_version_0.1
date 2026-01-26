@@ -97,6 +97,7 @@ query GetcurentMessdata{
     price
     totalDays,
     startAt,
+    lastScannedAt,
     RemainingDay
     userId {
         id,

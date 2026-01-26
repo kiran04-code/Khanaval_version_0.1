@@ -72,6 +72,7 @@ totalDays:Int!,
 RemainingDay:Int,
 userId:User,
 price:Int!,
+lastScannedAt:String
 startAt:String
 }
 type Locations {

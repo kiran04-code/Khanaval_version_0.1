@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 export declare const Subscription: mongoose.Model<{
-    userId: mongoose.Types.ObjectId;
     messId: mongoose.Types.ObjectId;
+    userId: mongoose.Types.ObjectId;
     totalDays: number;
     RemainingDay: number;
     startAt: NativeDate;
@@ -11,8 +11,8 @@ export declare const Subscription: mongoose.Model<{
 } & mongoose.DefaultTimestampProps, {}, {}, {
     id: string;
 }, mongoose.Document<unknown, {}, {
-    userId: mongoose.Types.ObjectId;
     messId: mongoose.Types.ObjectId;
+    userId: mongoose.Types.ObjectId;
     totalDays: number;
     RemainingDay: number;
     startAt: NativeDate;
@@ -24,8 +24,8 @@ export declare const Subscription: mongoose.Model<{
 }, {
     timestamps: true;
 }> & Omit<{
-    userId: mongoose.Types.ObjectId;
     messId: mongoose.Types.ObjectId;
+    userId: mongoose.Types.ObjectId;
     totalDays: number;
     RemainingDay: number;
     startAt: NativeDate;
@@ -41,8 +41,8 @@ export declare const Subscription: mongoose.Model<{
 }, mongoose.Schema<any, mongoose.Model<any, any, any, any, any, any, any>, {}, {}, {}, {}, {
     timestamps: true;
 }, {
-    userId: mongoose.Types.ObjectId;
     messId: mongoose.Types.ObjectId;
+    userId: mongoose.Types.ObjectId;
     totalDays: number;
     RemainingDay: number;
     startAt: NativeDate;
@@ -50,8 +50,8 @@ export declare const Subscription: mongoose.Model<{
     isActive: boolean;
     lastScannedAt?: NativeDate | null;
 } & mongoose.DefaultTimestampProps, mongoose.Document<unknown, {}, {
-    userId: mongoose.Types.ObjectId;
     messId: mongoose.Types.ObjectId;
+    userId: mongoose.Types.ObjectId;
     totalDays: number;
     RemainingDay: number;
     startAt: NativeDate;
@@ -63,8 +63,8 @@ export declare const Subscription: mongoose.Model<{
 }, mongoose.ResolveSchemaOptions<{
     timestamps: true;
 }>> & Omit<{
-    userId: mongoose.Types.ObjectId;
     messId: mongoose.Types.ObjectId;
+    userId: mongoose.Types.ObjectId;
     totalDays: number;
     RemainingDay: number;
     startAt: NativeDate;
@@ -81,8 +81,8 @@ export declare const Subscription: mongoose.Model<{
     [path: string]: mongoose.SchemaDefinitionProperty<undefined, any, any>;
 } | {
     [x: string]: mongoose.SchemaDefinitionProperty<any, any, mongoose.Document<unknown, {}, {
-        userId: mongoose.Types.ObjectId;
         messId: mongoose.Types.ObjectId;
+        userId: mongoose.Types.ObjectId;
         totalDays: number;
         RemainingDay: number;
         startAt: NativeDate;
@@ -94,8 +94,8 @@ export declare const Subscription: mongoose.Model<{
     }, mongoose.ResolveSchemaOptions<{
         timestamps: true;
     }>> & Omit<{
-        userId: mongoose.Types.ObjectId;
         messId: mongoose.Types.ObjectId;
+        userId: mongoose.Types.ObjectId;
         totalDays: number;
         RemainingDay: number;
         startAt: NativeDate;
@@ -110,8 +110,8 @@ export declare const Subscription: mongoose.Model<{
         id: string;
     }> | undefined;
 }, {
-    userId: mongoose.Types.ObjectId;
     messId: mongoose.Types.ObjectId;
+    userId: mongoose.Types.ObjectId;
     totalDays: number;
     RemainingDay: number;
     startAt: NativeDate;
@@ -125,8 +125,8 @@ export declare const Subscription: mongoose.Model<{
 } & {
     __v: number;
 }>, {
-    userId: mongoose.Types.ObjectId;
     messId: mongoose.Types.ObjectId;
+    userId: mongoose.Types.ObjectId;
     totalDays: number;
     RemainingDay: number;
     startAt: NativeDate;

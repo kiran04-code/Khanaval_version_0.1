@@ -438,7 +438,7 @@ export const AddToSubscriber = async (req: Request, res: Response) => {
 
 export const finUderAndDelete = async (req: Request, res: Response) => {
     try {
-        const { sub,userId } = req.body
+        const { sub, userId } = req.body
         await Subscription.findByIdAndDelete(sub)
         await user.findByIdAndUpdate(userId, { Subscriber: false })
         return res.status(200).json({
@@ -449,6 +449,27 @@ export const finUderAndDelete = async (req: Request, res: Response) => {
         return res.status(500).json({
             succcess: false,
             message: "Server"
+        })
+    }
+}
+
+
+export const MarkMealAttendece = async (req: Request, res: Response) => {
+    try {
+        const { sub, remaingDay } = req.body;
+        const data = await Subscription.findByIdAndUpdate(sub, {
+            lastScannedAt: new Date(),
+            RemainingDay: remaingDay - 1
+        });
+        console.log(data)
+        return res.status(200).json({
+            success: true,
+            message: "Reedem Successfull"
+        })
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Internal ServerError"
         })
     }
 }

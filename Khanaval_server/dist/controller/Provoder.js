@@ -415,4 +415,24 @@ export const finUderAndDelete = async (req, res) => {
         });
     }
 };
+export const MarkMealAttendece = async (req, res) => {
+    try {
+        const { sub, remaingDay } = req.body;
+        const data = await Subscription.findByIdAndUpdate(sub, {
+            lastScannedAt: new Date(),
+            RemainingDay: remaingDay - 1
+        });
+        console.log(data);
+        return res.status(200).json({
+            success: true,
+            message: "Reedem Successfull"
+        });
+    }
+    catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Internal ServerError"
+        });
+    }
+};
 //# sourceMappingURL=Provoder.js.map

@@ -25,6 +25,7 @@ import HowItWorks from "./pages/HowitWork";
 import HelpSupport from "./pages/HelpSupport";
 import FeedbackForm from "./pages/FeedBackFrom";
 import MealRedeemPage from "./pages/MealReademPage";
+import Paas from "./pages/Paas";
 const queryClient = new QueryClient();
 
 const App = () => {
@@ -67,6 +68,7 @@ const App = () => {
             <Route path="/HelpSupport" element={<HelpSupport/>} />
             <Route path="/tiffin" element={<UserDashboard />} />
             <Route path="/FeedBack" element={<FeedbackForm />} />
+            <Route path="/pass/:ids" element={<Paas />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

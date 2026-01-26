@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -7,19 +7,20 @@ import {
   ArrowLeft, Star, MapPin, Clock, Phone,
   ChevronRight, Navigation,
   UserCheck, ShieldCheck, Utensils, Image as ImageIcon,
-  Coffee, Moon, MessageSquare, Calendar, Send,
-  ThumbsUp, MessageCircle, MoreHorizontal, Share2
+  Coffee, Moon, MessageSquare, IndianRupee, AlertCircle
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { GetALLmess } from "@/hooks/MessData";
 import { calculateDistance } from "./components/Distance";
 import { useStateContex } from "@/context/State";
+import { useCurrentUser } from "@/hooks/user-hook";
 
 const Skeleton = ({ className }) => (
   <div className={cn("animate-pulse rounded-md bg-slate-200", className)} />
 );
 
 export default function MessDetailPage() {
+  const navigate = useNavigate()
   const { id } = useParams();
   const { AllMESS } = GetALLmess();
   const mess = AllMESS?.find((mess) => mess._id === id);
@@ -27,6 +28,10 @@ export default function MessDetailPage() {
   const [activeTab, setActiveTab] = useState("dineout");
   const { userlat, userlng } = useStateContex();
 
+  const monthlyPrice = mess?.MontlyPrices || 0
+  const isMonthlyAvailable = monthlyPrice && Number(monthlyPrice) > 0;
+  const { user } = useCurrentUser()
+  const { axioseInstace } = useStateContex()
   useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 2000);
     return () => clearTimeout(timer);
@@ -41,7 +46,6 @@ export default function MessDetailPage() {
 
   return (
     <div className="min-h-screen bg-slate-50/50 pb-32 font-sans">
-      {/* Hero Image Section */}
       <div className="relative group overflow-hidden bg-slate-200 h-[350px] md:h-[450px]">
         {loading ? (
           <Skeleton className="w-full h-full rounded-none" />
@@ -59,7 +63,6 @@ export default function MessDetailPage() {
       </div>
 
       <div className="container mx-auto px-4 max-w-5xl -mt-24 relative z-10">
-        {/* Floating Reference Card */}
         <Card className="border-none shadow-2xl rounded-[32px] overflow-hidden mb-6 bg-white">
           <CardContent className="p-6 md:p-8">
             <div className="space-y-4">
@@ -69,7 +72,9 @@ export default function MessDetailPage() {
                     <div className="bg-emerald-600 text-white px-2 py-0.5 rounded-md text-sm flex items-center gap-1 font-bold">
                       <Star className="w-3.5 h-3.5 fill-white" /> {mess?.rating || "4.1"}
                     </div>
-                    <span className="text-slate-500 text-xs font-bold">• ₹150 for one</span>
+                    <span className="text-slate-500 text-xs font-bold">•
+                      {isMonthlyAvailable ? ` ₹${monthlyPrice} Monthly` : " Price on request"}
+                    </span>
                   </div>
                   <h1 className="text-3xl font-black text-slate-900 leading-tight">{mess?.identity?.name}</h1>
                   <p className="text-sm font-bold text-slate-500 uppercase tracking-wide">
@@ -99,8 +104,6 @@ export default function MessDetailPage() {
             </div>
           </CardContent>
         </Card>
-
-        {/* Tab Selection */}
         <div className="sticky top-2 z-30 px-4 mb-8">
           <div className="bg-white/90 backdrop-blur-md p-1.5 rounded-[22px] shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-slate-100 flex items-center justify-between">
             {[
@@ -126,7 +129,7 @@ export default function MessDetailPage() {
           </div>
         </div>
 
-        {/* Dynamic Content */}
+
         <div className="transition-all duration-300">
           {activeTab === "dineout" && (
             <div className="space-y-8 animate-in fade-in duration-500">
@@ -151,7 +154,6 @@ export default function MessDetailPage() {
                 </div>
               </section>
 
-              {/* RESTORED: Your original Location layout */}
               <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <Card className="rounded-[32px] border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-7 space-y-5 bg-white">
                   <div className="flex items-center justify-between">
@@ -178,10 +180,6 @@ export default function MessDetailPage() {
                           <span className="font-black text-slate-700">Landmark:</span> {mess?.location?.landmark}
                         </p>
                       </div>
-                      <div className="flex items-start gap-2">
-                        <div className="w-1.5 h-1.5 rounded-full bg-slate-300 mt-1.5 shrink-0" />
-                        <p className="text-[11px] font-medium text-slate-400 leading-tight">{mess?.location?.address}</p>
-                      </div>
                     </div>
                     <div className="flex items-center">
                       <div className="w-1.5 h-1.5 rounded-full bg-orange-400 shrink-0" />
@@ -203,13 +201,9 @@ export default function MessDetailPage() {
                         {mess?.identity?.startTime} — {mess?.identity?.endTime}
                       </p>
                     </div>
-                    <div className="space-y-3">
-                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Facilities & Type</p>
-                      <div className="flex flex-wrap gap-2">
-                        <Badge className="bg-orange-100 text-orange-700 hover:bg-orange-100 border-none font-black uppercase text-[10px] px-3 py-1 rounded-lg">{mess?.identity?.operatingMode}</Badge>
-                        <Badge className="bg-emerald-100 text-emerald-700 hover:bg-emerald-100 border-none font-black uppercase text-[10px] px-3 py-1 rounded-lg">{mess?.identity?.dietaryType}</Badge>
-                        <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-100 border-none font-black uppercase text-[10px] px-3 py-1 rounded-lg">Dine-in Available</Badge>
-                      </div>
+                    <div className="flex flex-wrap gap-2">
+                      <Badge className="bg-orange-100 text-orange-700 border-none font-black uppercase text-[10px] px-3 py-1 rounded-lg">{mess?.identity?.operatingMode}</Badge>
+                      <Badge className="bg-emerald-100 text-emerald-700 border-none font-black uppercase text-[10px] px-3 py-1 rounded-lg">{mess?.identity?.dietaryType}</Badge>
                     </div>
                   </div>
                 </Card>
@@ -217,150 +211,40 @@ export default function MessDetailPage() {
             </div>
           )}
 
-          {activeTab === "reviews" && (
-            <div className="space-y-4 animate-in fade-in duration-500 max-w-2xl mx-auto">
-              {mess?.UserFeedBack && mess.UserFeedBack.length > 0 ? (
-                mess.UserFeedBack.map((review, idx) => (
-                  <Card key={idx} className="rounded-[24px] border-none shadow-sm p-5 bg-white">
-                    <div className="flex items-start gap-4">
-                      {/* Avatar */}
-                      <div className="w-10 h-10 rounded-full bg-slate-100 flex-shrink-0 flex items-center justify-center font-black text-slate-400 text-sm">
-                        {review.username?.charAt(0).toUpperCase()}
-                      </div>
+          {activeTab === "menu" && (
+            <div className="space-y-6 animate-in fade-in duration-500">
+              <div className="flex items-center justify-between px-2">
+                <h3 className="text-2xl font-black text-slate-900 tracking-tight">Today's Menu</h3>
+                <div className="flex items-center gap-1.5 bg-emerald-50 px-3 py-1 rounded-full">
+                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  <span className="text-[10px] font-black text-emerald-600 uppercase">Live</span>
+                </div>
+              </div>
 
-                      <div className="flex-1 space-y-1">
-                        {/* Header Info */}
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <h4 className="text-sm font-black text-slate-900 leading-none">{review.username}</h4>
-                            <p className="text-[10px] font-bold text-slate-400 mt-1 uppercase tracking-tighter">
-                              {new Date(review.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
-                            </p>
-                          </div>
-
-                          {/* Rating Badge */}
-                          <div className="bg-emerald-600 text-white px-2 py-0.5 rounded-md flex items-center gap-1 text-[10px] font-black">
-                            {review.ratingInStar} <Star className="w-2.5 h-2.5 fill-white" />
+              {mess?.Menu && mess.Menu.length > 0 ? (
+                <div className="columns-1 md:columns-2 gap-4 space-y-4">
+                  {mess.Menu.map((item, index) => (
+                    <div key={index} className="break-inside-avoid mb-4">
+                      <Card className="rounded-[2rem] border-none shadow-sm overflow-hidden bg-white">
+                        <div className="px-5 py-4 flex items-center justify-between border-b border-slate-50">
+                          <div className="flex items-center gap-2">
+                            {item.types === "breakfast" ? <Coffee className="w-4 h-4 text-orange-500" /> : <Moon className="w-4 h-4 text-indigo-500" />}
+                            <span className="text-sm font-black text-slate-800 uppercase">{item.types}</span>
                           </div>
                         </div>
-
-                        {/* Review Text */}
-                        <p className="text-[13px] text-slate-600 leading-snug pt-1">
-                          {review.Text}
-                        </p>
-                      </div>
+                        <img src={item.imageUrl} className="w-full h-auto block" alt={item.types} />
+                      </Card>
                     </div>
-                  </Card>
-                ))
+                  ))}
+                </div>
               ) : (
-                <div className="py-20 text-center bg-white rounded-[32px] border border-slate-50">
-                  <MessageSquare className="w-8 h-8 text-slate-200 mx-auto mb-2" />
-                  <p className="text-slate-400 font-black text-[10px] uppercase tracking-widest">No feedback yet</p>
+                <div className="py-20 flex flex-col items-center justify-center bg-white rounded-[3rem] border border-slate-100">
+                  <Utensils className="w-10 h-10 text-slate-100 mb-4" />
+                  <p className="text-slate-400 font-bold text-sm uppercase">Menu is empty</p>
                 </div>
               )}
             </div>
           )}
-          {/* RESTORED: Your original masonry Menu layout */}
- {activeTab === "menu" && (
-  <div className="space-y-6 animate-in fade-in duration-500">
-    <div className="flex items-center justify-between px-2">
-      <h3 className="text-2xl font-black text-slate-900 tracking-tight">Today's Menu</h3>
-      <div className="flex items-center gap-1.5 bg-emerald-50 px-3 py-1 rounded-full">
-        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-        <span className="text-[10px] font-black text-emerald-600 uppercase">Live</span>
-      </div>
-    </div>
-
-    {mess?.Menu && mess.Menu.length > 0 ? (
-      <div className="columns-1 md:columns-2 gap-4 space-y-4">
-        {mess.Menu.map((item, index) => {
-          const menuDate = new Date(item?.createdAt);
-          const today = new Date();
-          const menuMidnight = new Date(menuDate.getFullYear(), menuDate.getMonth(), menuDate.getDate());
-          const todayMidnight = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-
-          const yesterday = new Date(todayMidnight);
-          yesterday.setDate(yesterday.getDate() - 1);
-          const tomorrow = new Date(todayMidnight);
-          tomorrow.setDate(tomorrow.getDate() + 1);
-
-          let dayLabel = "";
-          const isSameDate = (d1, d2) => 
-            d1.getDate() === d2.getDate() && 
-            d1.getMonth() === d2.getMonth() && 
-            d1.getFullYear() === d2.getFullYear();
-
-          if (isSameDate(menuDate, today)) {
-            dayLabel = "Today";
-          } else if (isSameDate(menuDate, yesterday)) {
-            dayLabel = "Yesterday";
-          } else if (isSameDate(menuDate, tomorrow)) {
-            dayLabel = "Tomorrow";
-          } else if (menuMidnight < yesterday) {
-            const diffTime = Math.abs(todayMidnight - menuMidnight);
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            dayLabel = `${diffDays} days ago`;
-          } else {
-            dayLabel = menuDate.toLocaleDateString('en-US', { weekday: 'long' });
-          }
-          const formattedDate = menuDate.toLocaleDateString('en-US', { 
-            day: 'numeric', 
-            month: 'short' 
-          });
-
-          return (
-            <div key={index} className="break-inside-avoid mb-4">
-              <Card className="rounded-[2rem] border-none shadow-sm hover:shadow-md transition-shadow overflow-hidden bg-white">
-                <div className="px-5 py-4 flex items-center justify-between border-b border-slate-50">
-                  <div className="flex items-center gap-2">
-                    {item.types === "breakfast" ? (
-                      <Coffee className="w-4 h-4 text-orange-500" />
-                    ) : (
-                      <Moon className="w-4 h-4 text-indigo-500" />
-                    )}
-                    <span className="text-sm font-black text-slate-800 uppercase tracking-wide">
-                      {item.types}
-                    </span>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-[10px] font-black text-orange-500 uppercase leading-none">
-                      {dayLabel}
-                    </p>
-                    <p className="text-[9px] font-bold text-slate-400 uppercase mt-0.5">
-                      {formattedDate}
-                    </p>
-                  </div>
-                </div>
-                
-                <div className="w-full h-auto bg-slate-50">
-                  <img 
-                    src={item.imageUrl} 
-                    className="w-full h-auto block" 
-                    alt={item.types} 
-                    loading="lazy" 
-                  />
-                </div>
-
-                <div className="p-4 bg-slate-50/50 flex justify-center">
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                    Tap image to zoom
-                  </p>
-                </div>
-              </Card>
-            </div>
-          );
-        })}
-      </div>
-    ) : (
-      <div className="py-20 flex flex-col items-center justify-center bg-white rounded-[3rem] border border-slate-100 shadow-inner">
-        <Utensils className="w-10 h-10 text-slate-100 mb-4" />
-        <p className="text-slate-400 font-bold text-sm uppercase tracking-widest">
-          Menu is empty
-        </p>
-      </div>
-    )}
-  </div>
-)}
 
           {activeTab === "photos" && (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 animate-in slide-in-from-bottom-4 duration-500">
@@ -373,22 +257,66 @@ export default function MessDetailPage() {
               ))}
             </div>
           )}
+
+          {activeTab === "reviews" && (
+            <div className="space-y-4 animate-in fade-in duration-500 max-w-2xl mx-auto">
+              {mess?.UserFeedBack?.length > 0 ? (
+                mess.UserFeedBack.map((review, idx) => (
+                  <Card key={idx} className="rounded-[24px] border-none shadow-sm p-5 bg-white">
+                    <div className="flex items-start gap-4">
+                      <div className="w-10 h-10 rounded-full bg-slate-100 flex-shrink-0 flex items-center justify-center font-black text-slate-400">
+                        {review.username?.charAt(0).toUpperCase()}
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex justify-between">
+                          <h4 className="text-sm font-black text-slate-900">{review.username}</h4>
+                          <div className="bg-emerald-600 text-white px-2 py-0.5 rounded-md flex items-center gap-1 text-[10px] font-black">
+                            {review.ratingInStar} <Star className="w-2.5 h-2.5 fill-white" />
+                          </div>
+                        </div>
+                        <p className="text-[13px] text-slate-600 mt-2">{review.Text}</p>
+                      </div>
+                    </div>
+                  </Card>
+                ))
+              ) : (
+                <div className="py-20 text-center bg-white rounded-[32px]">
+                  <p className="text-slate-400 font-black text-[10px] uppercase">No feedback yet</p>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
-
-      {/* Sticky Bottom Bar */}
       {!loading && (
         <div className="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-2xl border-t border-slate-100 p-4 shadow-[0_-10px_40px_rgba(0,0,0,0.1)]">
           <div className="container mx-auto max-w-5xl flex items-center justify-between gap-4">
-            <div>
-              <p className="text-[10px] font-black text-slate-400 uppercase leading-none">Monthly Subscription</p>
-              <p className="text-2xl font-black text-slate-900">₹{mess?.identity?.price || "4000"}</p>
-            </div>
-            <Link to="/epass">
-              <Button size="lg" className="rounded-2xl bg-orange-600 hover:bg-orange-500 text-white font-black px-8 h-14 shadow-lg shadow-orange-200">
-                GET PASS <ChevronRight className="ml-1 w-5 h-5" />
-              </Button>
-            </Link>
+            {isMonthlyAvailable ? (
+              <>
+                <div>
+                  <p className="text-[10px] font-black text-slate-400 uppercase leading-none">Monthly Subscription</p>
+                  <div className="flex items-baseline gap-1">
+                    <IndianRupee className="w-4 h-4 text-slate-900" />
+                    <p className="text-2xl font-black text-slate-900">{monthlyPrice}</p>
+                  </div>
+                </div>
+
+                <Button onClick={()=>navigate(`/pass/${id}`)} size="lg" className="rounded-2xl bg-orange-600 hover:bg-orange-500 text-white font-black px-8 h-14 shadow-lg shadow-orange-200">
+                  GET PASS <ChevronRight className="ml-1 w-5 h-5" />
+                </Button>
+
+              </>
+            ) : (
+              <div className="flex items-center gap-3 bg-slate-50 w-full p-3 rounded-2xl border border-dashed border-slate-200">
+                <div className="w-10 h-10 rounded-xl bg-slate-200 flex items-center justify-center">
+                  <AlertCircle className="w-5 h-5 text-slate-500" />
+                </div>
+                <div>
+                  <p className="text-xs font-black text-slate-700 uppercase">Monthly Subscription</p>
+                  <p className="text-[11px] font-bold text-slate-400">Not currently available for this mess</p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}

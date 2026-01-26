@@ -41,12 +41,17 @@ const Query = {
         }
         const mess = await Mess.findOne({
             providerId: ctx.user._id,
-        }).populate({
-            path: "myAllSubscribers",
-            populate: {
-                path: "userId",                  // User inside Subscription
-            }
-        })
+        }).populate([
+            {
+                path: "myAllSubscribers",
+                populate: {
+                    path: "userId", // User inside Subscription
+                },
+            },
+            {
+                path: "myAllSubscribersRequest",
+            },
+        ]);
         if (!mess) {
             return mess
         }
@@ -56,7 +61,7 @@ const Query = {
 
         return {
             id: mess._id.toString(),
-            MontlyPrices:mess.MontlyPrices,
+            MontlyPrices: mess.MontlyPrices,
             identity: mess.identity,
             legal: mess.legal,
             media: mess.media,
@@ -65,7 +70,8 @@ const Query = {
             createdAt: mess.createdAt,
             MessQrcode: mess.MessQrcode,
             Menu: mess.Menu,
-            myAllSubscribers: mess.myAllSubscribers
+            myAllSubscribers: mess.myAllSubscribers,
+            myAllSubscribersRequest:mess.myAllSubscribersRequest
         };
     },
 }

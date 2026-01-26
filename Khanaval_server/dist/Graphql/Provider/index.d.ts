@@ -94,6 +94,7 @@ export declare const Provider: {
                     menuDate?: NativeDate | null;
                 }>;
                 myAllSubscribers: import("mongoose").Types.ObjectId[];
+                myAllSubscribersRequest: import("mongoose").Types.ObjectId[];
             } | null>;
         };
         Mutation: {

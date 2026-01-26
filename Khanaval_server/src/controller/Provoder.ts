@@ -8,6 +8,7 @@ import { user } from "../model/mongo.js";
 import { sendNotification } from "../firebase/SendNotification.js";
 import { Feedback } from "../model/FeedBack.js";
 import { Subscription } from "../model/Subscriber.js";
+import { SubscribeRequest } from "../model/SubscripeRequest.js";
 interface MulterFiles {
     [fieldname: string]: Express.Multer.File[];
 }
@@ -413,7 +414,6 @@ export const AddToSubscriber = async (req: Request, res: Response) => {
             totalDays: totalDays,
             RemainingDay: totalDays
         })
-        console.log(createdSubsciber)
         await Mess.findByIdAndUpdate(messId, {
             $addToSet: {
                 myAllSubscribers: createdSubsciber._id,
@@ -497,6 +497,32 @@ export const updatedtheMonthy = async (req: Request, res: Response) => {
         return res.json({
             success: false,
             message: "Server Error"
+        })
+    }
+}
+
+
+export const RequestForPass = async (req: Request, res: Response) => {
+    try {
+        const { messID, number, username } = req.body
+        const result = await SubscribeRequest.create({
+            messId: messID,
+            userName: username,
+            phoneNumber: number
+        })
+        await Mess.findByIdAndUpdate(messID, {
+            $addToSet: {
+                myAllSubscribersRequest: result._id
+            }
+        })
+        return res.json({
+            success: true,
+            message: "done"
+        })
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "serverError"
         })
     }
 }

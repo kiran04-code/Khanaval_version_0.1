@@ -64,7 +64,7 @@ export default function SubscriberCheckInQR() {
       doc.setTextColor(255, 140, 0);
       doc.setFont("helvetica", "bold");
       doc.setFontSize(38);
-      doc.text("KHANAVAL", center, 32, { align: "center", charSpace: 3 });
+      doc.text("KHANAAVAL", center, 32, { align: "center", charSpace: 3 });
       
       doc.setFontSize(10);
       doc.setTextColor(140, 140, 140);

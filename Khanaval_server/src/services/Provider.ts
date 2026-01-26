@@ -134,7 +134,6 @@ class ProviderService {
         }
     }
     public static async findcurrentUser(id:string){
-        console.log(id)
      const data = await  Provider.findById(id)
      return data
     }

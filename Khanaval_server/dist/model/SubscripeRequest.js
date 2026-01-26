@@ -2,11 +2,7 @@ import mongoose from "mongoose";
 const subscribeRequestSchema = new mongoose.Schema({
     messId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "MessSchema",
-        required: true,
-    },
-    userId: {
-        type: String,
+        ref: "Mess",
         required: true,
     },
     userName: {

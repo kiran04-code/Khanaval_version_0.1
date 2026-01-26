@@ -84,7 +84,11 @@ query GetcurentMessdata{
       lat
       lng
     }
-    messVerified
+    messVerified,
+        myAllSubscribersRequest{
+      userName,
+      phoneNumber
+    }
     createdAt
     MessQrcode
     Menu {

@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
 export declare const SubscribeRequest: mongoose.Model<{
     messId: mongoose.Types.ObjectId;
-    userId: string;
     userName: string;
     phoneNumber: string;
     respondedAt?: NativeDate | null;
@@ -9,7 +8,6 @@ export declare const SubscribeRequest: mongoose.Model<{
     id: string;
 }, mongoose.Document<unknown, {}, {
     messId: mongoose.Types.ObjectId;
-    userId: string;
     userName: string;
     phoneNumber: string;
     respondedAt?: NativeDate | null;
@@ -19,7 +17,6 @@ export declare const SubscribeRequest: mongoose.Model<{
     timestamps: true;
 }> & Omit<{
     messId: mongoose.Types.ObjectId;
-    userId: string;
     userName: string;
     phoneNumber: string;
     respondedAt?: NativeDate | null;
@@ -33,13 +30,11 @@ export declare const SubscribeRequest: mongoose.Model<{
     timestamps: true;
 }, {
     messId: mongoose.Types.ObjectId;
-    userId: string;
     userName: string;
     phoneNumber: string;
     respondedAt?: NativeDate | null;
 } & mongoose.DefaultTimestampProps, mongoose.Document<unknown, {}, {
     messId: mongoose.Types.ObjectId;
-    userId: string;
     userName: string;
     phoneNumber: string;
     respondedAt?: NativeDate | null;
@@ -49,7 +44,6 @@ export declare const SubscribeRequest: mongoose.Model<{
     timestamps: true;
 }>> & Omit<{
     messId: mongoose.Types.ObjectId;
-    userId: string;
     userName: string;
     phoneNumber: string;
     respondedAt?: NativeDate | null;
@@ -64,7 +58,6 @@ export declare const SubscribeRequest: mongoose.Model<{
 } | {
     [x: string]: mongoose.SchemaDefinitionProperty<any, any, mongoose.Document<unknown, {}, {
         messId: mongoose.Types.ObjectId;
-        userId: string;
         userName: string;
         phoneNumber: string;
         respondedAt?: NativeDate | null;
@@ -74,7 +67,6 @@ export declare const SubscribeRequest: mongoose.Model<{
         timestamps: true;
     }>> & Omit<{
         messId: mongoose.Types.ObjectId;
-        userId: string;
         userName: string;
         phoneNumber: string;
         respondedAt?: NativeDate | null;
@@ -87,7 +79,6 @@ export declare const SubscribeRequest: mongoose.Model<{
     }> | undefined;
 }, {
     messId: mongoose.Types.ObjectId;
-    userId: string;
     userName: string;
     phoneNumber: string;
     respondedAt?: NativeDate | null;
@@ -99,7 +90,6 @@ export declare const SubscribeRequest: mongoose.Model<{
     __v: number;
 }>, {
     messId: mongoose.Types.ObjectId;
-    userId: string;
     userName: string;
     phoneNumber: string;
     respondedAt?: NativeDate | null;

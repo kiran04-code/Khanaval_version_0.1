@@ -66,6 +66,11 @@ type  GetCurrentMess{
   MessQrcode:String!
   Menu:[menu],
   myAllSubscribers:[SubscriberforMess]
+  myAllSubscribersRequest:[SubscribersRequest]
+}
+type SubscribersRequest{
+ userName:String!,
+ phoneNumber:String!
 }
 type SubscriberforMess{
   id:ID!

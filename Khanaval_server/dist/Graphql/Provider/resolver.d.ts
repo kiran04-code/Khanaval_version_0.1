@@ -94,6 +94,7 @@ export declare const resolvers: {
                 menuDate?: NativeDate | null;
             }>;
             myAllSubscribers: mongoose.Types.ObjectId[];
+            myAllSubscribersRequest: mongoose.Types.ObjectId[];
         } | null>;
     };
     Mutation: {

@@ -129,6 +129,12 @@ const providerSchema = new mongoose.Schema(
                 type: mongoose.Schema.Types.ObjectId,
                 ref: "Subscription",
             }
+        ],
+        myAllSubscribersRequest: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "SubscribeRequest",
+            }
         ]
     },
     { timestamps: true }

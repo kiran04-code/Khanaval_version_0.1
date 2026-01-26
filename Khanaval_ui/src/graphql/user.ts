@@ -37,6 +37,9 @@ query GetcurrentUser{
     totalDays,
     startAt,
     lastScannedAt
+    allScans {
+      scannedAt
+    },
    messId {
     id
     identity {

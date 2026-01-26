@@ -7,6 +7,13 @@ export declare const Subscription: mongoose.Model<{
     startAt: NativeDate;
     price: number;
     isActive: boolean;
+    allScans: mongoose.Types.DocumentArray<{
+        scannedAt?: NativeDate | null;
+    }, mongoose.Types.Subdocument<mongoose.mongo.BSON.ObjectId, unknown, {
+        scannedAt?: NativeDate | null;
+    }> & {
+        scannedAt?: NativeDate | null;
+    }>;
     lastScannedAt?: NativeDate | null;
 } & mongoose.DefaultTimestampProps, {}, {}, {
     id: string;
@@ -18,6 +25,13 @@ export declare const Subscription: mongoose.Model<{
     startAt: NativeDate;
     price: number;
     isActive: boolean;
+    allScans: mongoose.Types.DocumentArray<{
+        scannedAt?: NativeDate | null;
+    }, mongoose.Types.Subdocument<mongoose.mongo.BSON.ObjectId, unknown, {
+        scannedAt?: NativeDate | null;
+    }> & {
+        scannedAt?: NativeDate | null;
+    }>;
     lastScannedAt?: NativeDate | null;
 } & mongoose.DefaultTimestampProps, {
     id: string;
@@ -31,6 +45,13 @@ export declare const Subscription: mongoose.Model<{
     startAt: NativeDate;
     price: number;
     isActive: boolean;
+    allScans: mongoose.Types.DocumentArray<{
+        scannedAt?: NativeDate | null;
+    }, mongoose.Types.Subdocument<mongoose.mongo.BSON.ObjectId, unknown, {
+        scannedAt?: NativeDate | null;
+    }> & {
+        scannedAt?: NativeDate | null;
+    }>;
     lastScannedAt?: NativeDate | null;
 } & mongoose.DefaultTimestampProps & {
     _id: mongoose.Types.ObjectId;
@@ -48,6 +69,13 @@ export declare const Subscription: mongoose.Model<{
     startAt: NativeDate;
     price: number;
     isActive: boolean;
+    allScans: mongoose.Types.DocumentArray<{
+        scannedAt?: NativeDate | null;
+    }, mongoose.Types.Subdocument<mongoose.mongo.BSON.ObjectId, unknown, {
+        scannedAt?: NativeDate | null;
+    }> & {
+        scannedAt?: NativeDate | null;
+    }>;
     lastScannedAt?: NativeDate | null;
 } & mongoose.DefaultTimestampProps, mongoose.Document<unknown, {}, {
     messId: mongoose.Types.ObjectId;
@@ -57,6 +85,13 @@ export declare const Subscription: mongoose.Model<{
     startAt: NativeDate;
     price: number;
     isActive: boolean;
+    allScans: mongoose.Types.DocumentArray<{
+        scannedAt?: NativeDate | null;
+    }, mongoose.Types.Subdocument<mongoose.mongo.BSON.ObjectId, unknown, {
+        scannedAt?: NativeDate | null;
+    }> & {
+        scannedAt?: NativeDate | null;
+    }>;
     lastScannedAt?: NativeDate | null;
 } & mongoose.DefaultTimestampProps, {
     id: string;
@@ -70,6 +105,13 @@ export declare const Subscription: mongoose.Model<{
     startAt: NativeDate;
     price: number;
     isActive: boolean;
+    allScans: mongoose.Types.DocumentArray<{
+        scannedAt?: NativeDate | null;
+    }, mongoose.Types.Subdocument<mongoose.mongo.BSON.ObjectId, unknown, {
+        scannedAt?: NativeDate | null;
+    }> & {
+        scannedAt?: NativeDate | null;
+    }>;
     lastScannedAt?: NativeDate | null;
 } & mongoose.DefaultTimestampProps & {
     _id: mongoose.Types.ObjectId;
@@ -88,6 +130,13 @@ export declare const Subscription: mongoose.Model<{
         startAt: NativeDate;
         price: number;
         isActive: boolean;
+        allScans: mongoose.Types.DocumentArray<{
+            scannedAt?: NativeDate | null;
+        }, mongoose.Types.Subdocument<mongoose.mongo.BSON.ObjectId, unknown, {
+            scannedAt?: NativeDate | null;
+        }> & {
+            scannedAt?: NativeDate | null;
+        }>;
         lastScannedAt?: NativeDate | null;
     } & mongoose.DefaultTimestampProps, {
         id: string;
@@ -101,6 +150,13 @@ export declare const Subscription: mongoose.Model<{
         startAt: NativeDate;
         price: number;
         isActive: boolean;
+        allScans: mongoose.Types.DocumentArray<{
+            scannedAt?: NativeDate | null;
+        }, mongoose.Types.Subdocument<mongoose.mongo.BSON.ObjectId, unknown, {
+            scannedAt?: NativeDate | null;
+        }> & {
+            scannedAt?: NativeDate | null;
+        }>;
         lastScannedAt?: NativeDate | null;
     } & mongoose.DefaultTimestampProps & {
         _id: mongoose.Types.ObjectId;
@@ -117,6 +173,13 @@ export declare const Subscription: mongoose.Model<{
     startAt: NativeDate;
     price: number;
     isActive: boolean;
+    allScans: mongoose.Types.DocumentArray<{
+        scannedAt?: NativeDate | null;
+    }, mongoose.Types.Subdocument<mongoose.mongo.BSON.ObjectId, unknown, {
+        scannedAt?: NativeDate | null;
+    }> & {
+        scannedAt?: NativeDate | null;
+    }>;
     lastScannedAt?: NativeDate | null;
     createdAt: NativeDate;
     updatedAt: NativeDate;
@@ -132,6 +195,13 @@ export declare const Subscription: mongoose.Model<{
     startAt: NativeDate;
     price: number;
     isActive: boolean;
+    allScans: mongoose.Types.DocumentArray<{
+        scannedAt?: NativeDate | null;
+    }, mongoose.Types.Subdocument<mongoose.mongo.BSON.ObjectId, unknown, {
+        scannedAt?: NativeDate | null;
+    }> & {
+        scannedAt?: NativeDate | null;
+    }>;
     lastScannedAt?: NativeDate | null;
     createdAt: NativeDate;
     updatedAt: NativeDate;

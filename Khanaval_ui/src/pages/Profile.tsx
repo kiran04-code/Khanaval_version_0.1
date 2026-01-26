@@ -1,59 +1,59 @@
+import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { 
   LogOut, ChevronRight, MapPin, History, ShieldCheck, 
-  UtensilsCrossed, Clock, Mail, Phone, QrCode, AlertTriangle, Calendar 
+  UtensilsCrossed, Clock, Mail, QrCode, Calendar, ChevronDown, ChevronUp 
 } from "lucide-react";
 import { useCurrentUser } from "@/hooks/user-hook";
 import { useQueryClient } from "@tanstack/react-query";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 export default function KhanavalProfile() {
   const navigate = useNavigate();
   const { user } = useCurrentUser();
   const queryClient = useQueryClient();
   
+  const [showHistory, setShowHistory] = useState(false);
+
   const myMess = user?.myMess;
   const total = myMess?.totalDays || 1; 
   const remaining = myMess?.RemainingDay || 0;
+  const totalScansCount = myMess?.allScans?.length || 0;
 
-  const formatRelativeTime = (val) => {
-    if (!val) return "Never scanned";
-    const date = new Date(isNaN(val) ? val : Number(val));
+  // Updated formatter to match: "Monday, 26 Jan • 01:07 PM"
+  const formatScanTime = (val) => {
+    if (!val) return { relative: "No scans", fullInfo: "N/A" };
+    const date = new Date(Number(val));
     const now = new Date();
     const diffInSeconds = Math.floor((now - date) / 1000);
+    const diffInMinutes = Math.floor(diffInSeconds / 60);
     
+    // Exact format: Monday, 26 Jan • 01:07 PM
     const timeStr = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
-    const dayStr = date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
+    const dayName = date.toLocaleDateString('en-GB', { weekday: 'long' }); 
+    const dateStr = date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
+    const fullInfo = `${dayName}, ${dateStr} • ${timeStr}`;
 
     let relative = "";
-    if (diffInSeconds < 60) relative = "Just now";
-    else if (diffInSeconds < 3600) relative = `${Math.floor(diffInSeconds / 60)}m ago`;
-    else if (diffInSeconds < 86400) relative = `${Math.floor(diffInSeconds / 3600)}h ago`;
-    else {
-      const days = Math.floor(diffInSeconds / 86400);
-      relative = days === 1 ? "Yesterday" : `${days} days ago`;
-    }
+    if (diffInMinutes < 1) relative = "Just now";
+    else if (diffInMinutes < 60) relative = `${diffInMinutes}m ago`;
+    else if (diffInMinutes < 1440) relative = `${Math.floor(diffInMinutes / 60)}h ago`;
+    else relative = `${Math.floor(diffInMinutes / 1440)}d ago`;
 
-    return `${relative} (${dayStr}, ${timeStr})`;
+    return { relative, fullInfo };
   };
 
-  const formatDate = (val) => {
+  const formatDateOnly = (val) => {
     if (!val) return "N/A";
-    const date = new Date(isNaN(val) ? val : Number(val));
-    return date.toLocaleDateString('en-GB', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric'
-    });
+    const date = new Date(Number(val));
+    return date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
   };
+
+  // Get data for the specific lastScannedAt field from your DB
+  const latestScan = formatScanTime(myMess?.lastScannedAt);
 
   const percentage = Math.min(100, Math.max(0, (remaining / total) * 100));
-  const radius = 34;
-  const circumference = 2 * Math.PI * radius; 
-  const strokeDashoffset = circumference - (percentage / 100) * circumference;
-  const isExpiringSoon = remaining <= 2 && remaining > 0;
-  const isExpired = remaining === 0;
 
   const handlelogout = () => {
     window.localStorage.removeItem("_user_Token__");
@@ -64,158 +64,192 @@ export default function KhanavalProfile() {
 
   return (
     <div className="min-h-screen bg-[#FFFBF9] pb-24 selection:bg-orange-100">
-      <div className="relative h-48 bg-gradient-to-r from-orange-600 to-orange-400 overflow-hidden">
+      <div className="relative h-40 lg:h-56 bg-gradient-to-r from-orange-600 to-orange-400 overflow-hidden">
         <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/food.png')]" />
         <div className="absolute -bottom-16 left-0 right-0 h-32 bg-[#FFFBF9] rounded-[100%] scale-x-125" />
       </div>
 
-      <div className="container mx-auto max-w-2xl px-6 -mt-24 relative z-10">
+      <div className="container mx-auto max-w-3xl px-4 lg:px-8 -mt-20 lg:-mt-28 relative z-10">
         {/* Profile Info */}
         <div className="flex flex-col items-center mb-8">
           <div className="relative group">
-            <div className="absolute inset-0 bg-orange-400 blur-2xl opacity-20 transition-opacity" />
             <img
               src={user?.imageUrl || `https://api.dicebear.com/7.x/initials/svg?seed=${user?.first_name}`}
-              className="w-32 h-32 rounded-[45px] bg-white border-8 border-white shadow-2xl relative object-cover"
+              className="w-28 h-28 lg:w-40 lg:h-40 rounded-[40px] lg:rounded-[50px] bg-white border-4 lg:border-8 border-white shadow-2xl relative object-cover"
               alt="Profile"
             />
-            <div className="absolute bottom-2 right-2 bg-green-500 rounded-2xl p-2 border-4 border-white shadow-lg">
-              <ShieldCheck className="w-4 h-4 text-white" />
+            <div className="absolute bottom-1 right-1 lg:bottom-3 lg:right-3 bg-green-500 rounded-xl p-1.5 lg:p-2.5 border-2 lg:border-4 border-white shadow-lg">
+              <ShieldCheck className="w-4 h-4 lg:w-6 lg:h-6 text-white" />
             </div>
           </div>
-          <div className="text-center mt-6 space-y-1">
-            <h1 className="text-[clamp(1.5rem,6vw,2rem)] font-black text-slate-900 tracking-tight">
+          <div className="text-center mt-4 lg:mt-6 space-y-1">
+            <h1 className="text-xl lg:text-3xl font-black text-slate-900 leading-tight">
               {user?.first_name} {user?.last_name}
             </h1>
-            <p className="text-slate-500 font-medium text-[clamp(0.75rem,3vw,0.875rem)] flex items-center justify-center gap-1.5">
-              <Mail className="w-3.5 h-3.5" /> {user?.emailId}
+            <p className="text-slate-500 font-medium text-xs lg:text-base flex items-center justify-center gap-1.5">
+              <Mail className="w-3.5 h-3.5 lg:w-4 lg:h-4" /> {user?.emailId}
             </p>
           </div>
         </div>
 
         {/* Check-in Button */}
-        {myMess && !isExpired && (
+        {myMess && remaining > 0 && (
           <button 
             onClick={() => navigate("/scan-qr")}
-            className="w-full mb-8 bg-slate-900 hover:bg-orange-600 text-white rounded-[32px] p-6 shadow-2xl flex items-center justify-between group transition-all transform active:scale-95 border-b-4 border-slate-950 active:border-b-0"
+            className="w-full mb-8 bg-slate-900 text-white rounded-[28px] lg:rounded-[35px] p-5 lg:p-8 shadow-xl flex items-center justify-between active:scale-[0.98] transition-all border-b-4 border-slate-950"
           >
-            <div className="flex items-center gap-5 text-left">
-              <div className="bg-orange-500 p-4 rounded-2xl shadow-inner group-hover:bg-white group-hover:text-orange-600 transition-colors shrink-0">
-                <QrCode className="w-8 h-8" />
+            <div className="flex items-center gap-4 lg:gap-6 text-left">
+              <div className="bg-orange-500 p-3 lg:p-5 rounded-2xl lg:rounded-3xl shrink-0">
+                <QrCode className="w-6 h-6 lg:w-10 lg:h-10" />
               </div>
               <div>
-                <p className="text-[clamp(1rem,4.5vw,1.25rem)] font-black tracking-tight leading-none">Check-in for Meal</p>
-                <p className="text-slate-400 group-hover:text-orange-100 text-[clamp(0.6rem,2.5vw,0.75rem)] font-bold uppercase mt-1.5 flex items-center gap-1.5 whitespace-nowrap">
-                  <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
-                  Scan QR at {myMess.messId?.identity?.name || "Mess"}
+                <p className="text-base lg:text-2xl font-black leading-tight">Check-in for Meal</p>
+                <p className="text-slate-400 text-[10px] lg:text-sm font-bold uppercase mt-1">
+                   Scan at {myMess.messId?.identity?.name || "Mess"}
                 </p>
               </div>
             </div>
-            <div className="h-12 w-12 rounded-full border border-slate-700 flex items-center justify-center group-hover:bg-orange-500 group-hover:border-orange-400 transition-all shrink-0 ml-2">
-              <ChevronRight className="w-6 h-6 text-white group-hover:translate-x-1 transition-transform" />
+            <div className="h-10 w-10 lg:h-14 lg:w-14 rounded-full bg-white/10 flex items-center justify-center">
+              <ChevronRight className="w-5 h-5 lg:w-8 lg:h-8 text-white" />
             </div>
           </button>
         )}
 
         {/* Active Subscription Card */}
         {myMess ? (
-          <Card className={`border-none shadow-[0_30px_60px_-15px_rgba(249,115,22,0.15)] rounded-[40px] overflow-hidden bg-white mb-8 border ${isExpiringSoon ? 'ring-2 ring-red-500/20' : 'border-orange-50'}`}>
-            <CardContent className="p-8">
-              <div className="flex flex-row items-center justify-between gap-4 mb-8">
-                <div className="flex items-center gap-4 min-w-0">
-                  <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 ${isExpiringSoon ? 'bg-red-50' : 'bg-orange-50'}`}>
-                    <UtensilsCrossed className={`w-7 h-7 ${isExpiringSoon ? 'text-red-500' : 'text-orange-500'}`} />
+          <Card className="border-none shadow-lg rounded-[32px] lg:rounded-[45px] overflow-hidden bg-white mb-8">
+            <CardContent className="p-6 lg:p-10">
+              <div className="flex items-center justify-between gap-4 mb-8">
+                <div className="flex items-center gap-4 lg:gap-6 min-w-0">
+                  <div className="w-12 h-12 lg:w-20 lg:h-20 rounded-2xl lg:rounded-3xl flex items-center justify-center shrink-0 bg-orange-50">
+                    <UtensilsCrossed className="w-6 h-6 lg:w-10 lg:h-10 text-orange-500" />
                   </div>
                   <div className="min-w-0">
-                    <h3 className="text-[clamp(1rem,4.5vw,1.25rem)] font-black text-slate-900 leading-tight truncate">{myMess.messId?.identity?.name || "Mess"}</h3>
-                    <div className="flex flex-col gap-0.5 mt-1">
-                      <div className="flex items-center gap-1 text-emerald-600 whitespace-nowrap">
-                        <Calendar className="w-3 h-3 shrink-0" />
-                        <span className="text-[clamp(0.5rem,2vw,0.65rem)] font-black uppercase tracking-wider">Started: {formatDate(myMess.startAt)}</span>
-                      </div>
-                      
-                      <div className="flex items-center gap-1 text-orange-500 whitespace-nowrap">
-                        <Clock className="w-3 h-3 shrink-0" />
-                        <span className="text-[clamp(0.5rem,2vw,0.65rem)] font-black uppercase tracking-wider">
-                          Last Scan: {formatRelativeTime(myMess.lastScannedAt)}
-                        </span>
-                      </div>
+                    <h3 className="text-lg lg:text-2xl font-black text-slate-900 truncate">{myMess.messId?.identity?.name || "Mess"}</h3>
+                    
+                    {/* Latest Scan Badge using lastScannedAt */}
+                    <div className="flex flex-col gap-1 mt-1 lg:mt-2">
+                        <div className="flex items-center gap-1.5 text-orange-600 bg-orange-50 px-2 py-0.5 rounded-lg w-fit border border-orange-100">
+                            <Clock className="w-3 h-3 lg:w-4 lg:h-4" />
+                            <span className="text-[9px] lg:text-xs font-black uppercase tracking-tight">
+                                Latest: {latestScan.fullInfo} ({latestScan.relative})
+                            </span>
+                        </div>
+                        <div className="flex items-center gap-1.5 text-emerald-600 ml-1">
+                          <Calendar className="w-3 h-3 lg:w-4 lg:h-4" />
+                          <span className="text-[9px] lg:text-xs font-black uppercase">Start: {formatDateOnly(myMess.startAt)}</span>
+                        </div>
                     </div>
                   </div>
                 </div>
                 <div className="text-right shrink-0">
-                  <p className="text-[clamp(0.55rem,2.2vw,0.65rem)] font-black text-slate-300 uppercase">Price</p>
-                  <p className="text-slate-900 font-black text-[clamp(1rem,4.5vw,1.125rem)]">₹{myMess.price}</p>
+                  <p className="text-[10px] lg:text-xs font-black text-slate-300 uppercase">Price</p>
+                  <p className="text-slate-900 font-black text-lg lg:text-2xl">₹{myMess.price}</p>
                 </div>
               </div>
 
               {/* Progress Tracker */}
-              <div className="bg-slate-50 rounded-[32px] p-6 flex items-center justify-between">
+              <div className="bg-slate-50 rounded-[28px] lg:rounded-[35px] p-6 lg:p-10 flex items-center justify-between">
                 <div className="space-y-1">
-                  <div className="flex items-baseline gap-1">
-                    <span className={`text-[clamp(2.5rem,12vw,3.5rem)] font-black tracking-tighter leading-none ${isExpiringSoon ? 'text-red-600' : 'text-slate-900'}`}>
+                  <div className="flex items-baseline gap-1 lg:gap-2">
+                    <span className="text-4xl lg:text-7xl font-black tracking-tighter text-slate-900">
                       {remaining}
                     </span>
-                    <span className="text-[clamp(0.875rem,4vw,1.125rem)] text-slate-400 font-bold">Days</span>
+                    <span className="text-xs lg:text-xl text-slate-400 font-bold uppercase">Meals Left</span>
                   </div>
-                  <p className="text-[clamp(0.55rem,2.2vw,0.65rem)] font-bold text-slate-400 uppercase tracking-widest">Plan: {total} Days</p>
+                  <p className="text-[10px] lg:text-xs font-bold text-slate-400 uppercase tracking-widest">Total Plan: {total} Days</p>
                 </div>
 
-                <div className="relative w-20 h-20 sm:w-24 sm:h-24">
-                  <svg className="w-full h-full transform -rotate-90">
-                    <circle cx="50%" cy="50%" r="34" stroke="currentColor" strokeWidth="8" fill="transparent" className="text-slate-200" />
+                <div className="relative w-20 h-20 lg:w-28 lg:h-28 flex items-center justify-center">
+                   <svg className="w-full h-full transform -rotate-90 absolute">
+                    <circle cx="50%" cy="50%" r="35%" stroke="currentColor" strokeWidth="10%" fill="transparent" className="text-slate-200" />
                     <circle
-                      cx="50%" cy="50%" r="34"
-                      stroke="currentColor" strokeWidth="8" fill="transparent" strokeLinecap="round"
-                      style={{
-                        strokeDasharray: circumference,
-                        strokeDashoffset: strokeDashoffset,
+                      cx="50%" cy="50%" r="35%"
+                      stroke="currentColor" strokeWidth="10%" fill="transparent" strokeLinecap="round"
+                      style={{ 
+                        strokeDasharray: "220%", 
+                        strokeDashoffset: `${220 - (percentage * 2.2)}%` 
                       }}
-                      className={`${isExpiringSoon ? 'text-red-500' : 'text-orange-500'} transition-all duration-1000 ease-out`}
+                      className="text-orange-500 transition-all duration-1000"
                     />
                   </svg>
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <History className={`w-5 h-5 ${isExpiringSoon ? 'text-red-500' : 'text-orange-500'}`} />
-                  </div>
+                  <History className="w-5 h-5 lg:w-8 lg:h-8 text-orange-500" />
                 </div>
               </div>
-
-              {!isExpired && (
-                <Link 
-                  to={`/mess/${myMess.messId?.id}`} 
-                  className="w-full mt-6 h-16 rounded-[24px] bg-slate-900 hover:bg-orange-600 text-white font-black text-[clamp(0.875rem,4vw,1.125rem)] transition-all shadow-xl flex items-center justify-center group"
-                >
-                  View Today's Menu
-                  <ChevronRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                </Link>
-              )}
             </CardContent>
           </Card>
-        ) : (
-          <div className="p-12 text-center bg-white rounded-[40px] border-2 border-dashed border-slate-200 mb-8">
-            <p className="text-slate-400 font-bold text-[clamp(0.875rem,4vw,1rem)]">No active mess found</p>
+        ) : null}
+
+        {/* Scan History Toggle with Total Count */}
+        {myMess?.allScans && myMess.allScans.length > 0 && (
+          <div className="mb-8">
+            <button 
+              onClick={() => setShowHistory(!showHistory)}
+              className="w-full flex items-center justify-between p-5 lg:p-7 bg-white border border-slate-100 rounded-3xl lg:rounded-[35px] shadow-sm hover:border-orange-200 transition-all"
+            >
+              <div className="flex items-center gap-3 lg:gap-4">
+                <div className="bg-orange-100 p-2.5 lg:p-3.5 rounded-xl lg:rounded-2xl">
+                   <History className="w-4 h-4 lg:w-6 lg:h-6 text-orange-600" />
+                </div>
+                <div className="text-left">
+                  <span className="block text-xs lg:text-lg font-black text-slate-700 uppercase tracking-wider">
+                    Full Scan History ({totalScansCount})
+                  </span>
+                  <span className="text-[10px] lg:text-xs text-slate-400 font-bold uppercase">Total Meals Tracked</span>
+                </div>
+              </div>
+              {showHistory ? <ChevronUp className="w-5 h-5 lg:w-7 lg:h-7 text-slate-400" /> : <ChevronDown className="w-5 h-5 lg:w-7 lg:h-7 text-slate-400" />}
+            </button>
+            
+            {showHistory && (
+              <div className="mt-4 space-y-3 lg:space-y-4 px-2">
+                {[...myMess.allScans].reverse().map((scan, index) => {
+                  const timeData = formatScanTime(scan.scannedAt);
+                  return (
+                    <div 
+                      key={index} 
+                      className="flex items-center justify-between p-4 lg:p-6 bg-white/60 border border-slate-100 rounded-2xl lg:rounded-3xl hover:bg-white transition-colors"
+                    >
+                      <div className="flex items-center gap-3 lg:gap-5">
+                        <div className="w-10 h-10 lg:w-14 lg:h-14 rounded-xl lg:rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                          <ShieldCheck className="w-5 h-5 lg:w-7 lg:h-7" />
+                        </div>
+                        <div>
+                          <p className="font-bold lg:font-black text-slate-800 text-sm lg:text-lg tracking-tight">Meal Verified</p>
+                          <p className="text-[10px] lg:text-sm font-bold text-slate-400 uppercase mt-0.5">
+                            {timeData.fullInfo}
+                          </p>
+                        </div>
+                      </div>
+                      <Badge className="bg-emerald-100 text-emerald-700 hover:bg-emerald-100 text-[9px] lg:text-xs px-2 lg:px-4 py-1">
+                        {timeData.relative}
+                      </Badge>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
         )}
 
-        {/* Action List */}
-        <div className="grid grid-cols-1 gap-3">
-          <button className="flex items-center justify-between p-5 bg-white border border-slate-50 rounded-3xl hover:border-orange-100 transition-all group shadow-sm hover:shadow-md text-left">
-            <div className="flex items-center gap-4 overflow-hidden">
-              <div className="p-3 rounded-2xl bg-orange-50 text-orange-600 group-hover:bg-orange-600 group-hover:text-white transition-colors shrink-0">
-                <MapPin className="w-5 h-5" />
+        <div className="space-y-4">
+          <button className="w-full flex items-center justify-between p-5 lg:p-7 bg-white border border-slate-50 rounded-3xl lg:rounded-[35px] hover:border-orange-100 shadow-sm transition-all group">
+            <div className="flex items-center gap-3 lg:gap-5">
+              <div className="p-3 lg:p-4 rounded-xl lg:rounded-2xl bg-orange-50 text-orange-600 group-hover:bg-orange-600 group-hover:text-white transition-colors">
+                <MapPin className="w-5 h-5 lg:w-7 lg:h-7" />
               </div>
-              <div className="min-w-0">
-                <p className="font-black text-slate-800 text-[clamp(0.75rem,3.5vw,0.875rem)]">Mess Location</p>
-                <p className="text-[clamp(0.6rem,2.8vw,0.7rem)] font-bold text-slate-400 uppercase truncate w-full pr-2">
+              <div className="text-left">
+                <p className="font-black text-slate-800 text-xs lg:text-lg">Mess Location</p>
+                <p className="text-[10px] lg:text-sm font-bold text-slate-400 uppercase truncate">
                   {myMess?.messId?.location?.landmark || "Not set"}
                 </p>
               </div>
             </div>
-            <ChevronRight className="w-5 h-5 text-slate-200 group-hover:text-orange-500 transition-colors shrink-0" />
+            <ChevronRight className="w-5 h-5 lg:w-7 lg:h-7 text-slate-200 group-hover:text-orange-500" />
           </button>
 
-          <button onClick={handlelogout} className="flex items-center justify-center gap-2 p-5 text-red-500 font-black uppercase text-[clamp(0.6rem,2.5vw,0.7rem)] tracking-[0.2em] mt-4 hover:bg-red-50 rounded-3xl transition-colors">
-            <LogOut className="w-4 h-4" /> Sign Out
+          <button onClick={handlelogout} className="w-full flex items-center justify-center gap-2 p-5 text-red-500 font-black uppercase text-[10px] lg:text-sm tracking-widest mt-4 hover:bg-red-50 rounded-2xl lg:rounded-3xl transition-colors">
+            <LogOut className="w-4 h-4 lg:w-5 lg:h-5" /> Sign Out
           </button>
         </div>
       </div>

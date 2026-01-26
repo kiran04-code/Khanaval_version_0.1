@@ -27,6 +27,10 @@ type Subscriber {
   messId:GetCurrentMess,
   startAt:String
   lastScannedAt:String
+  allScans:[subscannerlatest]
+}
+type subscannerlatest {
+  scannedAt:String
 }
 `;
 //# sourceMappingURL=typedef.js.map

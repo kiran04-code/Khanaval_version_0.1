@@ -418,9 +418,16 @@ export const MarkMealAttendece = async (req, res) => {
     try {
         const { sub, remaingDay } = req.body;
         const data = await Subscription.findByIdAndUpdate(sub, {
-            lastScannedAt: new Date(),
-            RemainingDay: remaingDay - 1
-        });
+            $set: {
+                lastScannedAt: new Date(),
+                RemainingDay: remaingDay - 1,
+            },
+            $push: {
+                allScans: {
+                    scannedAt: new Date(),
+                },
+            },
+        }, { new: true });
         console.log(data);
         return res.status(200).json({
             success: true,

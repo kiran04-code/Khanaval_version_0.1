@@ -74,6 +74,7 @@ userId:User,
 price:Int!,
 lastScannedAt:String
 startAt:String
+allScans:[subscannerlatest]
 }
 type Locations {
 address: String!

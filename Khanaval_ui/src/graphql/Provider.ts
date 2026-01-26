@@ -99,6 +99,9 @@ query GetcurentMessdata{
     startAt,
     lastScannedAt,
     RemainingDay
+     allScans {
+        scannedAt
+      }
     userId {
         id,
       first_name,

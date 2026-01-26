@@ -34,6 +34,13 @@ const subscriptionSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    allScans: [
+      {
+        scannedAt: {
+          type: Date,
+        },
+      },
+    ],
     lastScannedAt: {
       type: Date,
     },

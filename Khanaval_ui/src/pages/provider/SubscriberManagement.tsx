@@ -6,9 +6,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { 
-  UserPlus, Loader2, Phone, Search, 
-  IndianRupee, Calendar, Clock, AlertCircle, Mail, X, Trash2 
+import {
+  UserPlus, Loader2, Phone, Search,
+  IndianRupee, Calendar, Clock, AlertCircle, Mail, X, Trash2
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useStateContex } from "@/context/State";
@@ -54,9 +54,9 @@ export default function SubscriberManagement() {
       const fullName = `${user.first_name} ${user.last_name}`.toLowerCase();
       const number = String(user.number || "").toLowerCase();
       const email = String(user.email || "").toLowerCase();
-      return fullName.includes(searchQuery.toLowerCase()) || 
-             number.includes(searchQuery.toLowerCase()) || 
-             email.includes(searchQuery.toLowerCase());
+      return fullName.includes(searchQuery.toLowerCase()) ||
+        number.includes(searchQuery.toLowerCase()) ||
+        email.includes(searchQuery.toLowerCase());
     });
   }, [subscribers, searchQuery]);
 
@@ -70,7 +70,7 @@ export default function SubscriberManagement() {
         setVerifiedUser(data.userData);
         setStep(2);
       } else {
-        toast({ title: "User Not Found", variant: "destructive" });
+        toast({ title: `${data.message}`, variant:"destructive" });
       }
     } catch (error) {
       toast({ title: "Verification Failed", variant: "destructive" });
@@ -92,6 +92,8 @@ export default function SubscriberManagement() {
         setIsAddModalOpen(false);
         resetForm();
         queryClient.invalidateQueries({ queryKey: ["get-mess"] });
+      } else {
+        toast({ title: `${data.message}`, description: "Subscriber Added!" });
       }
     } catch (error) {
       toast({ title: "Error", variant: "destructive" });
@@ -102,9 +104,9 @@ export default function SubscriberManagement() {
     if (!selectedSub) return;
     setIsSubmitting(true);
     try {
-      const { data } = await axioseInstace.post(`/api/subscriptions/remove`,{
-        sub:subId,
-        userId:subuserId
+      const { data } = await axioseInstace.post(`/api/subscriptions/remove`, {
+        sub: subId,
+        userId: subuserId
       });
       if (data.success) {
         toast({ title: "Removed", description: "Student removed from register." });
@@ -124,7 +126,7 @@ export default function SubscriberManagement() {
 
   return (
     <div className="max-w-6xl mx-auto space-y-4 md:space-y-6 pb-24 px-2 md:px-0">
-      
+
       {/* 1. HEADER & SEARCH */}
       <div className="bg-white p-4 md:p-6 rounded-[2.5rem] shadow-sm border border-slate-100 space-y-4">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -141,7 +143,7 @@ export default function SubscriberManagement() {
 
         <div className="relative group">
           <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-orange-500" />
-          <Input 
+          <Input
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search name, phone or email..."
@@ -162,15 +164,15 @@ export default function SubscriberManagement() {
           return (
             <Card key={i} className="border-none shadow-sm rounded-[2rem] bg-white overflow-hidden group">
               <div className="p-4 md:p-6 flex flex-col md:flex-row md:items-center justify-between gap-6">
-                
+
                 {/* Profile Section */}
                 <div className="flex items-center gap-5">
                   <div className="relative flex-shrink-0">
                     <svg className="w-16 h-16 transform -rotate-90">
                       <circle cx="32" cy="32" r="28" stroke="currentColor" strokeWidth="5" fill="transparent" className="text-slate-50" />
-                      <circle cx="32" cy="32" r="28" stroke="currentColor" strokeWidth="5" fill="transparent" 
+                      <circle cx="32" cy="32" r="28" stroke="currentColor" strokeWidth="5" fill="transparent"
                         strokeDasharray={175.9} strokeDashoffset={175.9 - (175.9 * percentage) / 100}
-                        className={`${sub.RemainingDay <= 5 ? 'text-red-500' : 'text-orange-500'} transition-all duration-700`} 
+                        className={`${sub.RemainingDay <= 5 ? 'text-red-500' : 'text-orange-500'} transition-all duration-700`}
                       />
                     </svg>
                     <div className="absolute inset-0 flex items-center justify-center text-[11px] font-black">{Math.round(percentage)}%</div>
@@ -212,8 +214,8 @@ export default function SubscriberManagement() {
                     <p className="text-[10px] font-bold text-slate-300 mt-1">₹{sub.price}</p>
                   </div>
 
-                  <button 
-                    onClick={() => { setSelectedSub(sub); setIsDeleteModalOpen(true); setSubuserId(sub?.userId?.id);setSubId(sub?.id)}}
+                  <button
+                    onClick={() => { setSelectedSub(sub); setIsDeleteModalOpen(true); setSubuserId(sub?.userId?.id); setSubId(sub?.id) }}
                     className="p-3 bg-red-50 text-red-500 rounded-2xl hover:bg-red-500 hover:text-white transition-all duration-200"
                   >
                     <Trash2 className="w-5 h-5" />
@@ -249,17 +251,17 @@ export default function SubscriberManagement() {
       </Dialog>
 
       {/* 4. ADD MODAL */}
-      <Dialog open={isAddModalOpen} onOpenChange={(val) => { setIsAddModalOpen(val); if(!val) resetForm(); }}>
+      <Dialog open={isAddModalOpen} onOpenChange={(val) => { setIsAddModalOpen(val); if (!val) resetForm(); }}>
         <DialogContent className="w-[95%] max-w-[420px] p-0 overflow-hidden rounded-[3rem] border-none shadow-2xl bg-white">
           <div className="bg-slate-900 p-8 text-white">
-             <DialogTitle className="text-2xl font-black">Register Student</DialogTitle>
-             <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest mt-1">Step {step} of 2</p>
+            <DialogTitle className="text-2xl font-black">Register Student</DialogTitle>
+            <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest mt-1">Step {step} of 2</p>
           </div>
           <div className="p-8 space-y-6">
             {step === 1 ? (
               <div className="space-y-4">
                 <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Student Phone</Label>
-                <Input type="tel" placeholder="Enter number" className="h-16 rounded-[1.25rem] bg-slate-50 border-none font-black text-xl px-6" value={newSubscriber.phone} onChange={(e) => setNewSubscriber({...newSubscriber, phone: e.target.value})} />
+                <Input type="tel" placeholder="Enter number" className="h-16 rounded-[1.25rem] bg-slate-50 border-none font-black text-xl px-6" value={newSubscriber.phone} onChange={(e) => setNewSubscriber({ ...newSubscriber, phone: e.target.value })} />
                 <Button className="w-full h-16 bg-orange-600 hover:bg-orange-700 rounded-[1.25rem] font-black text-lg" onClick={handleCheckUser} disabled={isValidating}>
                   {isValidating ? <Loader2 className="animate-spin" /> : "VERIFY USER"}
                 </Button>
@@ -273,14 +275,14 @@ export default function SubscriberManagement() {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label className="text-[10px] font-black text-slate-400">PLAN</Label>
-                    <Select onValueChange={(v) => setNewSubscriber({...newSubscriber, plan: v})}>
+                    <Select onValueChange={(v) => setNewSubscriber({ ...newSubscriber, plan: v })}>
                       <SelectTrigger className="h-14 rounded-2xl bg-slate-50 border-none font-black"><SelectValue placeholder="30 Days" /></SelectTrigger>
                       <SelectContent className="rounded-2xl"><SelectItem value="30">30 Days</SelectItem><SelectItem value="60">60 Days</SelectItem><SelectItem value="90">90 Days</SelectItem></SelectContent>
                     </Select>
                   </div>
                   <div className="space-y-2">
                     <Label className="text-[10px] font-black text-slate-400">PRICE (₹)</Label>
-                    <Input type="number" className="h-14 rounded-2xl bg-slate-50 border-none font-black" placeholder="2000" onChange={(e) => setNewSubscriber({...newSubscriber, price: e.target.value})} />
+                    <Input type="number" className="h-14 rounded-2xl bg-slate-50 border-none font-black" placeholder="2000" onChange={(e) => setNewSubscriber({ ...newSubscriber, price: e.target.value })} />
                   </div>
                 </div>
                 <div className="flex gap-3">

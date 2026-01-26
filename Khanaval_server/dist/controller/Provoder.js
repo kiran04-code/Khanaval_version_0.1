@@ -285,8 +285,8 @@ export const finderUserByNumber = async (req, res) => {
         const data = await user.findOne({ number: number });
         if (!data) {
             return res.json({
-                success: true,
-                message: "Your Founded",
+                success: false,
+                message: "Your not Found",
                 userData: data
             });
         }
@@ -362,7 +362,6 @@ export const getAllFeedback = async (req, res) => {
 };
 export const AddToSubscriber = async (req, res) => {
     try {
-        console.log(req.body);
         const { userId, messId, totalDays, price } = req.body;
         const data = await user.findById(userId);
         if (data?.Subscriber) {

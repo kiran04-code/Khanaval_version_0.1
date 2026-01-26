@@ -247,7 +247,7 @@ export default function ProviderDashboard() {
                 {activeTab === "menu" && <MenuManagement />}
                 {activeTab === "scanner" && <QRScanner />}
                 {activeTab === "subscribers" && <SubscriberManagement />}
-                {activeTab === "earnings" && <EarningsDashboard />}
+                {/* {activeTab === "earnings" && <EarningsDashboard />} */}
                 {activeTab === "Profile" && <ProviderProfile />}
               </>
             )}
@@ -263,6 +263,5 @@ const navItems = [
   { id: "menu" as TabType, icon: Utensils, label: "Daily Menu" },
   { id: "subscribers" as TabType, icon: Users, label: "Student Register" },
   { id: "scanner" as TabType, icon: QrCode, label: "QR Scanner" },
-  { id: "earnings" as TabType, icon: Wallet, label: "Revenue" },
   { id: "Profile" as TabType, icon: Users2, label: "Settings" },
 ];

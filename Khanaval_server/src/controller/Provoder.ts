@@ -312,8 +312,8 @@ export const finderUserByNumber = async (req: Request, res: Response) => {
         const data = await user.findOne({ number: number })
         if (!data) {
             return res.json({
-                success: true,
-                message: "Your Founded",
+                success: false,
+                message: "Your not Found",
                 userData: data
             })
         }
@@ -394,7 +394,6 @@ export const getAllFeedback = async (req: Request, res: Response) => {
 
 export const AddToSubscriber = async (req: Request, res: Response) => {
     try {
-        console.log(req.body)
         const {
             userId,
             messId,

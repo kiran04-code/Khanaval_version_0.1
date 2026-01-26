@@ -155,7 +155,7 @@ export default function KhanavalProfile() {
                     <span className="text-4xl lg:text-7xl font-black tracking-tighter text-slate-900">
                       {remaining}
                     </span>
-                    <span className="text-xs lg:text-xl text-slate-400 font-bold uppercase">Meals Left</span>
+                    <span className="text-xs lg:text-xl text-slate-400 font-bold uppercase">Meals/Days Left</span>
                   </div>
                   <p className="text-[10px] lg:text-xs font-bold text-slate-400 uppercase tracking-widest">Total Plan: {total} Days</p>
                 </div>

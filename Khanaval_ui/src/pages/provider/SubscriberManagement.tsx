@@ -173,7 +173,7 @@ export default function SubscriberManagement() {
                   </div>
                   <div className="text-center border-x md:border-none border-slate-200">
                     <p className={`text-lg font-black leading-none ${sub.RemainingDay < 5 ? 'text-red-500' : 'text-slate-900'}`}>{sub.RemainingDay}</p>
-                    <p className="text-[9px] font-bold text-slate-400 uppercase">Days Left</p>
+                    <p className="text-[9px] font-bold text-slate-400 uppercase">Days/Meals Left</p>
                   </div>
                   <div className="text-center">
                     <p className="text-lg font-black text-slate-900 leading-none">₹{sub.price}</p>

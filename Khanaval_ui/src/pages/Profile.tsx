@@ -17,7 +17,6 @@ export default function KhanavalProfile() {
   const total = myMess?.totalDays || 1; 
   const remaining = myMess?.RemainingDay || 0;
 
-  // --- NEW: DATE FORMATTER HELPER ---
   const formatDate = (val) => {
     if (!val) return "N/A";
     const date = new Date(isNaN(val) ? val : Number(val));
@@ -51,6 +50,7 @@ export default function KhanavalProfile() {
       </div>
 
       <div className="container mx-auto max-w-2xl px-6 -mt-24 relative z-10">
+        {/* Profile Info */}
         <div className="flex flex-col items-center mb-8">
           <div className="relative group">
             <div className="absolute inset-0 bg-orange-400 blur-2xl opacity-20 transition-opacity" />
@@ -64,15 +64,16 @@ export default function KhanavalProfile() {
             </div>
           </div>
           <div className="text-center mt-6 space-y-1">
-            <h1 className="text-3xl font-black text-slate-900 tracking-tight">
+            <h1 className="text-[clamp(1.5rem,6vw,2rem)] font-black text-slate-900 tracking-tight">
               {user?.first_name} {user?.last_name}
             </h1>
-            <p className="text-slate-500 font-medium text-sm flex items-center justify-center gap-1.5">
+            <p className="text-slate-500 font-medium text-[clamp(0.75rem,3vw,0.875rem)] flex items-center justify-center gap-1.5">
               <Mail className="w-3.5 h-3.5" /> {user?.emailId}
             </p>
           </div>
         </div>
 
+        {/* Check-in Button */}
         {myMess && !isExpired && (
           <button 
             onClick={() => navigate("/scan-qr")}
@@ -83,8 +84,8 @@ export default function KhanavalProfile() {
                 <QrCode className="w-8 h-8" />
               </div>
               <div className="text-left">
-                <p className="text-xl font-black tracking-tight leading-none">Check-in for Meal</p>
-                <p className="text-slate-400 group-hover:text-orange-100 text-xs font-bold uppercase mt-1.5 flex items-center gap-1.5">
+                <p className="text-[clamp(1rem,4.5vw,1.25rem)] font-black tracking-tight leading-none">Check-in for Meal</p>
+                <p className="text-slate-400 group-hover:text-orange-100 text-[clamp(0.6rem,2.5vw,0.75rem)] font-bold uppercase mt-1.5 flex items-center gap-1.5">
                   <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
                   Scan QR at {myMess.messId?.identity?.name || "Mess"}
                 </p>
@@ -96,20 +97,20 @@ export default function KhanavalProfile() {
           </button>
         )}
 
-        {/* Expiry Reminder Banner */}
+        {/* Expiry Reminder */}
         {myMess && isExpiringSoon && (
           <div className="mb-6 animate-bounce bg-red-50 border border-red-100 p-4 rounded-[24px] flex items-center gap-3 shadow-sm">
             <div className="bg-red-500 p-2 rounded-xl">
               <AlertTriangle className="w-5 h-5 text-white" />
             </div>
             <div>
-              <p className="text-red-800 font-black text-sm">Subscription Expiring!</p>
-              <p className="text-red-600 text-xs font-bold uppercase tracking-tight">Expires in {remaining} {remaining === 1 ? 'day' : 'days'}</p>
+              <p className="text-red-800 font-black text-[clamp(0.75rem,3vw,0.875rem)]">Subscription Expiring!</p>
+              <p className="text-red-600 text-[clamp(0.6rem,2.5vw,0.7rem)] font-black uppercase tracking-tight">Expires in {remaining} {remaining === 1 ? 'day' : 'days'}</p>
             </div>
           </div>
         )}
 
-        <h2 className="text-xs font-black text-orange-500 uppercase tracking-[0.2em] mb-4 ml-2">Active Subscription</h2>
+        <h2 className="text-[clamp(0.6rem,2.5vw,0.7rem)] font-black text-orange-500 uppercase tracking-[0.2em] mb-4 ml-2">Active Subscription</h2>
 
         {myMess ? (
           <Card className={`border-none shadow-[0_30px_60px_-15px_rgba(249,115,22,0.15)] rounded-[40px] overflow-hidden bg-white mb-8 border ${isExpiringSoon ? 'ring-2 ring-red-500/20' : 'border-orange-50'}`}>
@@ -120,38 +121,37 @@ export default function KhanavalProfile() {
                     <UtensilsCrossed className={`w-7 h-7 ${isExpiringSoon ? 'text-red-500' : 'text-orange-500'}`} />
                   </div>
                   <div>
-                    <h3 className="text-xl font-black text-slate-900">{myMess.messId?.identity?.name || "Mess"}</h3>
-                    {/* START DATE UI ADDED HERE */}
+                    <h3 className="text-[clamp(1rem,4.5vw,1.25rem)] font-black text-slate-900 leading-tight">{myMess.messId?.identity?.name || "Mess"}</h3>
                     <div className="flex items-center gap-1 mt-1 text-emerald-600">
                       <Calendar className="w-3 h-3" />
-                      <span className="text-[10px] font-black uppercase tracking-wider">Started: {formatDate(myMess.startAt)}</span>
+                      <span className="text-[clamp(0.55rem,2.2vw,0.65rem)] font-black uppercase tracking-wider">Started: {formatDate(myMess.startAt)}</span>
                     </div>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-[10px] font-black text-slate-300 uppercase">Price</p>
-                  <p className="text-slate-900 font-black text-lg">₹{myMess.price}</p>
+                  <p className="text-[clamp(0.55rem,2.2vw,0.65rem)] font-black text-slate-300 uppercase">Price</p>
+                  <p className="text-slate-900 font-black text-[clamp(1rem,4.5vw,1.125rem)]">₹{myMess.price}</p>
                 </div>
               </div>
 
-              {/* Progress Tracker Section */}
+              {/* Progress Tracker */}
               <div className="bg-slate-50 rounded-[32px] p-6 flex items-center justify-between">
                 <div className="space-y-1">
                   <div className="flex items-baseline gap-1">
-                    <span className={`text-5xl font-black tracking-tighter ${isExpiringSoon ? 'text-red-600' : 'text-slate-900'}`}>
+                    <span className={`text-[clamp(2.5rem,12vw,3.5rem)] font-black tracking-tighter leading-none ${isExpiringSoon ? 'text-red-600' : 'text-slate-900'}`}>
                       {remaining}
                     </span>
-                    <span className="text-lg text-slate-400 font-bold">Days</span>
+                    <span className="text-[clamp(0.875rem,4vw,1.125rem)] text-slate-400 font-bold">Days</span>
                   </div>
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Plan: {total} Days</p>
+                  <p className="text-[clamp(0.55rem,2.2vw,0.65rem)] font-bold text-slate-400 uppercase tracking-widest">Plan: {total} Days</p>
                 </div>
 
                 {/* Radial Loader */}
-                <div className="relative w-24 h-24">
+                <div className="relative w-20 h-20 sm:w-24 sm:h-24">
                   <svg className="w-full h-full transform -rotate-90">
-                    <circle cx="48" cy="48" r="34" stroke="currentColor" strokeWidth="8" fill="transparent" className="text-slate-200" />
+                    <circle cx="50%" cy="50%" r="34" stroke="currentColor" strokeWidth="8" fill="transparent" className="text-slate-200" />
                     <circle
-                      cx="48" cy="48" r="34"
+                      cx="50%" cy="50%" r="34"
                       stroke="currentColor" strokeWidth="8" fill="transparent" strokeLinecap="round"
                       style={{
                         strokeDasharray: circumference,
@@ -169,7 +169,7 @@ export default function KhanavalProfile() {
               {!isExpired && (
                 <Link 
                   to={`/mess/${myMess.messId?.id}`} 
-                  className="w-full mt-6 h-16 rounded-[24px] bg-slate-900 hover:bg-orange-600 text-white font-black text-lg transition-all shadow-xl flex items-center justify-center group"
+                  className="w-full mt-6 h-16 rounded-[24px] bg-slate-900 hover:bg-orange-600 text-white font-black text-[clamp(0.875rem,4vw,1.125rem)] transition-all shadow-xl flex items-center justify-center group"
                 >
                   View Today's Menu
                   <ChevronRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -179,32 +179,32 @@ export default function KhanavalProfile() {
           </Card>
         ) : (
           <div className="p-12 text-center bg-white rounded-[40px] border-2 border-dashed border-slate-200 mb-8">
-            <p className="text-slate-400 font-bold">No active mess found</p>
+            <p className="text-slate-400 font-bold text-[clamp(0.875rem,4vw,1rem)]">No active mess found</p>
           </div>
         )}
 
-        {/* 4. Secondary Actions List */}
+        {/* Action List */}
         <div className="grid grid-cols-1 gap-3">
-          <button className="flex items-center justify-between p-5 bg-white border border-slate-50 rounded-3xl hover:border-orange-100 transition-all group shadow-sm hover:shadow-md">
-            <div className="flex items-center gap-4 text-left">
-              <div className="p-3 rounded-2xl bg-orange-50 text-orange-600 group-hover:bg-orange-600 group-hover:text-white transition-colors">
+          <button className="flex items-center justify-between p-5 bg-white border border-slate-50 rounded-3xl hover:border-orange-100 transition-all group shadow-sm hover:shadow-md text-left">
+            <div className="flex items-center gap-4 overflow-hidden">
+              <div className="p-3 rounded-2xl bg-orange-50 text-orange-600 group-hover:bg-orange-600 group-hover:text-white transition-colors shrink-0">
                 <MapPin className="w-5 h-5" />
               </div>
-              <div>
-                <p className="font-black text-slate-800 text-sm">Mess Location</p>
-                <p className="text-[11px] font-bold text-slate-400 uppercase truncate w-40">
+              <div className="min-w-0">
+                <p className="font-black text-slate-800 text-[clamp(0.75rem,3.5vw,0.875rem)]">Mess Location</p>
+                <p className="text-[clamp(0.6rem,2.8vw,0.7rem)] font-bold text-slate-400 uppercase truncate w-full pr-2">
                   {myMess?.messId?.location?.landmark || "Not set"}
                 </p>
               </div>
             </div>
-            <ChevronRight className="w-5 h-5 text-slate-200 group-hover:text-orange-500 transition-colors" />
+            <ChevronRight className="w-5 h-5 text-slate-200 group-hover:text-orange-500 transition-colors shrink-0" />
           </button>
 
-          <button onClick={handlelogout} className="flex items-center justify-center gap-2 p-5 text-red-500 font-black uppercase text-xs tracking-[0.2em] mt-4 hover:bg-red-50 rounded-3xl transition-colors">
+          <button onClick={handlelogout} className="flex items-center justify-center gap-2 p-5 text-red-500 font-black uppercase text-[clamp(0.6rem,2.5vw,0.7rem)] tracking-[0.2em] mt-4 hover:bg-red-50 rounded-3xl transition-colors">
             <LogOut className="w-4 h-4" /> Sign Out
           </button>
         </div>
       </div>
     </div>
   );
-}
+} 

@@ -77,7 +77,7 @@ export default function SubscriberCheckInQR() {
       // Border around QR
       doc.setDrawColor(230, 230, 230);
       doc.rect(centerX - (qrSize / 2) - 2, qrY - 2, qrSize + 4, qrSize + 4, "S");
-      doc.addImage(qrBase64, "PNG", centerX - (qrSize / 2), qrY, qrSize, qrSize);
+      doc.addImage(messdata?.MessQrcode, "PNG", centerX - (qrSize / 2), qrY, qrSize, qrSize);
     }
 
     // 5. SCAN TO CHECK-IN
@@ -125,7 +125,7 @@ export default function SubscriberCheckInQR() {
             </div>
 
             <div className="w-72 h-72 mb-12 bg-white p-2 border shadow-sm flex items-center justify-center">
-              {qrBase64 && <img src={qrBase64} alt="QR" className="w-full h-full" />}
+              {messdata?.MessQrcode && <img src={messdata?.MessQrcode} alt="QR" className="w-full h-full" />}
             </div>
 
             <h2 className="text-[#FF8C00] text-3xl font-black mb-3 uppercase tracking-tight">

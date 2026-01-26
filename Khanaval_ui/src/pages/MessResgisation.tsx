@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 import imageCompression from "browser-image-compression";
 import { Button } from "@/components/ui/button";
-import { useNavigate } from 'react-router-dom';
+import { Navigate, NavLink, useNavigate } from 'react-router-dom';
 import { UserProviderdata } from '@/hooks/Provider';
 import axios from 'axios';
 import { CreatemessForProvider } from '@/hooks/PorviderMess';
@@ -70,6 +70,7 @@ const format12h = (time24) => {
 };
 
 export default function UpdishOnboarding() {
+
     const [lang, setLang] = useState('en');
     const t = content[lang];
 
@@ -97,7 +98,7 @@ export default function UpdishOnboarding() {
     const fileInputRef = useRef(null);
     const [activeSlot, setActiveSlot] = useState(null);
     const { Providerdata } = UserProviderdata();
-
+    console.log(Providerdata)
     const [locationData, setLocationData] = useState({
         lat: null, lng: null, address: "", city: "", suburb: "",
         state: "", landmark: "", society: "", houseNo: "", postcode: ""
@@ -237,13 +238,15 @@ export default function UpdishOnboarding() {
             </div>
         );
     }
-
+    if (Providerdata?.MessRegister === "true" || !Providerdata) {
+        return <Navigate to="/provider" replace />;
+    }
     return (
         <div className="min-h-screen bg-[#FBFBFB] max-w-md mx-auto flex flex-col font-sans relative overflow-hidden">
             {loading && <UpdishLoader />}
 
             {/* Language Toggle */}
-            <button 
+            <button
                 onClick={() => setLang(lang === 'en' ? 'hi' : 'en')}
                 className="fixed top-20 right-4 z-40 bg-white shadow-md p-2 rounded-full border border-gray-100 flex items-center gap-1"
             >
@@ -373,12 +376,12 @@ export default function UpdishOnboarding() {
                             <label className="text-[11px] font-bold text-gray-400 uppercase">{t.mobile}</label>
                             <div className="flex items-center gap-3 bg-gray-50 p-3 rounded-xl border focus-within:border-orange-500">
                                 <span className="font-bold text-gray-400">+91</span>
-                                <input 
-                                    value={fssai} 
-                                    onChange={(e) => setFssai(e.target.value.replace(/\D/g, ""))} 
-                                    className="bg-transparent outline-none font-bold text-lg w-full" 
-                                    placeholder="00000 00000" 
-                                    maxLength={10} 
+                                <input
+                                    value={fssai}
+                                    onChange={(e) => setFssai(e.target.value.replace(/\D/g, ""))}
+                                    className="bg-transparent outline-none font-bold text-lg w-full"
+                                    placeholder="00000 00000"
+                                    maxLength={10}
                                 />
                             </div>
                         </div>
@@ -388,8 +391,8 @@ export default function UpdishOnboarding() {
 
             <footer className="fixed bottom-0 left-0 right-0 max-w-md mx-auto p-6 bg-white border-t space-y-4">
                 <div className="flex justify-center">
-                    <button 
-                        onClick={() => window.open('tel:1234567890')} 
+                    <button
+                        onClick={() => window.open('tel:1234567890')}
                         className="flex items-center gap-2 text-slate-400 hover:text-orange-600 transition-colors"
                     >
                         <PhoneCall className="w-4 h-4" />

@@ -79,18 +79,18 @@ export declare const resolvers: {
             MessQrcode: string | null | undefined;
             Menu: mongoose.Types.DocumentArray<{
                 createdAt: NativeDate;
-                types?: "breakfast" | "dinner" | null;
                 imageUrl?: string | null;
+                types?: "breakfast" | "dinner" | null;
                 menuDate?: NativeDate | null;
             }, mongoose.Types.Subdocument<mongoose.mongo.BSON.ObjectId, unknown, {
                 createdAt: NativeDate;
-                types?: "breakfast" | "dinner" | null;
                 imageUrl?: string | null;
+                types?: "breakfast" | "dinner" | null;
                 menuDate?: NativeDate | null;
             }> & {
                 createdAt: NativeDate;
-                types?: "breakfast" | "dinner" | null;
                 imageUrl?: string | null;
+                types?: "breakfast" | "dinner" | null;
                 menuDate?: NativeDate | null;
             }>;
             myAllSubscribers: mongoose.Types.ObjectId[];

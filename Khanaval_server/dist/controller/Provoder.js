@@ -118,10 +118,13 @@ export const Addmenus = async (req, res) => {
 export const DeletetheMenu = async (req, res) => {
     try {
         const { id, types } = req.body;
+        console.log(types);
         const mess = await Mess.findById(id);
+        console.log(mess);
         if (!mess)
             return res.status(404).json({ error: "Mess not found" });
         const menuItem = mess.Menu.id(types);
+        console.log(menuItem);
         if (!menuItem)
             return res.status(404).json({ error: "Menu not found" });
         if (menuItem.imageUrl) {

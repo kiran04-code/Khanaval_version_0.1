@@ -131,9 +131,12 @@ export const Addmenus = async (req: Request, res: Response): Promise<Response> =
 export const DeletetheMenu = async (req: Request, res: Response): Promise<Response> => {
     try {
         const { id, types } = req.body;
+        console.log(types)
         const mess = await Mess.findById(id);
+        console.log(mess)
         if (!mess) return res.status(404).json({ error: "Mess not found" });
         const menuItem = mess.Menu.id(types);
+        console.log(menuItem)
         if (!menuItem) return res.status(404).json({ error: "Menu not found" });
         if (menuItem.imageUrl) {
             await cloudinary.uploader.destroy(menuItem.imageUrl);

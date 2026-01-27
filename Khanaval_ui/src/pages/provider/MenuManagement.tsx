@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { format, parseISO, isSameDay } from "date-fns";
+import { useState, useEffect, useRef } from "react";
+import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -24,11 +24,10 @@ import { useStateContex } from "@/context/State";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "@/hooks/use-toast";
 
-// Interface updated to match your backend response
 interface MenuItem {
   _id?: string;
-  types: string;    // from your backend "types"
-  imageUrl: string; // from your backend "imageUrl"
+  types: string;
+  imageUrl: string;
   CreateAt?: string | null;
   time?: string;
 }
@@ -37,6 +36,42 @@ interface DayMenu {
   date: string;
   items: MenuItem[];
 }
+
+// --- HELPER: Image Compression ---
+const compressImage = (file: File): Promise<File> => {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (event) => {
+      const img = new Image();
+      img.src = event.target?.result as string;
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        const MAX_WIDTH = 1200; // Limit resolution for mobile
+        const scaleSize = MAX_WIDTH / img.width;
+        canvas.width = MAX_WIDTH;
+        canvas.height = img.height * scaleSize;
+
+        const ctx = canvas.getContext("2d");
+        ctx?.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+        canvas.toBlob(
+          (blob) => {
+            if (blob) {
+              const compressedFile = new File([blob], file.name, {
+                type: "image/jpeg",
+                lastModified: Date.now(),
+              });
+              resolve(compressedFile);
+            }
+          },
+          "image/jpeg",
+          0.7 // Compression quality (70%)
+        );
+      };
+    };
+  });
+};
 
 export default function MenuManagement() {
   const todayStr = format(new Date(), "yyyy-MM-dd");
@@ -57,13 +92,19 @@ export default function MenuManagement() {
     }
   }, [messdata, todayStr]);
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
-    setImageData(file);
     if (file) {
+      setIsLoading(true);
+      const compressed = await compressImage(file);
+      setImageData(compressed);
+      
       const reader = new FileReader();
-      reader.onloadend = () => setImagePreview(reader.result as string);
-      reader.readAsDataURL(file);
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+        setIsLoading(false);
+      };
+      reader.readAsDataURL(compressed);
     }
   };
 
@@ -76,10 +117,11 @@ export default function MenuManagement() {
     if (isDuplicate) {
       return toast({
         title: "Menu Already Exists",
-        description: `You have already added a ${type} menu. Please delete the current one to upload a new version.`,
+        description: `Please delete the current ${type} menu first.`,
         variant: "destructive"
       });
     }
+
     setIsLoading(true);
     const formData = new FormData();
     formData.append("id", messdata?.id);
@@ -90,7 +132,6 @@ export default function MenuManagement() {
 
     try {
       const { data } = await axioseInstace.post("/api/addmenu", formData);
-
       if (data.success) {
         toast({ title: `${type.toUpperCase()} Menu Updated Successfully` });
         setIsBreakfastOpen(false);
@@ -98,11 +139,8 @@ export default function MenuManagement() {
         setImagePreview(null);
         setImageData(null);
         queryClient.invalidateQueries({ queryKey: ["get-mess"] });
-      } else {
-        toast({ title: "Server Error", description: data.message, variant: "destructive" });
       }
     } catch (err) {
-      console.error("❌ Failed to sync:", err);
       toast({ title: "Upload Failed", variant: "destructive" });
     } finally {
       setIsLoading(false);
@@ -115,14 +153,8 @@ export default function MenuManagement() {
       types: menuId
     });
     if (data.success) {
-      toast({
-        title: "Menu deleted successfully. Please update with the new menu."
-      });
-
+      toast({ title: "Menu deleted successfully." });
       queryClient.invalidateQueries({ queryKey: ["get-mess"] });
-    }
-    else {
-      toast({ title: `${data.message}`, variant: "destructive" });
     }
   };
 
@@ -140,7 +172,7 @@ export default function MenuManagement() {
         </div>
         <div className="bg-blue-50 border border-blue-100 p-6 rounded-3xl flex flex-col justify-center">
           <h3 className="text-blue-900 font-bold text-sm flex items-center gap-1"><Lock className="h-3 w-3" /> Auto-Clean</h3>
-          <p className="text-blue-700 text-xs mt-1">Updates are visible to users instantly.</p>
+          <p className="text-blue-700 text-xs mt-1">Compressed for mobile speed.</p>
         </div>
       </div>
 
@@ -223,26 +255,16 @@ function MealDisplay({ items, onDelete }: { items: MenuItem[], onDelete: (id: st
       <div className="relative group">
         <div className="w-full h-74 rounded-[1.5rem] bg-slate-100 overflow-hidden shadow-md">
           {mainDish.imageUrl ? (
-            <img
-              src={mainDish.imageUrl}
-              className="w-full h-full object-cover"
-              alt="Today's Menu"
-            />
+            <img src={mainDish.imageUrl} className="w-full h-full object-cover" alt="Menu" />
           ) : (
             <div className="w-full h-full flex items-center justify-center"><ImageIcon className="w-12 h-12 text-slate-300" /></div>
           )}
         </div>
-
-        <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full flex items-center gap-2 shadow-sm">
-          <Clock className="w-3 h-3 text-slate-600" />
-          <span className="text-[10px] font-bold text-slate-700">LIVE</span>
-        </div>
-
         <Button
           variant="destructive"
           size="icon"
           className="absolute top-3 right-3 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-          onClick={() => onDelete(mainDish._id || "")}
+          onClick={() => onDelete(mainDish.types)}
         >
           <Trash2 className="w-4 h-4" />
         </Button>
@@ -252,29 +274,40 @@ function MealDisplay({ items, onDelete }: { items: MenuItem[], onDelete: (id: st
 }
 
 function MenuAddForm({ type, onSave, imagePreview, handleImageChange, isLoading }: any) {
+  const inputRef = useRef<HTMLInputElement>(null);
+
   return (
     <div className="bg-white px-6 py-8">
       <h3 className="text-xl font-black text-slate-900 mb-5 text-center">Update {type} Menu</h3>
       <div className="space-y-6">
-        <div className="relative h-56 w-full bg-slate-50 border-2 border-dashed border-slate-200 rounded-[2rem] flex flex-col items-center justify-center overflow-hidden transition-all hover:bg-slate-100 group">
+        <div 
+          onClick={() => inputRef.current?.click()}
+          className="relative h-56 w-full bg-slate-50 border-2 border-dashed border-slate-200 rounded-[2rem] flex flex-col items-center justify-center overflow-hidden cursor-pointer"
+        >
           {imagePreview ? (
             <img src={imagePreview} className="h-full w-full object-cover" alt="Preview" />
           ) : (
-            <label className="cursor-pointer flex flex-col items-center text-slate-400 p-4 text-center">
+            <div className="flex flex-col items-center text-slate-400 p-4 text-center">
               <div className="bg-white p-4 rounded-2xl shadow-sm mb-3">
                 <Upload className="h-6 w-6 text-indigo-500" />
               </div>
-              <span className="text-xs font-bold uppercase tracking-widest">Tap to upload menu image</span>
-              <input type="file" className="hidden" accept="image/*" onChange={handleImageChange} />
-            </label>
+              <span className="text-xs font-bold uppercase tracking-widest">Tap to upload image</span>
+            </div>
           )}
+          <input 
+            type="file" 
+            ref={inputRef} 
+            className="hidden" 
+            accept="image/*" 
+            onChange={handleImageChange} 
+          />
         </div>
         <Button
-          disabled={isLoading}
-          className="w-full h-14 bg-slate-900 hover:bg-black text-white rounded-2xl font-black text-sm shadow-xl transition-transform active:scale-95 disabled:opacity-50"
+          disabled={isLoading || !imagePreview}
+          className="w-full h-14 bg-slate-900 hover:bg-black text-white rounded-2xl font-black text-sm shadow-xl"
           onClick={onSave}
         >
-          {isLoading ? "UPLOADING..." : `POST ${type.toUpperCase()} MENU`}
+          {isLoading ? "PROCESSING..." : `POST ${type.toUpperCase()} MENU`}
           {!isLoading && <ChevronRight className="ml-1 h-4 w-4" />}
         </Button>
       </div>

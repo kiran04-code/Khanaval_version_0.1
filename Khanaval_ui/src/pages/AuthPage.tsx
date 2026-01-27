@@ -72,7 +72,7 @@ export default function HybridAuthPage() {
   /* ---------------- USER SIGNUP ---------------- */
   const handleFinalUserSignup = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (phoneNumber.length < 10) {
+    if (phoneNumber.length < 10 || phoneNumber.length >10 ) {
       toast({ title: "Invalid phone number" });
       return;
     }

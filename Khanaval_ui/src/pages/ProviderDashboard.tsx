@@ -332,7 +332,7 @@ export default function ProviderDashboard() {
 
 const navItems = [
   { id: "dashboard", icon: LayoutDashboard, label: "Live Dashboard" },
-  { id: "MonthlySubscriptionRequest", icon: CalendarCheck, label: "Price Requests" },
+  { id: "MonthlySubscriptionRequest", icon: CalendarCheck, label: "Pass Requests" },
   { id: "menu", icon: Utensils, label: "Daily Menu" },
   { id: "subscribers", icon: Users, label: "Custumer Register" },
   { id: "scanner", icon: QrCode, label: "QR Scanner" },

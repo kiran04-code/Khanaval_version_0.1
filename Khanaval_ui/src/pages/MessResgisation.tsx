@@ -60,7 +60,6 @@ const content = {
     }
 };
 
-// Helper to format 24h string to 12h display
 const format12h = (time24) => {
     const [hrs, mins] = time24.split(':');
     const h = parseInt(hrs);
@@ -70,7 +69,6 @@ const format12h = (time24) => {
 };
 
 export default function UpdishOnboarding() {
-
     const [lang, setLang] = useState('en');
     const t = content[lang];
 
@@ -79,10 +77,9 @@ export default function UpdishOnboarding() {
     const [isCompleted, setIsCompleted] = useState(false);
     const navigate = useNavigate();
 
-    // --- FORM STATES ---
     const [messName, setMessName] = useState("");
     const [startTime, setStartTime] = useState("08:00");
-    const [endTime, setEndTime] = useState("20:00"); // Defaulted to 8 PM for better UX
+    const [endTime, setEndTime] = useState("20:00");
     const [dietaryType, setDietaryType] = useState('Pure Veg');
     const [selectedType, setSelectedType] = useState('Home-made');
     const [fssai, setFssai] = useState("");
@@ -98,7 +95,7 @@ export default function UpdishOnboarding() {
     const fileInputRef = useRef(null);
     const [activeSlot, setActiveSlot] = useState(null);
     const { Providerdata } = UserProviderdata();
-    console.log(Providerdata)
+    
     const [locationData, setLocationData] = useState({
         lat: null, lng: null, address: "", city: "", suburb: "",
         state: "", landmark: "", society: "", houseNo: "", postcode: ""
@@ -128,7 +125,7 @@ export default function UpdishOnboarding() {
                 setStep(3);
             }
         } catch (error) {
-            showToast("Upload failed. Check file size.");
+            showToast("Upload failed. Check connection.");
         } finally {
             setLoading(false);
         }
@@ -203,10 +200,30 @@ export default function UpdishOnboarding() {
     const handleImageChange = async (e) => {
         const file = e.target.files[0];
         if (!file) return;
-        const options = { maxSizeMB: 1, maxWidthOrHeight: 1280, useWebWorker: true };
-        const compressedFile = await imageCompression(file, options);
-        setFiles(prev => ({ ...prev, [activeSlot]: compressedFile }));
-        setPreviews(prev => ({ ...prev, [activeSlot]: URL.createObjectURL(compressedFile) }));
+
+        // Compression Settings for High Quality
+        const options = {
+            maxSizeMB: 2,            // Maximum 2MB (High quality)
+            maxWidthOrHeight: 1920, // Full HD resolution
+            useWebWorker: true,
+            initialQuality: 0.8     // 80% quality start
+        };
+
+        try {
+            setLoading(true); // Show loader during compression
+            const compressedFile = await imageCompression(file, options);
+            
+            // Convert to a File object to ensure compatibility with FormData
+            const finalFile = new File([compressedFile], file.name, { type: file.type });
+
+            setFiles(prev => ({ ...prev, [activeSlot]: finalFile }));
+            setPreviews(prev => ({ ...prev, [activeSlot]: URL.createObjectURL(finalFile) }));
+        } catch (error) {
+            showToast("Error processing image");
+            console.error(error);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const UpdishLoader = () => (
@@ -238,14 +255,15 @@ export default function UpdishOnboarding() {
             </div>
         );
     }
+
     if (Providerdata?.MessRegister === "true" || !Providerdata) {
         return <Navigate to="/provider" replace />;
     }
+
     return (
         <div className="min-h-screen bg-[#FBFBFB] max-w-md mx-auto flex flex-col font-sans relative overflow-hidden">
             {loading && <UpdishLoader />}
 
-            {/* Language Toggle */}
             <button
                 onClick={() => setLang(lang === 'en' ? 'hi' : 'en')}
                 className="fixed top-20 right-4 z-40 bg-white shadow-md p-2 rounded-full border border-gray-100 flex items-center gap-1"
@@ -289,7 +307,6 @@ export default function UpdishOnboarding() {
                                 <input value={messName} onChange={(e) => setMessName(e.target.value)} className="w-full h-10 border-b outline-none font-bold text-lg focus:border-orange-500 transition-colors" placeholder="e.g. Royal Kitchen" />
                             </div>
 
-                            {/* Improved Time Selection */}
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-1">
                                     <span className="text-[10px] font-bold text-slate-400">{t.opens}</span>
@@ -320,7 +337,6 @@ export default function UpdishOnboarding() {
                     </div>
                 )}
 
-                {/* Other steps (2, 3, 4) remain the same as your provided code */}
                 {step === 2 && (
                     <div className="space-y-6">
                         <h2 className="text-xl font-bold">{t.visuals}</h2>

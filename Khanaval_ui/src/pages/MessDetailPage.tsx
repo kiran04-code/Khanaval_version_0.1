@@ -7,7 +7,8 @@ import {
   ArrowLeft, Star, MapPin, Clock, Phone,
   ChevronRight, Navigation,
   UserCheck, ShieldCheck, Utensils, Image as ImageIcon,
-  Coffee, Moon, MessageSquare, IndianRupee, AlertCircle
+  Coffee, Moon, MessageSquare, IndianRupee, AlertCircle,
+  X
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { GetALLmess } from "@/hooks/MessData";
@@ -31,12 +32,22 @@ export default function MessDetailPage() {
   const monthlyPrice = mess?.MontlyPrices || 0
   const isMonthlyAvailable = monthlyPrice && Number(monthlyPrice) > 0;
   const { user } = useCurrentUser()
+  const [selectedImg, setSelectedImg] = useState<string | null>(null);
   const { axioseInstace } = useStateContex()
   useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 2000);
     return () => clearTimeout(timer);
   }, []);
+  const formatIndianTime = (time: string) => {
+    if (!time) return "";
+    // Check if it's already in 12hr format
+    if (time.includes('AM') || time.includes('PM')) return time;
 
+    const [hours, minutes] = time.split(':').map(Number);
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    const adjustedHours = hours % 12 || 12;
+    return `${adjustedHours}:${minutes.toString().padStart(2, '0')} ${ampm}`;
+  };
   const openMaps = () => {
     if (mess?.location) {
       const { lat, lng } = mess.location;
@@ -46,8 +57,61 @@ export default function MessDetailPage() {
 
   return (
     <div className="min-h-screen bg-slate-50/50 pb-32 font-sans">
+      {/* Full Image Lightbox - Premium Version */}
+      {selectedImg && (
+        <div
+          className="fixed inset-0 z-[100] bg-slate-950/95 backdrop-blur-xl flex flex-col items-center justify-center animate-in fade-in duration-300"
+          onClick={() => setSelectedImg(null)}
+        >
+          {/* Top Bar for Actions */}
+          <div className="absolute top-0 left-0 right-0 p-6 flex justify-between items-center bg-gradient-to-b from-black/50 to-transparent">
+            <div className="text-white/70 text-sm font-medium">
+              Viewing Photo
+            </div>
+            <div className="flex gap-4">
+              {/* Optional Download Button */}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  const link = document.createElement('a');
+                  link.href = selectedImg;
+                  link.download = 'mess-image.jpg';
+                  link.click();
+                }}
+                className="w-11 h-11 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-white hover:bg-white/20 transition-all active:scale-90"
+              >
+                <Navigation className="w-5 h-5 rotate-180" /> {/* Using Navigation icon as a download proxy or use a Download icon */}
+              </button>
+
+              <button
+                className="w-11 h-11 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-white hover:bg-orange-500 transition-all active:scale-90"
+                onClick={() => setSelectedImg(null)}
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+          </div>
+
+          {/* Image Container */}
+          <div className="relative w-full max-w-4xl px-4 flex items-center justify-center">
+            <img
+              src={selectedImg}
+              className="max-w-full max-h-[80vh] object-contain rounded-lg shadow-[0_0_50px_rgba(0,0,0,0.5)] animate-in zoom-in-95 duration-500 ease-out"
+              alt="Full view"
+              onClick={(e) => e.stopPropagation()} // Prevent closing when clicking the image itself
+            />
+          </div>
+
+          {/* Bottom Hint */}
+          <div className="absolute bottom-10 animate-pulse">
+            <p className="text-white/40 text-[10px] font-black uppercase tracking-[0.2em]">
+              Tap anywhere to dismiss
+            </p>
+          </div>
+        </div>
+      )}
       <div className="relative group overflow-hidden bg-slate-200 h-[350px] md:h-[450px]">
-        {loading ? (
+        {!mess ? (
           <Skeleton className="w-full h-full rounded-none" />
         ) : (
           <>
@@ -134,7 +198,7 @@ export default function MessDetailPage() {
           {activeTab === "dineout" && (
             <div className="space-y-8 animate-in fade-in duration-500">
               <section>
-                <h3 className="text-xl font-black text-slate-800 mb-4 flex items-center gap-2">
+                <h3 className="text-xl ml-2 font-black text-slate-800 mb-4 flex items-center gap-2">
                   <UserCheck className="w-6 h-6 text-blue-500" /> Owner Details
                 </h3>
                 <div className="bg-white p-6 rounded-3xl border border-slate-100 flex items-center justify-between shadow-sm">
@@ -170,7 +234,7 @@ export default function MessDetailPage() {
                         {mess?.location?.houseNo}, {mess?.location?.society}
                       </p>
                       <p className="text-sm font-bold text-slate-500 mt-1">
-                        {mess?.location?.city}, {mess?.location?.state}
+                        {mess?.location?.address}, {mess?.location?.city} {mess?.location?.state}
                       </p>
                     </div>
                     <div className="flex flex-col gap-2 pt-2 border-t border-slate-50">
@@ -198,7 +262,7 @@ export default function MessDetailPage() {
                     <div className="bg-slate-50 rounded-2xl p-4 flex items-center justify-between">
                       <span className="text-xs font-black text-slate-400 uppercase tracking-wider">Service Hours</span>
                       <p className="text-sm font-black text-slate-700">
-                        {mess?.identity?.startTime} — {mess?.identity?.endTime}
+                        {formatIndianTime(mess?.identity?.startTime)} — {formatIndianTime(mess?.identity?.endTime)}
                       </p>
                     </div>
                     <div className="flex flex-wrap gap-2">
@@ -250,8 +314,16 @@ export default function MessDetailPage() {
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 animate-in slide-in-from-bottom-4 duration-500">
               {Object.entries(mess?.media || {}).map(([key, url]) => (
                 url && (
-                  <div key={key} className="aspect-square rounded-[2rem] overflow-hidden bg-slate-100 border-2 border-white shadow-sm hover:shadow-xl transition-all duration-300">
-                    <img src={String(url)} className="w-full h-full object-cover transition-transform duration-500 hover:scale-110" alt={key} />
+                  <div
+                    key={key}
+                    onClick={() => setSelectedImg(String(url))} // Click to open
+                    className="aspect-square rounded-[2rem] overflow-hidden bg-slate-100 border-2 border-white shadow-sm hover:shadow-xl transition-all duration-300 cursor-zoom-in group"
+                  >
+                    <img
+                      src={String(url)}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      alt={key}
+                    />
                   </div>
                 )
               ))}
@@ -301,7 +373,7 @@ export default function MessDetailPage() {
                   </div>
                 </div>
 
-                <Button onClick={()=>navigate(`/pass/${id}`)} size="lg" className="rounded-2xl bg-orange-600 hover:bg-orange-500 text-white font-black px-8 h-14 shadow-lg shadow-orange-200">
+                <Button onClick={() => navigate(`/pass/${id}`)} size="lg" className="rounded-2xl bg-orange-600 hover:bg-orange-500 text-white font-black px-8 h-14 shadow-lg shadow-orange-200">
                   GET PASS <ChevronRight className="ml-1 w-5 h-5" />
                 </Button>
 

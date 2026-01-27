@@ -31,6 +31,8 @@ import { calculateDistance } from "./components/Distance";
 import { useStateContex } from "@/context/State";
 import Footer from "@/components/layout/footer";
 import { useCurrentUser } from "@/hooks/user-hook";
+import { Skeleton } from "@/components/common/Skeleton";
+import { cn } from "@/lib/utils";
 const features = [
   {
     icon: <Search className="w-6 h-6" />,
@@ -305,9 +307,9 @@ const Index = () => {
           </div>
           <div className="mt-24 text-center">
             {
-              user ||  Providerdata ? <Button onClick={()=>navigate("/mess")} size="xl" className="rounded-2xl px-12 py-7 text-lg font-bold shadow-[0_20px_50px_rgba(var(--primary-rgb),0.3)]  transition-all">
+              user || Providerdata ? <Button onClick={() => navigate("/mess")} size="xl" className="rounded-2xl px-12 py-7 text-lg font-bold shadow-[0_20px_50px_rgba(var(--primary-rgb),0.3)]  transition-all">
                 Get Started Now
-              </Button> : <Button onClick={()=>navigate("/auth")} size="xl" className="rounded-2xl px-12 py-7 text-lg font-bold shadow-[0_20px_50px_rgba(var(--primary-rgb),0.3)]  transition-all">
+              </Button> : <Button onClick={() => navigate("/auth")} size="xl" className="rounded-2xl px-12 py-7 text-lg font-bold shadow-[0_20px_50px_rgba(var(--primary-rgb),0.3)]  transition-all">
                 Get Started Now
               </Button>
             }
@@ -316,104 +318,112 @@ const Index = () => {
       </section>
 
       {/* mess card */}
-      <section className="py-16 md:py-28 bg-white overflow-hidden">
-        <div className="container mx-auto px-4">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-
-            <div className="space-y-8">
-              <div className="space-y-4">
-                <Badge variant="soft" className="px-3 py-1 text-sm rounded-full bg-primary/10 text-primary border-none">
-                  Why MealPass?
-                </Badge>
-                <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight text-foreground leading-tight">
-                  The Smartest Way to <br />
-                  <span className="text-primary italic">Eat Daily</span>
-                </h2>
-                <p className="text-lg text-muted-foreground max-w-xl leading-relaxed">
-                  We verify every mess so you don't have to. Real menus, real prices, real hygiene.
-                </p>
-              </div>
-
-              <div className="grid sm:grid-cols-2 gap-4">
-                {benefits.map((benefit, index) => (
-                  <div key={index} className="flex flex-col gap-3 p-5 rounded-2xl border border-border/50 bg-card hover:border-primary/50 transition-all duration-300">
-                    <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
-                      {benefit.icon}
-                    </div>
-                    <div>
-                      <h4 className="font-bold text-foreground mb-1">{benefit.title}</h4>
-                      <p className="text-sm text-muted-foreground">{benefit.description}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* BENTO GRID AREA: SHOW SKELETON OR DATA */}
-            <div className="relative min-h-[500px]">
-              <div className="grid grid-cols-2 lg:grid-cols-2 gap-3 md:gap-4">
-                {AllMESS.length < 0 ? (
-                  <>
-                    <MessSkeleton isLarge={true} />
-                    <MessSkeleton isLarge={false} />
-                    <MessSkeleton isLarge={false} />
-                  </>
-                ) : (
-                  AllMESS?.map((mess, index) => (
-                    <Card
-                      key={mess._id}
-                      className={`group overflow-hidden border-none shadow-2xl relative animate-in fade-in zoom-in duration-500 
-            ${/* Mobile Logic: Card 1 is full width, others are half. 
-                 Desktop Logic: Revert to your original 'index === 0' span */
-                        index === 0
-                          ? "col-span-2 aspect-[16/9]"
-                          : "col-span-1 lg:col-span-1 aspect-square md:aspect-square"
-                        }
-            ${/* Hide card 4 and 5 on desktop to maintain your 'Old Layout' */
-                        index > 2 ? "flex lg:hidden" : "flex"
-                        }
-          `}
-                    >
-                      <img
-                        src={mess?.media?.cover}
-                        alt={mess.identity?.name}
-                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/20 to-transparent" />
-
-                      <div className="absolute bottom-3 left-3 right-3 md:bottom-6 md:left-6 md:right-6">
-                        <Badge className={`mb-2 ${mess?.identity?.dietaryType ? "bg-green-500/90" : "bg-red-500/90"} border-none text-white text-[10px] md:text-xs`}>
-                          {mess?.identity?.dietaryType ? "Pure Veg" : "Non-Veg Available"}
-                        </Badge>
-                        <h4 className="text-sm md:text-2xl font-black text-white mb-1 leading-tight line-clamp-1">
-                          {mess?.identity.name}
-                        </h4>
-                        <div className="flex items-center gap-2 md:gap-3 text-[10px] md:text-sm text-white/80">
-                          <div className="flex items-center gap-1">
-                            <Star className="w-3 h-3 md:w-4 md:h-4 fill-yellow-400 text-yellow-400" />
-                            <span className="font-bold text-white">4.2</span>
-                          </div>
-                          <span>•</span>
-                          <span className="font-medium">{calculateDistance(userlat, userlng, mess.location.lat, mess.location.lng)} KM</span>
-                        </div>
-                      </div>
-                    </Card>
-                  ))
-                )}
-
-                {!isLoading && (
-                  <Link to="/mess" className="col-span-2 mt-4">
-                    <Button variant="outline" className="w-full h-12 md:h-14 rounded-xl md:rounded-2xl border-2 font-bold hover:bg-primary hover:text-white transition-all">
-                      Explore All Local Messes <ArrowRight className="ml-2 w-4 h-4" />
-                    </Button>
-                  </Link>
-                )}
-              </div>
-            </div>
-
-          </div>
+   <section className="py-16 md:py-32 bg-[#FAFAFA] overflow-hidden">
+  <div className="container mx-auto px-4">
+    <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+      
+      {/* Left Content Column */}
+      <div className="space-y-10">
+        <div className="space-y-6">
+          <Badge 
+            variant="outline" 
+            className="px-4 py-1.5 text-xs uppercase tracking-widest rounded-full bg-primary/5 text-primary border-primary/20"
+          >
+            Why MealPass?
+          </Badge>
+          <h2 className="text-5xl md:text-6xl font-black tracking-tight text-slate-900 leading-[1.1]">
+            The Smartest Way to <br />
+            <span className="relative inline-block">
+              <span className="relative z-10 text-primary italic">Eat Daily</span>
+              <span className="absolute bottom-2 left-0 w-full h-3 bg-primary/10 -z-10" />
+            </span>
+          </h2>
+          <p className="text-xl text-slate-600 max-w-xl leading-relaxed font-medium">
+            We verify every mess so you don't have to. Enjoy <span className="text-slate-900 font-bold">verified hygiene</span> and real-time menus.
+          </p>
         </div>
-      </section>
+
+        {/* Benefits Grid */}
+        <div className="grid sm:grid-cols-2 gap-5">
+          {benefits.map((benefit, index) => (
+            <div 
+              key={index} 
+              className="group flex flex-col gap-4 p-6 rounded-2xl border border-slate-200 bg-white hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+            >
+              <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+                {benefit.icon}
+              </div>
+              <div>
+                <h4 className="font-bold text-slate-900 text-lg mb-1">{benefit.title}</h4>
+                <p className="text-sm text-slate-500 leading-relaxed">{benefit.description}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Right Bento Grid Area */}
+      <div className="relative">
+        {/* Decorative Background Element */}
+        <div className="absolute -top-10 -right-10 w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
+        
+        <div className="grid grid-cols-2 gap-4 relative z-10">
+          {AllMESS?.slice(0, 3).map((mess, index) => (
+            <Card
+              key={mess._id}
+              className={cn(
+                "group relative overflow-hidden rounded-[2rem] border-none shadow-lg transition-all duration-500 hover:shadow-2xl",
+                index === 0 ? "col-span-2 aspect-[16/9]" : "col-span-1 aspect-square"
+              )}
+            >
+              <img
+                src={mess?.media?.cover}
+                alt={mess.identity?.name}
+                className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+              />
+              {/* Refined Gradient Overlay */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+
+              <div className="absolute bottom-0 left-0 right-0 p-5 md:p-8">
+                <Badge className={cn(
+                  "mb-3 border-none text-white backdrop-blur-md",
+                  mess?.identity?.dietaryType ? "bg-emerald-500/80" : "bg-orange-500/80"
+                )}>
+                  {mess?.identity?.dietaryType ? "Pure Veg" : "Non-Veg Available"}
+                </Badge>
+                
+                <h4 className={cn(
+                  "font-bold text-white mb-2 line-clamp-1",
+                  index === 0 ? "text-2xl md:text-3xl" : "text-lg"
+                )}>
+                  {mess?.identity.name}
+                </h4>
+
+                <div className="flex items-center gap-4 text-white/90">
+                  <div className="flex items-center gap-1.5 bg-white/20 backdrop-blur-md px-2 py-0.5 rounded-lg">
+                    <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                    <span className="font-bold text-sm">4.2</span>
+                  </div>
+                  <span className="text-sm font-medium opacity-80">
+                    {calculateDistance(userlat, userlng, mess.location.lat, mess.location.lng)} KM away
+                  </span>
+                </div>
+              </div>
+            </Card>
+          ))}
+
+          <Link to="/mess" className="col-span-2 group/btn">
+            <Button className="w-full h-16 rounded-2xl text-lg font-bold shadow-lg shadow-primary/20 transition-all hover:scale-[1.02] active:scale-[0.98]">
+              Explore All Local Messes 
+              <ArrowRight className="ml-2 w-5 h-5 transition-transform group-hover/btn:translate-x-1" />
+            </Button>
+          </Link>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
       {/* bannrs */}
       <section className="py-8 md:py-5 relative overflow-hidden">
         <div className="container mx-auto px-4">

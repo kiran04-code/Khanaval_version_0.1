@@ -399,24 +399,24 @@ const Index = () => {
                         {mess?.identity.name}
                       </h4>
 
-                     <div className="flex items-center gap-3">
-  {/* Combined Info Pill */}
-  <div className="flex items-center divide-x divide-white/20 bg-white/20 backdrop-blur-md rounded-lg overflow-hidden">
-    {/* Rating Section */}
-    <div className="flex items-center gap-1.5 px-2 py-1">
-      <Star className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" />
-      <span className="font-bold text-xs text-white">4.2</span>
-    </div>
-    
-    {/* Distance Section */}
-    <div className="flex items-center gap-1.5 px-2 py-1">
-      <MapPin className="w-3.5 h-3.5 text-white/90" />
-      <span className="text-[8px] md:text-[13px] font-semibold text-white/90 tracking-tight">
-        {calculateDistance(userlat, userlng, mess.location.lat, mess.location.lng)} km
-      </span>
-    </div>
-  </div>
-</div>
+                      <div className="flex items-center gap-3">
+                        {/* Combined Info Pill */}
+                        <div className="flex items-center divide-x divide-white/20 bg-white/20 backdrop-blur-md rounded-lg overflow-hidden">
+                          {/* Rating Section */}
+                          <div className="flex items-center gap-1.5 px-2 py-1">
+                            <Star className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" />
+                            <span className="font-bold text-xs text-white">4.2</span>
+                          </div>
+
+                          {/* Distance Section */}
+                          <div className="flex items-center gap-1.5 px-2 py-1">
+                            <MapPin className="w-3.5 h-3.5 text-white/90" />
+                            <span className="text-[8px] md:text-[13px] font-semibold text-white/90 tracking-tight">
+                              {calculateDistance(userlat, userlng, mess.location.lat, mess.location.lng)} km
+                            </span>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </Card>
                 ))}
@@ -442,26 +442,6 @@ const Index = () => {
 
             <div className="relative z-10 flex flex-col items-center text-center">
               <div className="flex flex-col items-center gap-4 mb-10 animate-fade-in">
-                <div className="flex -space-x-3">
-                  {[1, 2, 3, 4, 5].map((i) => (
-                    <div
-                      key={i}
-                      className="w-12 h-12 rounded-2xl border-4 border-primary bg-muted overflow-hidden transition-transform hover:-translate-y-2"
-                    >
-                      <img
-                        src={`https://i.pravatar.cc/150?u=meal${i}`}
-                        alt="User avatar"
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                  ))}
-                  <div className="w-12 h-12 rounded-2xl border-4 border-primary bg-white text-primary flex items-center justify-center text-xs font-black shadow-lg">
-                    +2k
-                  </div>
-                </div>
-                <p className="text-primary-foreground/90 font-bold text-sm tracking-widest uppercase">
-                  Join the MealPass Community
-                </p>
               </div>
               <h2 className="text-5xl md:text-7xl font-black text-white mb-8 leading-[1] tracking-tighter">
                 Ready to <span className="text-white/70 italic">Simplify</span> <br />
@@ -469,7 +449,7 @@ const Index = () => {
               </h2>
 
               <p className="text-primary-foreground/80 max-w-2xl mx-auto mb-12 text-lg md:text-xl font-medium leading-relaxed">
-                Stop worrying about what to eat. Join thousands who save over <span className="text-white font-bold border-b-2 border-white/30 italic">₹2,000 monthly</span> on their food subscriptions.
+                Stop worrying about the menu—check it all on <span className="text-white font-bold border-b-2 border-white/30 italic">Khanaaval</span>
               </p>
 
               {/* High-Action Buttons */}

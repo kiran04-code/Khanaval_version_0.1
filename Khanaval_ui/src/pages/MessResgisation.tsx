@@ -95,7 +95,7 @@ export default function UpdishOnboarding() {
     const fileInputRef = useRef(null);
     const [activeSlot, setActiveSlot] = useState(null);
     const { Providerdata } = UserProviderdata();
-    
+
     const [locationData, setLocationData] = useState({
         lat: null, lng: null, address: "", city: "", suburb: "",
         state: "", landmark: "", society: "", houseNo: "", postcode: ""
@@ -200,19 +200,17 @@ export default function UpdishOnboarding() {
     const handleImageChange = async (e) => {
         const file = e.target.files[0];
         if (!file) return;
-
-        // Compression Settings for High Quality
         const options = {
-            maxSizeMB: 2,            // Maximum 2MB (High quality)
-            maxWidthOrHeight: 1920, // Full HD resolution
+            maxSizeMB: 1.5,            // Target size 1.5MB (Excellent for 10MB originals)
+            maxWidthOrHeight: 2560,    // Keeps 2K resolution (Very Sharp)
             useWebWorker: true,
-            initialQuality: 0.8     // 80% quality start
+            initialQuality: 0.85,      // High quality start point (0.85 is the sweet spot)
+            alwaysKeepResolution: true // Prevents the image from becoming "tiny" in pixels
         };
-
         try {
             setLoading(true); // Show loader during compression
             const compressedFile = await imageCompression(file, options);
-            
+
             // Convert to a File object to ensure compatibility with FormData
             const finalFile = new File([compressedFile], file.name, { type: file.type });
 

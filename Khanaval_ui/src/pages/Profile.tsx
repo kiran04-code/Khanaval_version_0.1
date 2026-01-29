@@ -3,7 +3,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { 
   LogOut, ChevronRight, MapPin, History, ShieldCheck, 
-  UtensilsCrossed, Clock, Mail, QrCode, Calendar, ChevronDown, ChevronUp 
+  UtensilsCrossed, Clock, Mail, QrCode, Calendar, ChevronDown, ChevronUp,
+  Search
 } from "lucide-react";
 import { useCurrentUser } from "@/hooks/user-hook";
 import { useQueryClient } from "@tanstack/react-query";
@@ -21,7 +22,7 @@ export default function KhanavalProfile() {
   const remaining = myMess?.RemainingDay || 0;
   const totalScansCount = myMess?.allScans?.length || 0;
 
-  // Updated formatter to match: "Monday, 26 Jan • 01:07 PM"
+  // Formatter for: "Monday, 26 Jan • 01:07 PM"
   const formatScanTime = (val) => {
     if (!val) return { relative: "No scans", fullInfo: "N/A" };
     const date = new Date(Number(val));
@@ -29,7 +30,6 @@ export default function KhanavalProfile() {
     const diffInSeconds = Math.floor((now - date) / 1000);
     const diffInMinutes = Math.floor(diffInSeconds / 60);
     
-    // Exact format: Monday, 26 Jan • 01:07 PM
     const timeStr = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
     const dayName = date.toLocaleDateString('en-GB', { weekday: 'long' }); 
     const dateStr = date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
@@ -50,9 +50,7 @@ export default function KhanavalProfile() {
     return date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
   };
 
-  // Get data for the specific lastScannedAt field from your DB
   const latestScan = formatScanTime(myMess?.lastScannedAt);
-
   const percentage = Math.min(100, Math.max(0, (remaining / total) * 100));
 
   const handlelogout = () => {
@@ -68,7 +66,6 @@ export default function KhanavalProfile() {
         <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/food.png')]" />
         <div className="absolute -bottom-16 left-0 right-0 h-32 bg-[#FFFBF9] rounded-[100%] scale-x-125" />
       </div>
-
       <div className="container mx-auto max-w-3xl px-4 lg:px-8 -mt-20 lg:-mt-28 relative z-10">
         {/* Profile Info */}
         <div className="flex flex-col items-center mb-8">
@@ -92,7 +89,6 @@ export default function KhanavalProfile() {
           </div>
         </div>
 
-        {/* Check-in Button */}
         {myMess && remaining > 0 && (
           <button 
             onClick={() => navigate("/scan-qr")}
@@ -115,7 +111,7 @@ export default function KhanavalProfile() {
           </button>
         )}
 
-        {/* Active Subscription Card */}
+        {/* Subscription Section */}
         {myMess ? (
           <Card className="border-none shadow-lg rounded-[32px] lg:rounded-[45px] overflow-hidden bg-white mb-8">
             <CardContent className="p-6 lg:p-10">
@@ -126,13 +122,11 @@ export default function KhanavalProfile() {
                   </div>
                   <div className="min-w-0">
                     <h3 className="text-lg lg:text-2xl font-black text-slate-900 truncate">{myMess.messId?.identity?.name || "Mess"}</h3>
-                    
-                    {/* Latest Scan Badge using lastScannedAt */}
                     <div className="flex flex-col gap-1 mt-1 lg:mt-2">
                         <div className="flex items-center gap-1.5 text-orange-600 bg-orange-50 px-2 py-0.5 rounded-lg w-fit border border-orange-100">
                             <Clock className="w-3 h-3 lg:w-4 lg:h-4" />
                             <span className="text-[9px] lg:text-xs font-black uppercase tracking-tight">
-                                Latest: {latestScan.fullInfo} ({latestScan.relative})
+                                Latest: {latestScan.fullInfo}
                             </span>
                         </div>
                         <div className="flex items-center gap-1.5 text-emerald-600 ml-1">
@@ -148,16 +142,15 @@ export default function KhanavalProfile() {
                 </div>
               </div>
 
-              {/* Progress Tracker */}
               <div className="bg-slate-50 rounded-[28px] lg:rounded-[35px] p-6 lg:p-10 flex items-center justify-between">
                 <div className="space-y-1">
                   <div className="flex items-baseline gap-1 lg:gap-2">
                     <span className="text-4xl lg:text-7xl font-black tracking-tighter text-slate-900">
                       {remaining}
                     </span>
-                    <span className="text-xs lg:text-xl text-slate-400 font-bold uppercase">Meals/Days Left</span>
+                    <span className="text-xs lg:text-xl text-slate-400 font-bold uppercase">Meals Left</span>
                   </div>
-                  <p className="text-[10px] lg:text-xs font-bold text-slate-400 uppercase tracking-widest">Total Plan: {total} Days</p>
+                  <p className="text-[10px] lg:text-xs font-bold text-slate-400 uppercase tracking-widest">Plan: {total} Days</p>
                 </div>
 
                 <div className="relative w-20 h-20 lg:w-28 lg:h-28 flex items-center justify-center">
@@ -178,9 +171,26 @@ export default function KhanavalProfile() {
               </div>
             </CardContent>
           </Card>
-        ) : null}
+        ) : (
+          /* Empty State: No Mess Registered */
+          <div className="bg-white border-2 border-dashed border-slate-200 rounded-[32px] lg:rounded-[45px] p-8 lg:p-12 mb-8 text-center shadow-sm">
+            <div className="w-16 h-16 lg:w-24 lg:h-24 bg-orange-50 rounded-full flex items-center justify-center mx-auto mb-6">
+              <UtensilsCrossed className="w-8 h-8 lg:w-12 lg:h-12 text-orange-200" />
+            </div>
+            <h3 className="text-xl lg:text-2xl font-black text-slate-900 mb-2">No Active Subscription</h3>
+            <p className="text-slate-500 text-sm lg:text-base font-medium max-w-xs mx-auto mb-8">
+              You aren't registered with any mess yet. Join a mess to track your meals here.
+            </p>
+            <button 
+              onClick={() => navigate("/explore")}
+              className="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-black py-4 px-8 rounded-2xl transition-all shadow-lg shadow-orange-100 active:scale-95"
+            >
+              <Search className="w-5 h-5" /> Find a Mess
+            </button>
+          </div>
+        )}
 
-        {/* Scan History Toggle with Total Count */}
+        {/* Scan History Toggle */}
         {myMess?.allScans && myMess.allScans.length > 0 && (
           <div className="mb-8">
             <button 
@@ -232,21 +242,24 @@ export default function KhanavalProfile() {
           </div>
         )}
 
+        {/* Footer Actions */}
         <div className="space-y-4">
-          <button className="w-full flex items-center justify-between p-5 lg:p-7 bg-white border border-slate-50 rounded-3xl lg:rounded-[35px] hover:border-orange-100 shadow-sm transition-all group">
-            <div className="flex items-center gap-3 lg:gap-5">
-              <div className="p-3 lg:p-4 rounded-xl lg:rounded-2xl bg-orange-50 text-orange-600 group-hover:bg-orange-600 group-hover:text-white transition-colors">
-                <MapPin className="w-5 h-5 lg:w-7 lg:h-7" />
+          {myMess && (
+            <button className="w-full flex items-center justify-between p-5 lg:p-7 bg-white border border-slate-50 rounded-3xl lg:rounded-[35px] hover:border-orange-100 shadow-sm transition-all group">
+              <div className="flex items-center gap-3 lg:gap-5">
+                <div className="p-3 lg:p-4 rounded-xl lg:rounded-2xl bg-orange-50 text-orange-600 group-hover:bg-orange-600 group-hover:text-white transition-colors">
+                  <MapPin className="w-5 h-5 lg:w-7 lg:h-7" />
+                </div>
+                <div className="text-left">
+                  <p className="font-black text-slate-800 text-xs lg:text-lg">Mess Location</p>
+                  <p className="text-[10px] lg:text-sm font-bold text-slate-400 uppercase truncate">
+                    {myMess?.messId?.location?.landmark || "Location details not available"}
+                  </p>
+                </div>
               </div>
-              <div className="text-left">
-                <p className="font-black text-slate-800 text-xs lg:text-lg">Mess Location</p>
-                <p className="text-[10px] lg:text-sm font-bold text-slate-400 uppercase truncate">
-                  {myMess?.messId?.location?.landmark || "Not set"}
-                </p>
-              </div>
-            </div>
-            <ChevronRight className="w-5 h-5 lg:w-7 lg:h-7 text-slate-200 group-hover:text-orange-500" />
-          </button>
+              <ChevronRight className="w-5 h-5 lg:w-7 lg:h-7 text-slate-200 group-hover:text-orange-500" />
+            </button>
+          )}
 
           <button onClick={handlelogout} className="w-full flex items-center justify-center gap-2 p-5 text-red-500 font-black uppercase text-[10px] lg:text-sm tracking-widest mt-4 hover:bg-red-50 rounded-2xl lg:rounded-3xl transition-colors">
             <LogOut className="w-4 h-4 lg:w-5 lg:h-5" /> Sign Out

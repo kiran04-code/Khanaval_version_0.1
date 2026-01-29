@@ -197,58 +197,64 @@ export default function UpdishOnboarding() {
         });
     };
 
-  const handleImageChange = async (e) => {
-  const file = e.target.files?.[0];
-  if (!file) return;
+    const handleImageChange = async (e) => {
+        const file = e.target.files?.[0];
+        if (!file || !activeSlot) return;
+        if (
+            file.type.includes("heic") ||
+            file.type.includes("heif") ||
+            file.name.toLowerCase().endsWith(".heic")
+        ) {
+            showToast("HEIC images not supported. Convert to JPG.");
+            return;
+        }
+        const options = {
+            maxSizeMB: 4,
+            maxWidthOrHeight: 3000,
+            useWebWorker: true,
+            initialQuality: 0.9,
+        };
 
-  const options = {
-    maxSizeMB: 5,              // ✅ FINAL SIZE ≤ 5MB
-    maxWidthOrHeight: 4096,    // ✅ High resolution (4K)
-    useWebWorker: true,
-    initialQuality: 0.9,      // ✅ Starts high, auto-reduces if needed
-  };
+        try {
+            setLoading(true);
 
-  try {
-    setLoading(true);
+            console.log(
+                "Original size:",
+                (file.size / 1024 / 1024).toFixed(2),
+                "MB"
+            );
 
-    console.log(
-      "Original size:",
-      (file.size / 1024 / 1024).toFixed(2),
-      "MB"
-    );
+            const compressedFile = await imageCompression(file, options);
 
-    const compressedFile = await imageCompression(file, options);
+            console.log(
+                "Compressed size:",
+                (compressedFile.size / 1024 / 1024).toFixed(2),
+                "MB"
+            );
 
-    console.log(
-      "Compressed size:",
-      (compressedFile.size / 1024 / 1024).toFixed(2),
-      "MB"
-    );
+            const finalFile = new File(
+                [compressedFile],
+                file.name,
+                { type: compressedFile.type }
+            );
 
-    // Ensure File object for FormData compatibility
-    const finalFile = new File(
-      [compressedFile],
-      file.name,
-      { type: compressedFile.type }
-    );
+            setFiles((prev) => ({
+                ...prev,
+                [activeSlot]: finalFile,
+            }));
 
-    setFiles((prev) => ({
-      ...prev,
-      [activeSlot]: finalFile,
-    }));
+            setPreviews((prev) => ({
+                ...prev,
+                [activeSlot]: URL.createObjectURL(finalFile),
+            }));
 
-    setPreviews((prev) => ({
-      ...prev,
-      [activeSlot]: URL.createObjectURL(finalFile),
-    }));
-
-  } catch (error) {
-    console.error("Image compression error:", error);
-    showToast("Error processing image");
-  } finally {
-    setLoading(false);
-  }
-};
+        } catch (error) {
+            console.error("Image compression error:", error);
+            showToast("Error processing image");
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const UpdishLoader = () => (
         <div className="fixed inset-0 z-[100] bg-white/95 backdrop-blur-md flex flex-col items-center justify-center">

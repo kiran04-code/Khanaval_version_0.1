@@ -201,7 +201,7 @@ export default function UpdishOnboarding() {
         const file = e.target.files[0];
         if (!file) return;
         const options = {
-            maxSizeMB: 1.5,            // Target size 1.5MB (Excellent for 10MB originals)
+            maxSizeMB: 1,            // Target size 1.5MB (Excellent for 10MB originals)
             maxWidthOrHeight: 2560,    // Keeps 2K resolution (Very Sharp)
             useWebWorker: true,
             initialQuality: 0.85,      // High quality start point (0.85 is the sweet spot)

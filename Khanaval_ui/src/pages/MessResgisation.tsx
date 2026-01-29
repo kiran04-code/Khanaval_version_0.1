@@ -197,32 +197,58 @@ export default function UpdishOnboarding() {
         });
     };
 
-    const handleImageChange = async (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-        const options = {
-            maxSizeMB: 2,            // Target size 1.5MB (Excellent for 10MB originals)
-            maxWidthOrHeight: 3840,    // Keeps 2K resolution (Very Sharp)
-            useWebWorker: true,
-            initialQuality: 0.95,      // High quality start point (0.85 is the sweet spot)
-            alwaysKeepResolution: true // Prevents the image from becoming "tiny" in pixels
-        };
-        try {
-            setLoading(true); // Show loader during compression
-            const compressedFile = await imageCompression(file, options);
+  const handleImageChange = async (e) => {
+  const file = e.target.files?.[0];
+  if (!file) return;
 
-            // Convert to a File object to ensure compatibility with FormData
-            const finalFile = new File([compressedFile], file.name, { type: file.type });
+  const options = {
+    maxSizeMB: 5,              // ✅ FINAL SIZE ≤ 5MB
+    maxWidthOrHeight: 4096,    // ✅ High resolution (4K)
+    useWebWorker: true,
+    initialQuality: 0.9,      // ✅ Starts high, auto-reduces if needed
+  };
 
-            setFiles(prev => ({ ...prev, [activeSlot]: finalFile }));
-            setPreviews(prev => ({ ...prev, [activeSlot]: URL.createObjectURL(finalFile) }));
-        } catch (error) {
-            showToast("Error processing image");
-            console.error(error);
-        } finally {
-            setLoading(false);
-        }
-    };
+  try {
+    setLoading(true);
+
+    console.log(
+      "Original size:",
+      (file.size / 1024 / 1024).toFixed(2),
+      "MB"
+    );
+
+    const compressedFile = await imageCompression(file, options);
+
+    console.log(
+      "Compressed size:",
+      (compressedFile.size / 1024 / 1024).toFixed(2),
+      "MB"
+    );
+
+    // Ensure File object for FormData compatibility
+    const finalFile = new File(
+      [compressedFile],
+      file.name,
+      { type: compressedFile.type }
+    );
+
+    setFiles((prev) => ({
+      ...prev,
+      [activeSlot]: finalFile,
+    }));
+
+    setPreviews((prev) => ({
+      ...prev,
+      [activeSlot]: URL.createObjectURL(finalFile),
+    }));
+
+  } catch (error) {
+    console.error("Image compression error:", error);
+    showToast("Error processing image");
+  } finally {
+    setLoading(false);
+  }
+};
 
     const UpdishLoader = () => (
         <div className="fixed inset-0 z-[100] bg-white/95 backdrop-blur-md flex flex-col items-center justify-center">

@@ -125,7 +125,7 @@ export default function UpdishOnboarding() {
                 setStep(3);
             }
         } catch (error) {
-            showToast("Upload failed. Check connection.");
+            showToast("Image Size is To Much. Please Compress Image or Upload low Quality Image");
         } finally {
             setLoading(false);
         }

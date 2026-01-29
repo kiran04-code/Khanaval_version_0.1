@@ -208,42 +208,36 @@ export default function UpdishOnboarding() {
             showToast("HEIC images not supported. Convert to JPG.");
             return;
         }
-        const options = {
-            maxSizeMB: 4,
-            maxWidthOrHeight: 3000,
-            useWebWorker: true,
-            initialQuality: 0.9,
-        };
-
         try {
             setLoading(true);
+            if (file.size / 1024 / 1024 > 25) {
+                showToast("Image too large. Max 25MB allowed.");
+                return;
+            } 
+            const img = new Image();
+            img.src = URL.createObjectURL(file);
+            await new Promise(res => (img.onload = res));
+            const mp = (img.width * img.height) / 1_000_000;
+            if (mp > 25) {
+                showToast("Image resolution too high. Choose a smaller image.");
+                return;
+            }
 
-            console.log(
-                "Original size:",
-                (file.size / 1024 / 1024).toFixed(2),
-                "MB"
-            );
-
-            const compressedFile = await imageCompression(file, options);
-
-            console.log(
-                "Compressed size:",
-                (compressedFile.size / 1024 / 1024).toFixed(2),
-                "MB"
-            );
+            const compressed = await imageCompression(file, {
+                maxSizeMB: 4,
+                maxWidthOrHeight: 3000,
+                initialQuality: 0.8,
+                useWebWorker: true,
+            });
 
             const finalFile = new File(
-                [compressedFile],
-                file.name,
-                { type: compressedFile.type }
+                [compressed],
+                file.name.replace(/\..+$/, ".jpg"),
+                { type: "image/jpeg" }
             );
 
-            setFiles((prev) => ({
-                ...prev,
-                [activeSlot]: finalFile,
-            }));
-
-            setPreviews((prev) => ({
+            setFiles(prev => ({ ...prev, [activeSlot]: finalFile }));
+            setPreviews(prev => ({
                 ...prev,
                 [activeSlot]: URL.createObjectURL(finalFile),
             }));

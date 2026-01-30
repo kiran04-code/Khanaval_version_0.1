@@ -79,7 +79,11 @@ const benefits = [
     description: "All providers are verified with hygiene ratings.",
   },
 ];
-
+const DUMMY_THALIS = [
+  "https://images.unsplash.com/photo-1546833999-b9f581a1996d?q=80&w=800&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?q=80&w=800&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1589301760014-d929f3979dbc?q=80&w=800&auto=format&fit=crop"
+];
 const popularMesses = [
   {
     id: "1",
@@ -251,7 +255,7 @@ const Index = () => {
           </div>
         </div>
       </section>
-   <div className="md:hidden px-5 py-8">
+<div className="md:hidden px-5 py-8">
   {/* Section Header: Bold & Hyper-Local */}
   <div className="flex flex-col mb-2">
     <div className="flex items-center gap-2 mb-1">
@@ -304,20 +308,24 @@ const Index = () => {
           </div>
         ))
       ) : AllMESS && AllMESS.length > 0 ? (
-        /* 2. DATA STATE: Actual Mess Cards */
-        AllMESS.slice(0, 3).map((mess) => (
+        /* 2. DATA STATE: Using Dummy Thali Images */
+        AllMESS.slice(0, 3).map((mess, index) => (
           <div
             key={mess._id}
             onClick={() => navigate(`mess/${mess?._id}`)}
             className="group relative flex items-center p-3 bg-white rounded-[2rem] border border-slate-100 shadow-[0_10px_30px_-15px_rgba(0,0,0,0.08)] active:scale-[0.97] transition-all duration-300"
           >
-            <div className="relative h-20 w-20 rounded-[1.5rem] overflow-hidden flex-shrink-0 shadow-inner">
+            {/* Image Container */}
+            <div className="relative h-20 w-20 rounded-[1.5rem] overflow-hidden flex-shrink-0 shadow-inner bg-slate-100">
               <img
-                src={mess?.media?.cover}
+                /* Cycles through DUMMY_THALIS array so images look different */
+                src={DUMMY_THALIS[index % DUMMY_THALIS.length]}
                 className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
-                alt={mess?.identity?.name}
+                alt="Thali"
               />
               <div className="absolute inset-0 bg-black/5" />
+              
+              {/* Status Indicator */}
               <div className="absolute bottom-1 right-1 h-5 w-5 bg-white rounded-full flex items-center justify-center shadow-sm">
                 <div className={cn(
                   "h-2.5 w-2.5 rounded-full",
@@ -326,6 +334,7 @@ const Index = () => {
               </div>
             </div>
 
+            {/* Content Area */}
             <div className="flex-1 ml-4 overflow-hidden">
               <div className="flex items-center gap-2 mb-1">
                 <h4 className="font-extrabold text-slate-800 text-base tracking-tight truncate">
@@ -355,16 +364,17 @@ const Index = () => {
               </div>
             </div>
 
+            {/* Arrow Button */}
             <div className="h-10 w-10 flex items-center justify-center rounded-full bg-slate-50 text-slate-300 group-active:bg-orange-600 group-active:text-white transition-all ml-1">
               <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-0.5" />
             </div>
           </div>
         ))
       ) : (
-        /* 3. EMPTY STATE: If no data is found */
+        /* 3. EMPTY STATE */
         <div className="py-10 text-center bg-slate-50 rounded-[2rem] border border-dashed border-slate-200">
-           <Utensils className="w-8 h-8 text-slate-300 mx-auto mb-2" />
-           <p className="text-sm font-bold text-slate-400">No messes found near you yet.</p>
+          <Utensils className="w-8 h-8 text-slate-300 mx-auto mb-2" />
+          <p className="text-sm font-bold text-slate-400">No messes found near you yet.</p>
         </div>
       )}
     </div>

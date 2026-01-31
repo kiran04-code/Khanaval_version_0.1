@@ -64,7 +64,7 @@ const MessCard = ({ _id, identity, media, MontlyPrices, rating, location, messVe
     if (!messVerified) return null;
 
     return (
-        <Card className="group relative md:w-full w-[320px] overflow-hidden rounded-[2.5rem] border-none bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all duration-500 h-[420px]">
+        <Card className="group relative md:w-full w-[330px] overflow-hidden rounded-[2.5rem] border-none bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all duration-500 h-[420px]">
             {/* IMAGE SECTION */}
             <div className="relative h-1/2 w-full overflow-hidden">
                 <img

@@ -274,41 +274,56 @@ export default function MessDetailPage() {
               </section>
             </div>
           )}
+{activeTab === "menu" && (
+  <div className="space-y-6 animate-in fade-in duration-500">
+    <div className="flex items-center justify-between px-2">
+      <h3 className="text-2xl font-black text-slate-900 tracking-tight">Today's Menu</h3>
+      <div className="flex items-center gap-1.5 bg-emerald-50 px-3 py-1 rounded-full">
+        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+        <span className="text-[10px] font-black text-emerald-600 uppercase">Live</span>
+      </div>
+    </div>
 
-          {activeTab === "menu" && (
-            <div className="space-y-6 animate-in fade-in duration-500">
-              <div className="flex items-center justify-between px-2">
-                <h3 className="text-2xl font-black text-slate-900 tracking-tight">Today's Menu</h3>
-                <div className="flex items-center gap-1.5 bg-emerald-50 px-3 py-1 rounded-full">
-                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                  <span className="text-[10px] font-black text-emerald-600 uppercase">Live</span>
-                </div>
+    {mess?.Menu && mess.Menu.length > 0 ? (
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+        {mess.Menu.map((item, index) => (
+          <div key={index} className="group">
+            <Card 
+              className="rounded-3xl border-none shadow-sm overflow-hidden bg-white cursor-zoom-in transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+              onClick={() => setSelectedImg(item.imageUrl)}
+            >
+              {/* Small Header for the Card */}
+              <div className="px-4 py-2 flex items-center gap-2 border-b border-slate-50 bg-slate-50/50">
+                {item.types === "breakfast" ? (
+                  <Coffee className="w-3 h-3 text-orange-500" />
+                ) : (
+                  <Moon className="w-3 h-3 text-indigo-500" />
+                )}
+                <span className="text-[10px] font-black text-slate-600 uppercase tracking-tighter">
+                  {item.types}
+                </span>
               </div>
 
-              {mess?.Menu && mess.Menu.length > 0 ? (
-                <div className="columns-1 md:columns-2 gap-4 space-y-4">
-                  {mess.Menu.map((item, index) => (
-                    <div key={index} className="break-inside-avoid mb-4">
-                      <Card className="rounded-[2rem] border-none shadow-sm overflow-hidden bg-white">
-                        <div className="px-5 py-4 flex items-center justify-between border-b border-slate-50">
-                          <div className="flex items-center gap-2">
-                            {item.types === "breakfast" ? <Coffee className="w-4 h-4 text-orange-500" /> : <Moon className="w-4 h-4 text-indigo-500" />}
-                            <span className="text-sm font-black text-slate-800 uppercase">{item.types}</span>
-                          </div>
-                        </div>
-                        <img src={item.imageUrl} className="w-full h-auto block" alt={item.types} />
-                      </Card>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="py-20 flex flex-col items-center justify-center bg-white rounded-[3rem] border border-slate-100">
-                  <Utensils className="w-10 h-10 text-slate-100 mb-4" />
-                  <p className="text-slate-400 font-bold text-sm uppercase">Menu is empty</p>
-                </div>
-              )}
-            </div>
-          )}
+              {/* Small Image Preview */}
+              <div className="aspect-[4/5] overflow-hidden">
+                <img 
+                  src={item.imageUrl} 
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" 
+                  alt={item.types} 
+                />
+              </div>
+            </Card>
+          </div>
+        ))}
+      </div>
+    ) : (
+      <div className="py-20 flex flex-col items-center justify-center bg-white rounded-[3rem] border border-slate-100">
+        <Utensils className="w-10 h-10 text-slate-100 mb-4" />
+        <p className="text-slate-400 font-bold text-sm uppercase">Menu is empty</p>
+      </div>
+    )}
+  </div>
+)}
 
           {activeTab === "photos" && (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 animate-in slide-in-from-bottom-4 duration-500">

@@ -309,7 +309,7 @@ const Index = () => {
         ))
       ) : AllMESS && AllMESS.length > 0 ? (
         /* 2. DATA STATE: Using Dummy Thali Images */
-        AllMESS.slice(0, 3).map((mess, index) => (
+        AllMESS.slice(7,10).map((mess, index) => (
           <div
             key={mess._id}
             onClick={() => navigate(`mess/${mess?._id}`)}
@@ -510,7 +510,7 @@ const Index = () => {
               <div className="absolute -top-10 -right-10 w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
 
               <div className="grid grid-cols-2 gap-4 relative z-10">
-                {AllMESS?.slice(0, 3).map((mess, index) => (
+                {AllMESS?.slice(7,10).map((mess, index) => (
                   <Card
                     key={mess._id}
                     className={cn(

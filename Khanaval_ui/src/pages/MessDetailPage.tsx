@@ -277,49 +277,99 @@ export default function MessDetailPage() {
 {activeTab === "menu" && (
   <div className="space-y-6 animate-in fade-in duration-500">
     <div className="flex items-center justify-between px-2">
-      <h3 className="text-2xl font-black text-slate-900 tracking-tight">Today's Menu</h3>
+      <h3 className="text-2xl font-black text-slate-900 tracking-tight">Weekly Menu</h3>
       <div className="flex items-center gap-1.5 bg-emerald-50 px-3 py-1 rounded-full">
         <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-        <span className="text-[10px] font-black text-emerald-600 uppercase">Live</span>
+        <span className="text-[10px] font-black text-emerald-600 uppercase tracking-wider">Live Updates</span>
       </div>
     </div>
 
     {mess?.Menu && mess.Menu.length > 0 ? (
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-        {mess.Menu.map((item, index) => (
-          <div key={index} className="group">
-            <Card 
-              className="rounded-3xl border-none shadow-sm overflow-hidden bg-white cursor-zoom-in transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
-              onClick={() => setSelectedImg(item.imageUrl)}
-            >
-              {/* Small Header for the Card */}
-              <div className="px-4 py-2 flex items-center gap-2 border-b border-slate-50 bg-slate-50/50">
-                {item.types === "breakfast" ? (
-                  <Coffee className="w-3 h-3 text-orange-500" />
-                ) : (
-                  <Moon className="w-3 h-3 text-indigo-500" />
-                )}
-                <span className="text-[10px] font-black text-slate-600 uppercase tracking-tighter">
-                  {item.types}
-                </span>
-              </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {mess.Menu.map((item, index) => {
+          // Helper to format the createdAt timestamp from your DB
+          const itemDate = item.createdAt ? new Date(item.createdAt) : null;
+          const formattedTime = itemDate 
+            ? itemDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }) 
+            : "Scheduled";
+          const formattedDate = itemDate 
+            ? itemDate.toLocaleDateString([], { day: '2-digit', month: 'short' }) 
+            : "Today";
 
-              {/* Small Image Preview */}
-              <div className="aspect-[4/5] overflow-hidden">
+          return (
+            <Card 
+              key={index}
+              className="group rounded-[32px] border-none shadow-sm overflow-hidden bg-white flex h-44 transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+            >
+              {/* Left Side: Image */}
+              <div 
+                className="relative w-1/3 overflow-hidden cursor-zoom-in"
+                onClick={() => setSelectedImg(item.imageUrl)}
+              >
                 <img 
                   src={item.imageUrl} 
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" 
                   alt={item.types} 
                 />
+                <div className="absolute top-2 left-2">
+                  <Badge className={cn(
+                    "border-none text-[8px] font-black uppercase px-2 py-0.5 rounded-lg",
+                    item.types === "breakfast" ? "bg-orange-500 text-white" : "bg-indigo-600 text-white"
+                  )}>
+                    {item.types}
+                  </Badge>
+                </div>
+              </div>
+
+              {/* Right Side: Details */}
+              <div className="flex-1 p-4 flex flex-col justify-between">
+                <div>
+                  <div className="flex justify-between items-start mb-1">
+                    <div className="flex items-center gap-1 text-orange-600">
+                       <Clock className="w-3 h-3" />
+                       <span className="text-[10px] font-black uppercase tracking-tighter">
+                         {formattedTime}
+                       </span>
+                    </div>
+                    <span className="text-[10px] font-bold text-slate-400">
+                      {formattedDate}
+                    </span>
+                  </div>
+
+                  <h4 className="text-lg font-black text-slate-800 leading-tight capitalize">
+                    {item.itemName || `${item.types} Special`}
+                  </h4>
+                  
+                  <p className="text-[11px] font-medium text-slate-500 line-clamp-2 mt-1">
+                    {item.description || "Freshly prepared home-style meal with authentic spices and quality ingredients."}
+                  </p>
+                </div>
+
+                <div className="flex items-center justify-between mt-auto pt-2 border-t border-slate-50">
+                  <div className="flex items-center gap-1">
+                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                    <span className="text-[9px] font-black text-slate-400 uppercase">Available</span>
+                  </div>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="h-7 text-[9px] font-black bg-slate-50 hover:bg-orange-50 hover:text-orange-600 rounded-full"
+                    onClick={() => setSelectedImg(item.imageUrl)}
+                  >
+                    VIEW LARGE
+                  </Button>
+                </div>
               </div>
             </Card>
-          </div>
-        ))}
+          );
+        })}
       </div>
     ) : (
       <div className="py-20 flex flex-col items-center justify-center bg-white rounded-[3rem] border border-slate-100">
-        <Utensils className="w-10 h-10 text-slate-100 mb-4" />
-        <p className="text-slate-400 font-bold text-sm uppercase">Menu is empty</p>
+        <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-4">
+          <Utensils className="w-8 h-8 text-slate-200" />
+        </div>
+        <p className="text-slate-400 font-black text-xs uppercase tracking-widest">No Menu Posted for Today</p>
       </div>
     )}
   </div>

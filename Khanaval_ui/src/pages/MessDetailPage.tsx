@@ -277,7 +277,7 @@ export default function MessDetailPage() {
 {activeTab === "menu" && (
   <div className="space-y-6 animate-in fade-in duration-500">
     <div className="flex items-center justify-between px-2">
-      <h3 className="text-2xl font-black text-slate-900 tracking-tight">Weekly Menu</h3>
+      <h3 className="text-2xl font-black text-slate-900 tracking-tight">Daily Menu</h3>
       <div className="flex items-center gap-1.5 bg-emerald-50 px-3 py-1 rounded-full">
         <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
         <span className="text-[10px] font-black text-emerald-600 uppercase tracking-wider">Live Updates</span>

@@ -164,7 +164,7 @@ const MessOrbitDashboard = () => {
                 {/* 3. CLEAN ACTION AREA */}
                 <div className="flex items-center gap-3">
                   <button onClick={() => navigate(user || Providerdata ? `/mess/${mess._id}` : `/auth`)} className="flex-1 py-3.5 bg-slate-900 text-white rounded-2xl font-black text-[11px] uppercase tracking-widest flex items-center justify-center gap-2 group-hover:bg-orange-600 transition-all shadow-lg shadow-slate-200">
-                    View Menu <ArrowRight className="w-4 h-4" />
+                    View Menu <ArrowRight className="w-5 h-4" />
                   </button>
 
                   <div className={`px-4 py-3 rounded-2xl border-2 flex items-center justify-center ${mess.identity?.dietaryType === 'Pure Veg'

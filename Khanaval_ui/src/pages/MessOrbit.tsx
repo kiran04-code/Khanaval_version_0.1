@@ -1,8 +1,7 @@
 import React, { useMemo, useState } from "react";
 import {
   MapPin, Star, Search, Navigation,
-  ChevronRight, UtensilsCrossed, Zap,
-  ShieldCheck, ArrowRight, Heart
+  ShieldCheck, ArrowRight
 } from "lucide-react";
 import { GetALLmess } from "@/hooks/MessData";
 import { useStateContex } from "@/context/State";
@@ -23,7 +22,7 @@ const MessOrbitDashboard = () => {
     if (!AllMESS) return [];
     return AllMESS
       .map(mess => {
-        const dist = calculateDistance(userlat, userlng, mess.location?.lat, mess.location?.lng);
+        const dist = calculateDistance(String(userlat), String(userlng), String(mess.location?.lat), String(mess.location?.lng));
         const price = mess.MontlyPrices ? Number(mess.MontlyPrices) : Infinity;
         return { ...mess, calculatedDistance: parseFloat(dist) || 0, sortPrice: price };
       })

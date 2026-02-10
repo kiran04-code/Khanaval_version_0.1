@@ -24,7 +24,7 @@ const MessOrbitDashboard = () => {
       .map(mess => {
         const dist = calculateDistance(String(userlat), String(userlng), String(mess.location?.lat), String(mess.location?.lng));
         const price = mess.MontlyPrices ? Number(mess.MontlyPrices) : Infinity;
-        return { ...mess, calculatedDistance: parseFloat(dist) || 0, sortPrice: price };
+        return { ...mess, calculatedDistance: parseFloat(String(dist)) || 0, sortPrice: price };
       })
       .filter(mess => {
         if (!mess.messVerified) return false;

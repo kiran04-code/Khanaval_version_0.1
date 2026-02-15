@@ -1,34 +1,56 @@
 import React from 'react';
-import { Bell, Utensils, ShieldCheck, MapPin, ArrowRight, Sparkles, Clock } from 'lucide-react';
+import { 
+  Bell, 
+  Utensils, 
+  ShieldCheck, 
+  MapPin, 
+  ArrowRight, 
+  Sparkles, 
+  Clock, 
+  ChevronLeft // Added for the back button
+} from 'lucide-react';
 
 const Announcements = () => {
   const announcements = [
-    {
-      id: 1,
-      icon: <Utensils className="w-5 h-5 text-orange-600" />,
-      tag: "Live Menu",
-      title: "Today's Special Menu Updated",
-      description: "Shriram Bhojnalay & 8 others just updated their lunch menu. Paneer Masala & Special Puran Poli available today!",
-      date: "Updated 2 mins ago",
-      btnText: "Check Menu",
-      isLive: true,
-      highlight: false
-    },
-    {
-      id: 2,
-      icon: <Sparkles className="w-5 h-5 text-orange-500" />,
-      tag: "Network Update",
-      title: "12 New Verified Messes Near You",
-      description: "We've expanded our reach! Discover 12 high-quality, hygiene-certified mess services now open within 0.15 km.",
-      date: "Available Now",
-      btnText: "Explore Map",
-      isLive: false,
-      highlight: true
-    }
-  ];
-
+      {
+          id: 1,
+          icon: <Sparkles className="w-5 h-5 text-orange-500" />,
+          tag: "Network Update",
+          title: "12 New Verified Messes Near You",
+          description: "We've expanded our reach! Discover 12 high-quality, hygiene-certified mess services now open within 0.15 km.",
+          date: "Available Now",
+          btnText: "Explore Map",
+          isLive: false,
+          highlight: true
+        },
+        {
+          id: 2,
+          icon: <Utensils className="w-5 h-5 text-orange-600" />,
+          tag: "Live Menu",
+          title: "Today's Special Menu Updated",
+          description: "Shriram Bhojnalay & 8 others just updated their lunch menu. Paneer Masala & Special Puran Poli available today!",
+          date: "Updated 2 mins ago",
+          btnText: "Check Menu",
+          isLive: true,
+          highlight: false
+        },
+    ];
+    
   return (
-    <section className="max-w-7xl mx-auto px-6 py-20 bg-white font-sans">
+    <section className="max-w-7xl mx-auto px-6 py-10 bg-white font-sans">
+      {/* Navigation Row */}
+      <div className="mb-8">
+        <button 
+          onClick={() => window.history.back()} 
+          className="flex items-center gap-2 text-gray-500 hover:text-orange-500 transition-colors font-bold text-sm group"
+        >
+          <div className="p-2 rounded-full bg-gray-50 group-hover:bg-orange-50">
+            <ChevronLeft className="w-5 h-5" />
+          </div>
+          Back to Home
+        </button>
+      </div>
+
       {/* Header Area */}
       <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
         <div className="max-w-xl">

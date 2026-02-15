@@ -26,6 +26,7 @@ import HelpSupport from "./pages/HelpSupport";
 import FeedbackForm from "./pages/FeedBackFrom";
 import MealRedeemPage from "./pages/MealReademPage";
 import Paas from "./pages/Paas";
+import Announcements from "./pages/Anniumment";
 const queryClient = new QueryClient();
 
 const App = () => {
@@ -69,6 +70,7 @@ const App = () => {
             <Route path="/tiffin" element={<UserDashboard />} />
             <Route path="/FeedBack" element={<FeedbackForm />} />
             <Route path="/pass/:ids" element={<Paas />} />
+            <Route path="/Annousment" element={<Announcements />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

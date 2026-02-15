@@ -182,7 +182,7 @@ export default function KhanavalProfile() {
               You aren't registered with any mess yet. Join a mess to track your meals here.
             </p>
             <button 
-              onClick={() => navigate("/explore")}
+              onClick={() => navigate("/mess")}
               className="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-black py-4 px-8 rounded-2xl transition-all shadow-lg shadow-orange-100 active:scale-95"
             >
               <Search className="w-5 h-5" /> Find a Mess

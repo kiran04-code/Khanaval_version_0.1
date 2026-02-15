@@ -12,6 +12,7 @@ import { PROVIDER_OTP_LOGIN_QUERY, PROVIDER_OTP_LOGIN_VERYFIED_QUERY, PROVIDER_O
 import { UserProviderdata } from "@/hooks/Provider";
 import { useQueryClient } from "@tanstack/react-query";
 import { requestPushPermission } from "@/FIREBASE/getToken";
+import { KhanaavalLoader } from "./provider/Loderkhanaaval";
 
 export default function HybridAuthPage() {
   const navigate = useNavigate();
@@ -214,6 +215,7 @@ export default function HybridAuthPage() {
 
   return (
     <div className="min-h-screen bg-[#F3F4F6] bg-gradient-to-br from-slate-50 to-slate-200 flex items-center justify-center p-6">
+      {isLoading && <KhanaavalLoader />}
       <div className="w-full max-w-[460px] space-y-6">
 
         {/* HEADER SECTION */}

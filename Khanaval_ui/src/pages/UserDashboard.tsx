@@ -130,7 +130,7 @@ export default function UserDashboard() {
                 className="w-10 h-10 rounded-2xl bg-orange-100 cursor-pointer overflow-hidden border-2 border-white shadow-md" 
                 onClick={() => navigate("/profile")}
               >
-                <img src="https://img.freepik.com/free-vector/smiling-young-man-illustration_1308-174669.jpg?semt=ais_hybrid&w=740&q=80" alt="user" />
+                 <img src={user ? `${user?.imageUrl}` : "https://img.freepik.com/free-vector/smiling-young-man-illustration_1308-174669.jpg?semt=ais_hybrid&w=740&q=80" } alt="user" /> 
               </div>
             )}
           </div>
@@ -144,9 +144,9 @@ export default function UserDashboard() {
             <img src="/logo.png" alt="logo" className="w-full h-auto" />
           </Link>
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" className="rounded-full"><Bell className="w-5 h-5" /></Button>
+            <Button onClick={()=>navigate("/Annousment")} variant="ghost" size="icon" className="rounded-full"><Bell className="w-5 h-5" /></Button>
             <div className="w-8 h-8 rounded-full bg-slate-100 overflow-hidden" onClick={() => navigate("/profile")}>
-              <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Rahul" alt="user" />
+              <img src={user ? `${user?.imageUrl}` : "https://img.freepik.com/free-vector/smiling-young-man-illustration_1308-174669.jpg?semt=ais_hybrid&w=740&q=80" } alt="user" />
             </div>
           </div>
         </div>

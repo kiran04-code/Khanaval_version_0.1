@@ -14,8 +14,8 @@ import {
   Moon,
   Upload,
   ImageIcon,
-  Lock,
-  ChevronRight,
+  Type,
+  ChevronLeft,
   Utensils,
 } from "lucide-react";
 import { Getmymess } from "@/hooks/PorviderMess";
@@ -26,7 +26,8 @@ import { toast } from "@/hooks/use-toast";
 interface MenuItem {
   _id?: string;
   types: string;
-  imageUrl: string;
+  imageUrl?: string | null;
+  menuText?: string;
   CreateAt?: string | null;
   time?: string;
 }
@@ -66,6 +67,7 @@ export default function MenuManagement() {
   const [menuData, setMenuData] = useState<DayMenu[]>([]);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [imageData, setImageData] = useState<File | null>(null);
+  const [menuText, setMenuText] = useState("");
   const [isBreakfastOpen, setIsBreakfastOpen] = useState(false);
   const [isDinnerOpen, setIsDinnerOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -96,21 +98,20 @@ export default function MenuManagement() {
   };
 
   const handleSaveItem = async (type: string) => {
-    if (!imageData) return toast({ title: "Upload Image First", variant: "destructive" });
+    if (!imageData) return toast({ title: "Please provide an image", variant: "destructive" });
     setIsLoading(true);
     const formData = new FormData();
     formData.append("id", messdata?.id);
     formData.append("date", todayStr);
     formData.append("type", type);
     formData.append("image", imageData);
-
     try {
       const { data } = await axioseInstace.post("/api/addmenu", formData);
       if (data.success) {
-        toast({ title: "Menu Updated" });
+        toast({ title: "Image Menu Posted" });
         setIsBreakfastOpen(false);
         setIsDinnerOpen(false);
-        setImagePreview(null);
+        resetForm();
         queryClient.invalidateQueries({ queryKey: ["get-mess"] });
       }
     } catch (err) {
@@ -120,12 +121,40 @@ export default function MenuManagement() {
     }
   };
 
+  const updatedMenuText = async (type: string) => {
+    if (!menuText.trim()) return toast({ title: "Please type a menu", variant: "destructive" });
+    setIsLoading(true);
+    try {
+      const { data } = await axioseInstace.post("api/mess/UpdateMenu", { 
+        MenuText: menuText, 
+        messId: messdata?.id,
+        type: type 
+      })
+      if (data.success) {
+        toast({ title: "Text Menu Updated" });
+        setIsBreakfastOpen(false);
+        setIsDinnerOpen(false);
+        resetForm();
+        queryClient.invalidateQueries({ queryKey: ["get-mess"] });
+      }
+    } catch (error) {
+      toast({ title: "Update Failed", variant: "destructive" });
+    } finally {
+        setIsLoading(false);
+    }
+  }
+
+  const resetForm = () => {
+    setImagePreview(null);
+    setImageData(null);
+    setMenuText("");
+  };
+
   const handleDelete = async (itemId: string) => {
     try {
-      // "types" is the key your backend expects, but we pass the _id string
       const { data } = await axioseInstace.post("/api/deleteMenu", {
         id: messdata.id,
-        types: itemId 
+        types: itemId
       });
       if (data.success) {
         toast({ title: "Menu Deleted" });
@@ -142,7 +171,7 @@ export default function MenuManagement() {
     <div className="max-w-5xl mx-auto p-4 space-y-6">
       <div className="grid md:grid-cols-2 gap-8">
         <MenuCard
-          title="Breakfast"
+          title="Lunch"
           type="breakfast"
           icon={<Coffee className="w-5 h-5 text-white" />}
           colorClass="bg-orange-500"
@@ -150,7 +179,7 @@ export default function MenuManagement() {
           setIsOpen={setIsBreakfastOpen}
           items={todaysItems.filter(i => i.types === "breakfast")}
           onDelete={handleDelete}
-          formProps={{ onSave: handleSaveItem, imagePreview, handleImageChange, isLoading }}
+          formProps={{ onSave: handleSaveItem, onSaveText: updatedMenuText, imagePreview, handleImageChange, isLoading, menuText, setMenuText, resetForm }}
         />
         <MenuCard
           title="Dinner"
@@ -161,7 +190,7 @@ export default function MenuManagement() {
           setIsOpen={setIsDinnerOpen}
           items={todaysItems.filter(i => i.types === "dinner")}
           onDelete={handleDelete}
-          formProps={{ onSave: handleSaveItem, imagePreview, handleImageChange, isLoading }}
+          formProps={{ onSave: handleSaveItem, onSaveText: updatedMenuText, imagePreview, handleImageChange, isLoading, menuText, setMenuText, resetForm }}
         />
       </div>
     </div>
@@ -170,71 +199,144 @@ export default function MenuManagement() {
 
 function MenuCard({ title, type, icon, colorClass, isOpen, setIsOpen, items, onDelete, formProps }: any) {
   return (
-    <Card className="border-none shadow-2xl rounded-[2rem] bg-white overflow-hidden">
-      <div className="p-6 flex items-center justify-between border-b">
-        <div className="flex items-center gap-3">
-          <div className={`${colorClass} p-2 rounded-xl`}>{icon}</div>
-          <h2 className="text-sm font-bold text-slate-800 uppercase">{title}</h2>
+    <Card className="border-none shadow-2xl rounded-[2.5rem] bg-white overflow-hidden transition-all hover:shadow-orange-100">
+      <div className="p-7 flex items-center justify-between border-b border-slate-50">
+        <div className="flex items-center gap-4">
+          <div className={`${colorClass} p-2.5 rounded-2xl shadow-lg shadow-inherit`}>{icon}</div>
+          <h2 className="text-sm font-extrabold text-slate-800 uppercase tracking-wider">{title}</h2>
         </div>
-        <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <Dialog open={isOpen} onOpenChange={(val) => { setIsOpen(val); if (!val) formProps.resetForm(); }}>
           <DialogTrigger asChild>
-            <Button size="sm" className={`${colorClass} rounded-xl text-[10px] font-bold text-white`}>
-              <Plus className="w-3 h-3 mr-1" /> ADD MENU
+            <Button size="sm" className={`${colorClass} rounded-2xl text-[11px] font-black text-white px-5 hover:scale-105 transition-transform`}>
+              <Plus className="w-3.5 h-3.5 mr-1.5 stroke-[3px]" /> ADD MENU
             </Button>
           </DialogTrigger>
-          <DialogContent className="rounded-[2.5rem] sm:max-w-[400px] p-0 overflow-hidden">
+          <DialogContent className="rounded-[2.5rem] sm:max-w-[420px] p-0 overflow-hidden border-none">
             <MenuAddForm
               type={type}
               onSave={() => formProps.onSave(type)}
+              onSaveText={() => formProps.onSaveText(type)}
               imagePreview={formProps.imagePreview}
               handleImageChange={formProps.handleImageChange}
               isLoading={formProps.isLoading}
+              menuText={formProps.menuText}
+              setMenuText={formProps.setMenuText}
+              colorClass={colorClass}
             />
           </DialogContent>
         </Dialog>
       </div>
-      <CardContent className="p-4 px-5">
+      <CardContent className="p-6">
         <MealDisplay items={items} onDelete={onDelete} />
       </CardContent>
     </Card>
   );
 }
 
-function MealDisplay({ items, onDelete }: { items: MenuItem[], onDelete: (id: string) => void }) {
-  if (items.length === 0) return <div className="py-12 text-center text-slate-300">No menu uploaded</div>;
-  const mainDish = items[items.length - 1];
+function MenuAddForm({ type, onSave, onSaveText, imagePreview, handleImageChange, isLoading, menuText, setMenuText }: any) {
+  const [step, setStep] = useState<"choice" | "image" | "text">("choice");
+  const inputRef = useRef<HTMLInputElement>(null);
 
   return (
-    <div className="relative group">
-      <div className="w-full h-74 rounded-[1.5rem] bg-slate-100 overflow-hidden">
-        <img src={mainDish.imageUrl} className="w-full h-full object-cover" alt="Menu" />
+    <div className="bg-white p-8 min-h-[400px] flex flex-col justify-center">
+      {step !== "choice" && (
+        <button onClick={() => setStep("choice")} className="absolute top-6 left-6 text-slate-400 hover:text-slate-600 transition-colors">
+          <ChevronLeft className="w-6 h-6" />
+        </button>
+      )}
+
+      <div className="text-center mb-8">
+        <h3 className="text-2xl font-black text-slate-900 uppercase italic leading-none">Update {type}</h3>
+        <p className="text-slate-400 text-[10px] font-bold mt-2 tracking-widest uppercase">Choose display method</p>
       </div>
-      <Button
-        variant="destructive"
-        size="icon"
-        className="absolute top-3 right-3 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-        onClick={() => mainDish._id && onDelete(mainDish._id)}
-      >
-        <Trash2 className="w-4 h-4" />
-      </Button>
+
+      {step === "choice" ? (
+        <div className="grid gap-4">
+          <button onClick={() => setStep("image")} className="group flex items-center p-5 rounded-[1.5rem] border-2 border-slate-100 hover:border-slate-900 hover:bg-slate-900 transition-all text-left">
+            <div className="p-3 rounded-xl bg-slate-50 group-hover:bg-white/10 text-slate-900 group-hover:text-white mr-4">
+              <ImageIcon className="w-6 h-6" />
+            </div>
+            <div>
+              <p className="font-black text-slate-900 group-hover:text-white uppercase text-sm">Upload Photo</p>
+              <p className="text-xs text-slate-400 group-hover:text-slate-300">Share a picture of the meal</p>
+            </div>
+          </button>
+
+          <button onClick={() => setStep("text")} className="group flex items-center p-5 rounded-[1.5rem] border-2 border-slate-100 hover:border-slate-900 hover:bg-slate-900 transition-all text-left">
+            <div className="p-3 rounded-xl bg-slate-50 group-hover:bg-white/10 text-slate-900 group-hover:text-white mr-4">
+              <Type className="w-6 h-6" />
+            </div>
+            <div>
+              <p className="font-black text-slate-900 group-hover:text-white uppercase text-sm">Text Based Menu</p>
+              <p className="text-xs text-slate-400 group-hover:text-slate-300">Type out the menu items</p>
+            </div>
+          </button>
+        </div>
+      ) : step === "image" ? (
+        <div className="space-y-6">
+          <div onClick={() => inputRef.current?.click()} className="relative h-56 bg-slate-50 border-2 border-dashed border-slate-200 rounded-[2rem] flex flex-col items-center justify-center cursor-pointer overflow-hidden group hover:border-slate-400 transition-all">
+            {imagePreview ? <img src={imagePreview} className="h-full w-full object-cover" alt="Preview" /> : (
+              <div className="text-center">
+                <Upload className="w-10 h-10 text-slate-300 mx-auto mb-2 group-hover:scale-110 transition-transform" />
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-tighter">Click to browse photo</p>
+              </div>
+            )}
+            <input type="file" ref={inputRef} className="hidden" accept="image/*" onChange={handleImageChange} />
+          </div>
+          <Button disabled={isLoading || !imagePreview} className="w-full h-14 bg-slate-900 text-white rounded-2xl font-black italic tracking-wider" onClick={onSave}>
+            {isLoading ? "PROCESSING..." : "POST PHOTO"}
+          </Button>
+        </div>
+      ) : (
+        <div className="space-y-6">
+          <textarea
+            value={menuText}
+            onChange={(e) => setMenuText(e.target.value)}
+            placeholder="Example: Rajma Chawal, Salad, Pickle, Curd..."
+            className="w-full h-44 p-6 rounded-[2rem] bg-slate-50 border-2 border-slate-100 focus:border-slate-900 focus:outline-none text-slate-700 font-medium resize-none transition-all placeholder:text-slate-300"
+          />
+          <Button disabled={isLoading || !menuText.trim()} className="w-full h-14 bg-slate-900 text-white rounded-2xl font-black italic tracking-wider" onClick={onSaveText}>
+            {isLoading ? "PROCESSING..." : "POST TEXT MENU"}
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
 
-function MenuAddForm({ type, onSave, imagePreview, handleImageChange, isLoading }: any) {
-  const inputRef = useRef<HTMLInputElement>(null);
+function MealDisplay({ items, onDelete }: { items: MenuItem[], onDelete: (id: string) => void }) {
+  if (items.length === 0) return (
+    <div className="py-20 flex flex-col items-center justify-center border-2 border-dashed border-slate-100 rounded-[2rem]">
+      <Utensils className="w-10 h-10 text-slate-200 mb-3" />
+      <p className="text-slate-300 font-black uppercase text-[10px] tracking-widest">No Menu Set</p>
+    </div>
+  );
+
+  const mainDish = items[items.length - 1];
+
   return (
-    <div className="bg-white px-6 py-8">
-      <h3 className="text-xl font-black mb-5 text-center uppercase">Update {type}</h3>
-      <div 
-        onClick={() => inputRef.current?.click()}
-        className="relative h-56 bg-slate-50 border-2 border-dashed rounded-[2rem] flex flex-col items-center justify-center cursor-pointer overflow-hidden"
-      >
-        {imagePreview ? <img src={imagePreview} className="h-full w-full object-cover" /> : <Upload className="text-slate-300" />}
-        <input type="file" ref={inputRef} className="hidden" accept="image/*" onChange={handleImageChange} />
+    <div className="relative group">
+      <div className="w-full min-h-[280px] rounded-[2rem] bg-slate-50 overflow-hidden shadow-inner flex flex-col">
+        {/* UPDATED LOGIC: If imageUrl is null or empty, show menuText */}
+        {mainDish.imageUrl ? (
+          <img src={mainDish.imageUrl} className="w-full h-full object-cover" alt="Menu" />
+        ) : (
+          <div className="flex-grow flex flex-col items-center justify-center p-8 text-center bg-gradient-to-br from-white to-slate-50 border border-slate-100 min-h-[280px]">
+             <Utensils className="w-8 h-8 text-slate-200 mb-4" />
+             <p className="text-2xl font-bold text-slate-800 leading-tight tracking-tight italic">
+               "{mainDish.menuText || 'No description available'}"
+             </p>
+             <div className="mt-4 w-12 h-1 bg-slate-200 rounded-full" />
+          </div>
+        )}
       </div>
-      <Button disabled={isLoading || !imagePreview} className="w-full mt-6 h-14 bg-slate-900 text-white rounded-2xl" onClick={onSave}>
-        {isLoading ? "PROCESSING..." : "POST MENU"}
+      <Button
+        variant="destructive"
+        size="icon"
+        className="absolute top-4 right-4 rounded-full opacity-0 group-hover:opacity-100 transition-all hover:scale-110 shadow-xl"
+        onClick={() => mainDish._id && onDelete(mainDish._id)}
+      >
+        <Trash2 className="w-4 h-4" />
       </Button>
     </div>
   );

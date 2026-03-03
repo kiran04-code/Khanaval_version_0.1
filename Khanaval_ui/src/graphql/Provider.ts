@@ -96,6 +96,7 @@ query GetcurentMessdata{
       types
       imageUrl
       createdAt
+      menuText
     },
      myAllSubscribers{
         id,

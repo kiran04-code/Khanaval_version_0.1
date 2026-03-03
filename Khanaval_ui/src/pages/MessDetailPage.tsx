@@ -287,7 +287,6 @@ export default function MessDetailPage() {
     {mess?.Menu && mess.Menu.length > 0 ? (
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {mess.Menu.map((item, index) => {
-          // Helper to format the createdAt timestamp from your DB
           const itemDate = item.createdAt ? new Date(item.createdAt) : null;
           const formattedTime = itemDate 
             ? itemDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }) 
@@ -301,16 +300,29 @@ export default function MessDetailPage() {
               key={index}
               className="group rounded-[32px] border-none shadow-sm overflow-hidden bg-white flex h-44 transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
             >
-              {/* Left Side: Image */}
+              {/* Left Side: Image or Text Fallback */}
               <div 
-                className="relative w-1/3 overflow-hidden cursor-zoom-in"
-                onClick={() => setSelectedImg(item.imageUrl)}
+                className={cn(
+                  "relative w-1/3 overflow-hidden flex items-center justify-center p-2",
+                  item.imageUrl ? "cursor-zoom-in" : "bg-slate-50 border-r border-slate-100"
+                )}
+                onClick={() => item.imageUrl && setSelectedImg(item.imageUrl)}
               >
-                <img 
-                  src={item.imageUrl} 
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" 
-                  alt={item.types} 
-                />
+                {item.imageUrl ? (
+                  <img 
+                    src={item.imageUrl} 
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" 
+                    alt={item.types} 
+                  />
+                ) : (
+                  <div className="text-center flex flex-col items-center gap-2">
+                    <Utensils className="w-6 h-6 text-slate-300" />
+                    <span className="text-[8px] font-black text-slate-400 uppercase tracking-tighter text-center leading-tight">
+                      Text<br/>Only
+                    </span>
+                  </div>
+                )}
+                
                 <div className="absolute top-2 left-2">
                   <Badge className={cn(
                     "border-none text-[8px] font-black uppercase px-2 py-0.5 rounded-lg",
@@ -336,12 +348,13 @@ export default function MessDetailPage() {
                     </span>
                   </div>
 
-                  <h4 className="text-lg font-black text-slate-800 leading-tight capitalize">
-                    {item.itemName || `${item.types} Special`}
+                  {/* Show MenuText if no imageUrl exists */}
+                  <h4 className="text-lg font-black text-slate-800 leading-tight capitalize line-clamp-2">
+                    {item.menuText || item.itemName || `${item.types} Special`}
                   </h4>
                   
                   <p className="text-[11px] font-medium text-slate-500 line-clamp-2 mt-1">
-                    {item.description || "Freshly prepared home-style meal with authentic spices and quality ingredients."}
+                    {item.description || "Freshly prepared home-style meal with authentic spices."}
                   </p>
                 </div>
 
@@ -350,14 +363,16 @@ export default function MessDetailPage() {
                     <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                     <span className="text-[9px] font-black text-slate-400 uppercase">Available</span>
                   </div>
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    className="h-7 text-[9px] font-black bg-slate-50 hover:bg-orange-50 hover:text-orange-600 rounded-full"
-                    onClick={() => setSelectedImg(item.imageUrl)}
-                  >
-                    VIEW LARGE
-                  </Button>
+                  {item.imageUrl && (
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="h-7 text-[9px] font-black bg-slate-50 hover:bg-orange-50 hover:text-orange-600 rounded-full px-3"
+                      onClick={() => setSelectedImg(item.imageUrl)}
+                    >
+                      VIEW PHOTO
+                    </Button>
+                  )}
                 </div>
               </div>
             </Card>

@@ -6,16 +6,19 @@ declare const Mess: mongoose.Model<{
         createdAt: NativeDate;
         imageUrl?: string | null;
         types?: "breakfast" | "dinner" | null;
+        menuText?: string | null;
         menuDate?: NativeDate | null;
     }, mongoose.Types.Subdocument<mongoose.mongo.BSON.ObjectId, unknown, {
         createdAt: NativeDate;
         imageUrl?: string | null;
         types?: "breakfast" | "dinner" | null;
+        menuText?: string | null;
         menuDate?: NativeDate | null;
     }> & {
         createdAt: NativeDate;
         imageUrl?: string | null;
         types?: "breakfast" | "dinner" | null;
+        menuText?: string | null;
         menuDate?: NativeDate | null;
     }>;
     UserFeedBack: mongoose.Types.DocumentArray<{
@@ -74,16 +77,19 @@ declare const Mess: mongoose.Model<{
         createdAt: NativeDate;
         imageUrl?: string | null;
         types?: "breakfast" | "dinner" | null;
+        menuText?: string | null;
         menuDate?: NativeDate | null;
     }, mongoose.Types.Subdocument<mongoose.mongo.BSON.ObjectId, unknown, {
         createdAt: NativeDate;
         imageUrl?: string | null;
         types?: "breakfast" | "dinner" | null;
+        menuText?: string | null;
         menuDate?: NativeDate | null;
     }> & {
         createdAt: NativeDate;
         imageUrl?: string | null;
         types?: "breakfast" | "dinner" | null;
+        menuText?: string | null;
         menuDate?: NativeDate | null;
     }>;
     UserFeedBack: mongoose.Types.DocumentArray<{
@@ -144,16 +150,19 @@ declare const Mess: mongoose.Model<{
         createdAt: NativeDate;
         imageUrl?: string | null;
         types?: "breakfast" | "dinner" | null;
+        menuText?: string | null;
         menuDate?: NativeDate | null;
     }, mongoose.Types.Subdocument<mongoose.mongo.BSON.ObjectId, unknown, {
         createdAt: NativeDate;
         imageUrl?: string | null;
         types?: "breakfast" | "dinner" | null;
+        menuText?: string | null;
         menuDate?: NativeDate | null;
     }> & {
         createdAt: NativeDate;
         imageUrl?: string | null;
         types?: "breakfast" | "dinner" | null;
+        menuText?: string | null;
         menuDate?: NativeDate | null;
     }>;
     UserFeedBack: mongoose.Types.DocumentArray<{
@@ -218,16 +227,19 @@ declare const Mess: mongoose.Model<{
         createdAt: NativeDate;
         imageUrl?: string | null;
         types?: "breakfast" | "dinner" | null;
+        menuText?: string | null;
         menuDate?: NativeDate | null;
     }, mongoose.Types.Subdocument<mongoose.mongo.BSON.ObjectId, unknown, {
         createdAt: NativeDate;
         imageUrl?: string | null;
         types?: "breakfast" | "dinner" | null;
+        menuText?: string | null;
         menuDate?: NativeDate | null;
     }> & {
         createdAt: NativeDate;
         imageUrl?: string | null;
         types?: "breakfast" | "dinner" | null;
+        menuText?: string | null;
         menuDate?: NativeDate | null;
     }>;
     UserFeedBack: mongoose.Types.DocumentArray<{
@@ -284,16 +296,19 @@ declare const Mess: mongoose.Model<{
         createdAt: NativeDate;
         imageUrl?: string | null;
         types?: "breakfast" | "dinner" | null;
+        menuText?: string | null;
         menuDate?: NativeDate | null;
     }, mongoose.Types.Subdocument<mongoose.mongo.BSON.ObjectId, unknown, {
         createdAt: NativeDate;
         imageUrl?: string | null;
         types?: "breakfast" | "dinner" | null;
+        menuText?: string | null;
         menuDate?: NativeDate | null;
     }> & {
         createdAt: NativeDate;
         imageUrl?: string | null;
         types?: "breakfast" | "dinner" | null;
+        menuText?: string | null;
         menuDate?: NativeDate | null;
     }>;
     UserFeedBack: mongoose.Types.DocumentArray<{
@@ -354,16 +369,19 @@ declare const Mess: mongoose.Model<{
         createdAt: NativeDate;
         imageUrl?: string | null;
         types?: "breakfast" | "dinner" | null;
+        menuText?: string | null;
         menuDate?: NativeDate | null;
     }, mongoose.Types.Subdocument<mongoose.mongo.BSON.ObjectId, unknown, {
         createdAt: NativeDate;
         imageUrl?: string | null;
         types?: "breakfast" | "dinner" | null;
+        menuText?: string | null;
         menuDate?: NativeDate | null;
     }> & {
         createdAt: NativeDate;
         imageUrl?: string | null;
         types?: "breakfast" | "dinner" | null;
+        menuText?: string | null;
         menuDate?: NativeDate | null;
     }>;
     UserFeedBack: mongoose.Types.DocumentArray<{
@@ -429,16 +447,19 @@ declare const Mess: mongoose.Model<{
             createdAt: NativeDate;
             imageUrl?: string | null;
             types?: "breakfast" | "dinner" | null;
+            menuText?: string | null;
             menuDate?: NativeDate | null;
         }, mongoose.Types.Subdocument<mongoose.mongo.BSON.ObjectId, unknown, {
             createdAt: NativeDate;
             imageUrl?: string | null;
             types?: "breakfast" | "dinner" | null;
+            menuText?: string | null;
             menuDate?: NativeDate | null;
         }> & {
             createdAt: NativeDate;
             imageUrl?: string | null;
             types?: "breakfast" | "dinner" | null;
+            menuText?: string | null;
             menuDate?: NativeDate | null;
         }>;
         UserFeedBack: mongoose.Types.DocumentArray<{
@@ -499,16 +520,19 @@ declare const Mess: mongoose.Model<{
             createdAt: NativeDate;
             imageUrl?: string | null;
             types?: "breakfast" | "dinner" | null;
+            menuText?: string | null;
             menuDate?: NativeDate | null;
         }, mongoose.Types.Subdocument<mongoose.mongo.BSON.ObjectId, unknown, {
             createdAt: NativeDate;
             imageUrl?: string | null;
             types?: "breakfast" | "dinner" | null;
+            menuText?: string | null;
             menuDate?: NativeDate | null;
         }> & {
             createdAt: NativeDate;
             imageUrl?: string | null;
             types?: "breakfast" | "dinner" | null;
+            menuText?: string | null;
             menuDate?: NativeDate | null;
         }>;
         UserFeedBack: mongoose.Types.DocumentArray<{
@@ -572,16 +596,19 @@ declare const Mess: mongoose.Model<{
         createdAt: NativeDate;
         imageUrl?: string | null;
         types?: "breakfast" | "dinner" | null;
+        menuText?: string | null;
         menuDate?: NativeDate | null;
     }, mongoose.Types.Subdocument<mongoose.mongo.BSON.ObjectId, unknown, {
         createdAt: NativeDate;
         imageUrl?: string | null;
         types?: "breakfast" | "dinner" | null;
+        menuText?: string | null;
         menuDate?: NativeDate | null;
     }> & {
         createdAt: NativeDate;
         imageUrl?: string | null;
         types?: "breakfast" | "dinner" | null;
+        menuText?: string | null;
         menuDate?: NativeDate | null;
     }>;
     UserFeedBack: mongoose.Types.DocumentArray<{
@@ -644,16 +671,19 @@ declare const Mess: mongoose.Model<{
         createdAt: NativeDate;
         imageUrl?: string | null;
         types?: "breakfast" | "dinner" | null;
+        menuText?: string | null;
         menuDate?: NativeDate | null;
     }, mongoose.Types.Subdocument<mongoose.mongo.BSON.ObjectId, unknown, {
         createdAt: NativeDate;
         imageUrl?: string | null;
         types?: "breakfast" | "dinner" | null;
+        menuText?: string | null;
         menuDate?: NativeDate | null;
     }> & {
         createdAt: NativeDate;
         imageUrl?: string | null;
         types?: "breakfast" | "dinner" | null;
+        menuText?: string | null;
         menuDate?: NativeDate | null;
     }>;
     UserFeedBack: mongoose.Types.DocumentArray<{

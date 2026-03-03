@@ -18,4 +18,5 @@ export declare const finUderAndDelete: (req: Request, res: Response) => Promise<
 export declare const MarkMealAttendece: (req: Request, res: Response) => Promise<Response<any, Record<string, any>>>;
 export declare const updatedtheMonthy: (req: Request, res: Response) => Promise<Response<any, Record<string, any>>>;
 export declare const RequestForPass: (req: Request, res: Response) => Promise<Response<any, Record<string, any>>>;
+export declare const UpdatedTextBasesMenu: (req: Request, res: Response) => Promise<Response<any, Record<string, any>>>;
 //# sourceMappingURL=Provoder.d.ts.map

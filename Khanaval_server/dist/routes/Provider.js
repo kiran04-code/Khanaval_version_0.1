@@ -1,5 +1,5 @@
 import express from "express";
-import { Addmenus, AddToSubscriber, BufferimagetoURlimage, DeletetheMenu, finderUserByNumber, finUderAndDelete, getAllDATA, getAllFeedback, getAllProvider, getAllUser, GetValidMess, MarkMealAttendece, NotificationsPUSH, RequestForPass, sendFeedback, sendMessageToAllUser, submitFeedback, updatedtheMonthy, verifiyMess } from "../controller/Provoder.js";
+import { Addmenus, AddToSubscriber, BufferimagetoURlimage, DeletetheMenu, finderUserByNumber, finUderAndDelete, getAllDATA, getAllFeedback, getAllProvider, getAllUser, GetValidMess, MarkMealAttendece, NotificationsPUSH, RequestForPass, sendFeedback, sendMessageToAllUser, submitFeedback, UpdatedTextBasesMenu, updatedtheMonthy, verifiyMess } from "../controller/Provoder.js";
 import { upload } from "../config/multer.js";
 import { Provider } from "../model/Provider.js";
 const providerRoutes = express.Router();
@@ -26,5 +26,6 @@ providerRoutes.post("/subscriptions/remove", finUderAndDelete);
 providerRoutes.post("/meals/redeem", MarkMealAttendece);
 providerRoutes.post("/mess/update-mess-price", updatedtheMonthy);
 providerRoutes.post("/mess/getpass", RequestForPass);
+providerRoutes.post("/mess/UpdateMenu", UpdatedTextBasesMenu);
 export default providerRoutes;
 //# sourceMappingURL=Provider.js.map

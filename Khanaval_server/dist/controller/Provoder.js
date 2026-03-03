@@ -8,6 +8,7 @@ import { sendNotification } from "../firebase/SendNotification.js";
 import { Feedback } from "../model/FeedBack.js";
 import { Subscription } from "../model/Subscriber.js";
 import { SubscribeRequest } from "../model/SubscripeRequest.js";
+import { error } from "node:console";
 export const BufferimagetoURlimage = async (req, res) => {
     res.setHeader("Access-Control-Allow-Origin", "*");
     try {
@@ -118,13 +119,10 @@ export const Addmenus = async (req, res) => {
 export const DeletetheMenu = async (req, res) => {
     try {
         const { id, types } = req.body;
-        console.log(types);
         const mess = await Mess.findById(id);
-        console.log(mess);
         if (!mess)
             return res.status(404).json({ error: "Mess not found" });
         const menuItem = mess.Menu.id(types);
-        console.log(menuItem);
         if (!menuItem)
             return res.status(404).json({ error: "Menu not found" });
         if (menuItem.imageUrl) {
@@ -238,7 +236,6 @@ export const getAllProvider = async (req, res) => {
 export const verifiyMess = async (req, res) => {
     try {
         const { ids, verifyed } = req.body;
-        console.log(req.body);
         await Mess.findByIdAndUpdate(ids, { messVerified: verifyed });
         const cachekey = "AllMESS";
         await redisclient.del(cachekey);
@@ -330,7 +327,6 @@ export const submitFeedback = async (req, res) => {
             topic: formData.topic,
             message: formData.message
         });
-        console.log(newFeedback);
         return res.status(201).json({
             success: true,
             message: "Feedback submitted successfully",
@@ -392,7 +388,6 @@ export const AddToSubscriber = async (req, res) => {
         });
     }
     catch (error) {
-        console.log(error);
         return res.status(500).json({
             success: false,
             messsage: "Server Error"
@@ -484,6 +479,31 @@ export const RequestForPass = async (req, res) => {
         return res.status(500).json({
             success: false,
             message: "serverError"
+        });
+    }
+};
+export const UpdatedTextBasesMenu = async (req, res) => {
+    try {
+        const data = await Mess.findByIdAndUpdate(req.body?.messId, {
+            $push: {
+                Menu: {
+                    types: req.body.type,
+                    menuText: req.body?.MenuText
+                }
+            }
+        });
+        const cachekey = "AllMESS";
+        await redisclient.del(cachekey);
+        return res.status(200).json({
+            success: true,
+            message: "Menu Updated"
+        });
+    }
+    catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            success: false,
+            message: "sever Error"
         });
     }
 };

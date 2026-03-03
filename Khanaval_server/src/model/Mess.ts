@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const providerSchema = new mongoose.Schema(
     {
         MontlyPrices: {
-            type:Number,
+            type: Number,
         },
         providerId: {
             type: mongoose.Schema.Types.ObjectId,
@@ -88,7 +88,11 @@ const providerSchema = new mongoose.Schema(
                     type: String,
                     enum: ["breakfast", "dinner"],
                 },
-
+                menuText: {
+                    type: String,
+                    trim: true,
+                    default: null
+                },
                 imageUrl: {
                     type: String,
                 },

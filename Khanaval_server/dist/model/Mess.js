@@ -83,6 +83,11 @@ const providerSchema = new mongoose.Schema({
                 type: String,
                 enum: ["breakfast", "dinner"],
             },
+            menuText: {
+                type: String,
+                trim: true,
+                default: null
+            },
             imageUrl: {
                 type: String,
             },

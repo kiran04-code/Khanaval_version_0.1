@@ -98,6 +98,7 @@ type menu {
   _id:ID
   types:String
   imageUrl:String
+  menuText:String
   createdAt:String
 }
 type Medias {

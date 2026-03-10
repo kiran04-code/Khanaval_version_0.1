@@ -484,7 +484,7 @@ export const RequestForPass = async (req, res) => {
 };
 export const UpdatedTextBasesMenu = async (req, res) => {
     try {
-        const data = await Mess.findByIdAndUpdate(req.body?.messId, {
+        await Mess.findByIdAndUpdate(req.body?.messId, {
             $push: {
                 Menu: {
                     types: req.body.type,

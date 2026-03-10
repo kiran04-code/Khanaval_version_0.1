@@ -34,6 +34,7 @@ export default function MessDetailPage() {
   const { user } = useCurrentUser()
   const [selectedImg, setSelectedImg] = useState<string | null>(null);
   const { axioseInstace } = useStateContex()
+  const [selectedMenu, setSelectedMenu] = useState(null);
   useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 2000);
     return () => clearTimeout(timer);
@@ -274,8 +275,9 @@ export default function MessDetailPage() {
               </section>
             </div>
           )}
-{activeTab === "menu" && (
+       {activeTab === "menu" && (
   <div className="space-y-6 animate-in fade-in duration-500">
+    {/* Header Section */}
     <div className="flex items-center justify-between px-2">
       <h3 className="text-2xl font-black text-slate-900 tracking-tight">Daily Menu</h3>
       <div className="flex items-center gap-1.5 bg-emerald-50 px-3 py-1 rounded-full">
@@ -284,45 +286,47 @@ export default function MessDetailPage() {
       </div>
     </div>
 
+    {/* Menu Grid */}
     {mess?.Menu && mess.Menu.length > 0 ? (
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {mess.Menu.map((item, index) => {
           const itemDate = item.createdAt ? new Date(item.createdAt) : null;
-          const formattedTime = itemDate 
-            ? itemDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }) 
+          const formattedTime = itemDate
+            ? itemDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })
             : "Scheduled";
-          const formattedDate = itemDate 
-            ? itemDate.toLocaleDateString([], { day: '2-digit', month: 'short' }) 
+          const formattedDate = itemDate
+            ? itemDate.toLocaleDateString([], { day: '2-digit', month: 'short' })
             : "Today";
 
           return (
-            <Card 
+            <Card
               key={index}
-              className="group rounded-[32px] border-none shadow-sm overflow-hidden bg-white flex h-44 transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+              className="group rounded-[32px] border-none shadow-sm overflow-hidden bg-white flex h-44 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer"
+              // If there is an image, open the image lightbox. Otherwise, open the text detail modal.
+              onClick={() => item.imageUrl ? setSelectedImg(item.imageUrl) : setSelectedMenu(item)}
             >
-              {/* Left Side: Image or Text Fallback */}
-              <div 
+              {/* Left Side: Thumbnail or Text Icon */}
+              <div
                 className={cn(
                   "relative w-1/3 overflow-hidden flex items-center justify-center p-2",
-                  item.imageUrl ? "cursor-zoom-in" : "bg-slate-50 border-r border-slate-100"
+                  item.imageUrl ? "bg-slate-100" : "bg-orange-50/50 border-r border-orange-100"
                 )}
-                onClick={() => item.imageUrl && setSelectedImg(item.imageUrl)}
               >
                 {item.imageUrl ? (
-                  <img 
-                    src={item.imageUrl} 
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" 
-                    alt={item.types} 
+                  <img
+                    src={item.imageUrl}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    alt={item.types}
                   />
                 ) : (
                   <div className="text-center flex flex-col items-center gap-2">
-                    <Utensils className="w-6 h-6 text-slate-300" />
-                    <span className="text-[8px] font-black text-slate-400 uppercase tracking-tighter text-center leading-tight">
-                      Text<br/>Only
+                    <Utensils className="w-6 h-6 text-orange-300" />
+                    <span className="text-[9px] font-black text-orange-400 uppercase tracking-tighter text-center leading-tight">
+                      PURE<br />TASTE
                     </span>
                   </div>
                 )}
-                
+
                 <div className="absolute top-2 left-2">
                   <Badge className={cn(
                     "border-none text-[8px] font-black uppercase px-2 py-0.5 rounded-lg",
@@ -338,21 +342,20 @@ export default function MessDetailPage() {
                 <div>
                   <div className="flex justify-between items-start mb-1">
                     <div className="flex items-center gap-1 text-orange-600">
-                       <Clock className="w-3 h-3" />
-                       <span className="text-[10px] font-black uppercase tracking-tighter">
-                         {formattedTime}
-                       </span>
+                      <Clock className="w-3 h-3" />
+                      <span className="text-[10px] font-black uppercase tracking-tighter">
+                        {formattedTime}
+                      </span>
                     </div>
                     <span className="text-[10px] font-bold text-slate-400">
                       {formattedDate}
                     </span>
                   </div>
 
-                  {/* Show MenuText if no imageUrl exists */}
-                  <h4 className="text-lg font-black text-slate-800 leading-tight capitalize line-clamp-2">
+                  <h4 className="text-lg font-black text-slate-800 leading-tight capitalize line-clamp-2 group-hover:text-orange-600 transition-colors">
                     {item.menuText || item.itemName || `${item.types} Special`}
                   </h4>
-                  
+
                   <p className="text-[11px] font-medium text-slate-500 line-clamp-2 mt-1">
                     {item.description || "Freshly prepared home-style meal with authentic spices."}
                   </p>
@@ -363,16 +366,11 @@ export default function MessDetailPage() {
                     <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                     <span className="text-[9px] font-black text-slate-400 uppercase">Available</span>
                   </div>
-                  {item.imageUrl && (
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      className="h-7 text-[9px] font-black bg-slate-50 hover:bg-orange-50 hover:text-orange-600 rounded-full px-3"
-                      onClick={() => setSelectedImg(item.imageUrl)}
-                    >
-                      VIEW PHOTO
-                    </Button>
-                  )}
+                  
+                  <div className="text-[10px] font-black text-orange-600 flex items-center gap-1">
+                    {item.imageUrl ? "VIEW PHOTO" : "VIEW DETAILS"}
+                    <ChevronRight className="w-3 h-3" />
+                  </div>
                 </div>
               </div>
             </Card>
@@ -385,6 +383,56 @@ export default function MessDetailPage() {
           <Utensils className="w-8 h-8 text-slate-200" />
         </div>
         <p className="text-slate-400 font-black text-xs uppercase tracking-widest">No Menu Posted for Today</p>
+      </div>
+    )}
+
+    {/* --- TEXT DETAIL MODAL --- */}
+    {selectedMenu && (
+      <div className="fixed inset-0 z-[110] bg-slate-950/70 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-300">
+        <Card className="w-full max-w-sm rounded-[40px] overflow-hidden border-none shadow-2xl animate-in zoom-in-95 duration-300">
+          <div className="bg-orange-500 p-8 text-white relative">
+            <button 
+              onClick={() => setSelectedMenu(null)}
+              className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/40 transition-colors"
+            >
+              <X className="w-6 h-6" />
+            </button>
+            <Badge className="bg-white/20 text-white border-none mb-2 uppercase text-[10px]">{selectedMenu.types}</Badge>
+            <h2 className="text-2xl font-black leading-tight">
+              {selectedMenu.menuText || selectedMenu.itemName}
+            </h2>
+          </div>
+          
+          <CardContent className="p-8 bg-white">
+            <div className="space-y-6">
+              <div>
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Full Menu Details</p>
+                <p className="text-slate-700 leading-relaxed font-bold text-lg">
+                  {/* Shows the full Marathi/English text without line clamping */}
+                  {selectedMenu.menuText || selectedMenu.itemName}
+                </p>
+                {selectedMenu.description && (
+                   <p className="mt-4 text-slate-500 text-sm italic">
+                    {selectedMenu.description}
+                   </p>
+                )}
+              </div>
+              
+              <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
+                <div className="flex items-center gap-2 text-orange-500">
+                  <Clock className="w-4 h-4" />
+                  <span className="text-[10px] font-black uppercase">Freshly Served</span>
+                </div>
+                <Button 
+                  onClick={() => setSelectedMenu(null)}
+                  className="rounded-2xl bg-slate-900 text-white font-black px-6 hover:bg-slate-800"
+                >
+                  CLOSE
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     )}
   </div>

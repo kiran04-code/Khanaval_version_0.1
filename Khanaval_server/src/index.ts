@@ -7,6 +7,7 @@ import StartGraphql from "./Graphql/index.js"
 import { connectDB } from "./config/mongodb.js"
 import jwtService from "./services/JwtToken.js"
 import providerRoutes from "./routes/Provider.js"
+import CloudProviderRouter from "./routes/CloudKitchenOwner.js"
 dotenv.config()
 const app = express()
 const PORT = process.env.PORT || 3002
@@ -29,9 +30,9 @@ app.use((req, res, next) => {
     next();
 })
 app.get("/", (req: Request, res: Response) => {
-    res.send("Backend is Wroking Properly of Khanaval.com🌐!")
+    res.send("Backend is Wroking Properly of Khanaaval.com🌐!")
 })
-// Graphql
+// Graphql --> match Route Middleware 
 app.use("/graphql", expressMiddleware(await StartGraphql(),{
     context:async({req,res})=>{
         const authHeader  = req.headers.authorization
@@ -50,7 +51,9 @@ app.use("/graphql", expressMiddleware(await StartGraphql(),{
 )
 
 await connectDB();
+
 app.use("/api",providerRoutes)
+app.use("/api/cloudkitchens",CloudProviderRouter)
 // Server IS Listing
 app.listen(PORT, () => {
     console.log(`server is runing on Port http://localhost:${PORT}`)

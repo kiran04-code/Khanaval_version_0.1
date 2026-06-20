@@ -1,4 +1,5 @@
 import axios from "axios";
+import { ApiError } from "../../utils/Apierror.js";
 
 interface IProviderInputSendOTP {
   number: string;
@@ -32,8 +33,7 @@ const SENTOTPROVIDERS = async ({
     );
     return response.data.return === true;
   } catch (error: any) {
-    console.error("FAST2SMS ERROR:", error.response?.data || error.message);
-    throw new Error("Failed to send OTP");
+    throw new ApiError(502,`FAST2SMS ERROR:${error.response?.data.message || error.message}`);
   }
 };
 

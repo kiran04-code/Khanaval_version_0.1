@@ -3,7 +3,10 @@ const jwtSecret = "kiran@9090";
 class jwtService {
     static createToken = async (user) => {
         const payload = {
-            _id: user.id
+            _id: user.id,
+            providerName: user.providerName,
+            phoneNumber: user.phoneNumber,
+            role: user.role
         };
         const token = Jwt.sign(payload, jwtSecret);
         return token;

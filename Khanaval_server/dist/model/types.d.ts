@@ -19,8 +19,14 @@ export interface IProvider {
 }
 export interface JwtToken {
     _id: string;
+    providerName?: string;
+    phoneNumber?: string;
+    role?: string;
 }
 export interface JwtTokeninput {
     id: string;
+    providerName?: string;
+    phoneNumber?: string;
+    role?: string;
 }
 //# sourceMappingURL=types.d.ts.map

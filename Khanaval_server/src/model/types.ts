@@ -21,8 +21,15 @@ export interface IProvider {
 }
 
 export  interface JwtToken {
-    _id:string
+    _id:string,
+    providerName?:string,
+    phoneNumber?:string,
+    role?:string
+
 }
 export  interface JwtTokeninput {
-    id:string
+    id:string,
+    providerName?:string,
+    phoneNumber?:string
+    role?:string
 }

@@ -7,7 +7,10 @@ const jwtSecret = "kiran@9090";
 class jwtService {
     public static createToken = async (user: JwtTokeninput ) => {
         const payload: JwtToken = {
-            _id: user.id!
+            _id: user.id!,
+            providerName:user.providerName!,
+            phoneNumber:user.phoneNumber!,
+            role:user.role!
         }
         const token = Jwt.sign(payload, jwtSecret)
         return token
@@ -15,7 +18,7 @@ class jwtService {
     public static Jwtdecoder(token:string | undefined){
 
      if(token){
-        const data =  Jwt.verify(token,jwtSecret)
+        const data = Jwt.verify(token,jwtSecret)
         return data;
      }
     }

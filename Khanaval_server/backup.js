@@ -14,7 +14,6 @@ async function exportUsers() {
 
   fs.writeFileSync("subscriptions_backup.json", JSON.stringify(users, null, 2));
 
-  console.log("✅ Users backup done");
   await client.close();
 }
 

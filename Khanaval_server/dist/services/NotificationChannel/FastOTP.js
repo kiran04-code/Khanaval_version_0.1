@@ -1,4 +1,5 @@
 import axios from "axios";
+import { ApiError } from "../../utils/Apierror.js";
 const FAST2SMS_URL = "https://www.fast2sms.com/dev/bulkV2";
 const SENTOTPROVIDERS = async ({ number, otp, }) => {
     try {
@@ -19,8 +20,7 @@ const SENTOTPROVIDERS = async ({ number, otp, }) => {
         return response.data.return === true;
     }
     catch (error) {
-        console.error("FAST2SMS ERROR:", error.response?.data || error.message);
-        throw new Error("Failed to send OTP");
+        throw new ApiError(502, `FAST2SMS ERROR:${error.response?.data.message || error.message}`);
     }
 };
 export default SENTOTPROVIDERS;

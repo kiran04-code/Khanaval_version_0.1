@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
 import { graphqlClient } from "../../api_server/api_end_point";
-import { User, Building2, Phone, ArrowRight, ShieldCheck, Mail } from "lucide-react";
+import { User, Building2, Phone, ArrowRight, ShieldCheck, Mail, Cloud } from "lucide-react";
 import { GoogleLogin } from "@react-oauth/google";
 import { VERIFIED_USER_GOOGLE, VERIFIED_USER_GOOGLE_LOGIN } from "@/graphql/user";
 import { PROVIDER_OTP_LOGIN_QUERY, PROVIDER_OTP_LOGIN_VERYFIED_QUERY, PROVIDER_OTP_SIGNUP_QUERY, PROVIDER_OTP_SIGNUP_VERYFIED_QUERY } from "@/graphql/Provider";
@@ -13,9 +13,11 @@ import { UserProviderdata } from "@/hooks/Provider";
 import { useQueryClient } from "@tanstack/react-query";
 import { requestPushPermission } from "@/FIREBASE/getToken";
 import { KhanaavalLoader } from "./provider/Loderkhanaaval";
+import { useStateContex } from "@/context/State";
 
 export default function HybridAuthPage() {
   const navigate = useNavigate();
+  const { axioseInstace } = useStateContex()
   const queryclinet = useQueryClient()
   /* ---------------- COMMON ---------------- */
   const [role, setRole] = useState("user");
@@ -73,17 +75,17 @@ export default function HybridAuthPage() {
   /* ---------------- USER SIGNUP ---------------- */
   const handleFinalUserSignup = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (phoneNumber.length < 10 || phoneNumber.length >10 ) {
+    if (phoneNumber.length < 10 || phoneNumber.length > 10) {
       toast({ title: "Invalid phone number" });
       return;
     }
     setIsLoading(true);
-     const token = await requestPushPermission();
-     setfcToken(token)
+    const token = await requestPushPermission();
+    setfcToken(token)
     try {
       const { verifiedgoodtokenandnumberforSignup } =
         await graphqlClient.request(VERIFIED_USER_GOOGLE, {
-          payload: { number: phoneNumber, token: googleToken,FCMtoken: fcToken },
+          payload: { number: phoneNumber, token: googleToken, FCMtoken: fcToken },
         });
 
       if (verifiedgoodtokenandnumberforSignup.success) {
@@ -167,7 +169,7 @@ export default function HybridAuthPage() {
             number: providerNumber,
             Ownername: providerMode === "signup" ? providerName : "Existing User",
             otp: Number(providerOtp),
-            FCMtoken:fcToken
+            FCMtoken: fcToken
           }
         });
 
@@ -212,7 +214,115 @@ export default function HybridAuthPage() {
       setIsLoading(false);
     }
   };
+  //============= Cloude Kitchen =============================
+  const LoginCloudKitchen = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (providerMode == 'login') {
+      try {
 
+        if (providerNumber.length < 10 || providerNumber.length > 10) {
+          toast({ title: "Invalid phone number" });
+          return;
+        }
+        const { data } = await axioseInstace.post("/api/cloudkitchens/send-login-otp", {
+          phoneNumber: providerNumber
+        })
+        if (data.success) {
+          toast({ title: data.message, variant: "default" })
+        }
+        setProviderStep(2);
+
+      } catch (error) {
+        console.log(error.response.data.errorMessage)
+        toast({
+          title: error.response.data.errorMessage,
+          variant: "destructive",
+        });
+      }
+    } else {
+      try {
+        if (!providerName) {
+          toast({ title: "Please Enter Owner Name" });
+          return;
+        }
+        if (providerNumber.length < 10 || providerNumber.length > 10) {
+          toast({ title: "Invalid phone number" });
+          return;
+        }
+        const { data } = await axioseInstace.post("/api/cloudkitchens/send-SignUp-otp", {
+          phoneNumber: providerNumber
+        })
+        if (data.success) {
+          toast({ title: data.message, variant: "default" })
+        }
+        console.log(data);
+        setProviderStep(2);
+      } catch (error) {
+        toast({
+          title:
+            error.response?.data?.errorMessage ||
+            error.response?.data?.message ||
+            "Something went wrong",
+          variant: "destructive",
+        });
+      }
+    }
+  }
+  const LoginCloudKitchenOtpVerify = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (providerMode == 'login') {
+      try {
+        if (providerOtp.length < 4 || providerOtp.length > 4) {
+          toast({ title: "Invalid phone number" });
+          return;
+        }
+        const { data } = await axioseInstace.post("/api/cloudkitchens/login-Verify-otp    ", {
+          phoneNumber: providerNumber,
+          otp: providerOtp,
+        })
+        if (data.success) {
+          toast({ title: data.message, variant: "default" })
+        }
+        setIsLoading(true)
+        localStorage.setItem("client_token", data.responseData.token)
+        navigate("/");
+      } catch (error) {
+        toast({
+          title:
+            error.response?.data?.errorMessage ||
+            error.response?.data?.message ||
+            "Something went wrong",
+          variant: "destructive",
+        });
+      }
+    } else {
+      try {
+        if (providerOtp.length < 4 || providerOtp.length > 4) {
+          toast({ title: "Invalid phone number" });
+          return;
+        }
+        const { data } = await axioseInstace.post("/api/cloudkitchens/SignUp-verify-Otp ", {
+          phoneNumber: providerNumber,
+          otp: providerOtp,
+          providerName: providerName
+        })
+        if (data.success) {
+          toast({ title: data.message, variant: "default" })
+        }
+        setIsLoading(true)
+        localStorage.setItem("client_token", data.responseData.token)
+        navigate("/");
+      } catch (error) {
+        toast({
+          title:
+            error.response?.data?.errorMessage ||
+            error.response?.data?.message ||
+            "Something went wrong",
+          variant: "destructive",
+        });
+      }
+    }
+  }
   return (
     <div className="min-h-screen bg-[#F3F4F6] bg-gradient-to-br from-slate-50 to-slate-200 flex items-center justify-center p-6">
       {isLoading && <KhanaavalLoader />}
@@ -227,20 +337,48 @@ export default function HybridAuthPage() {
         </div>
 
         {/* ROLE TOGGLE */}
-        <div className="flex p-1.5 bg-slate-200/60 backdrop-blur-md rounded-2xl mb-8 border border-white/50 shadow-inner">
+        <div className="flex flex-col sm:flex-row p-1.5 bg-slate-200/60 backdrop-blur-md rounded-2xl mb-9 border border-white/50 shadow-inner gap-2">
           <button
-            onClick={() => { setRole("user"); setUserMode("signup"); setStep(1); }}
-            className={`flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl text-sm font-bold transition-all duration-200 ${role === "user" ? "bg-white text-orange-600 shadow-md scale-[1.02]" : "text-slate-500 hover:text-slate-700"
+            onClick={() => {
+              setRole("user");
+              setUserMode("signup");
+              setStep(1);
+            }}
+            className={`flex-1 flex items-center justify-center gap-2 px-3 py-3 rounded-xl text-sm font-bold transition-all duration-200 ${role === "user"
+                ? "bg-white text-orange-600 shadow-md"
+                : "text-slate-500 hover:text-slate-700"
               }`}
           >
-            <User className="w-4 h-4" /> Customer
+            <User className="w-4 h-4 shrink-0" />
+            <span>Customer</span>
           </button>
+
           <button
-            onClick={() => { setRole("provider"); setProviderStep(1); }}
-            className={`flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl text-sm font-bold transition-all duration-200 ${role === "provider" ? "bg-white text-slate-900 shadow-md scale-[1.02]" : "text-slate-500 hover:text-slate-700"
+            onClick={() => {
+              setRole("provider");
+              setProviderStep(1);
+            }}
+            className={`flex-1 flex items-center justify-center gap-2 px-3 py-3 rounded-xl text-sm font-bold transition-all duration-200 ${role === "provider"
+                ? "bg-white text-slate-900 shadow-md"
+                : "text-slate-500 hover:text-slate-700"
               }`}
           >
-            <Building2 className="w-4 h-4" /> Provider
+            <Building2 className="w-4 h-4 shrink-0" />
+            <span>Provider</span>
+          </button>
+
+          <button
+            onClick={() => {
+              setRole("Kitchen");
+              setProviderStep(1);
+            }}
+            className={`flex-1 flex items-center justify-center gap-2 px-3 py-3 rounded-xl text-sm font-bold transition-all duration-200 ${role === "Kitchen"
+                ? "bg-white text-slate-900 shadow-md"
+                : "text-slate-500 hover:text-slate-700"
+              }`}
+          >
+            <Cloud className="w-4 h-4 shrink-0" />
+            <span className="text-center">Kitchen Partner</span>
           </button>
         </div>
 
@@ -343,6 +481,59 @@ export default function HybridAuthPage() {
 
                 {providerStep === 2 && (
                   <form onSubmit={handleProviderVerify} className="space-y-6 text-center animate-in zoom-in duration-300">
+                    <div className="p-4 bg-slate-100 rounded-2xl inline-block mb-2">
+                      <ShieldCheck className="w-8 h-8 text-slate-900" />
+                    </div>
+                    <div className="space-y-1">
+                      <h2 className="text-xl font-bold">Verify Identity</h2>
+                      <p className="text-sm text-slate-500">Enter the 4-digit code sent to your phone</p>
+                    </div>
+                    <Input
+                      placeholder="0 0 0 0"
+                      value={providerOtp}
+                      maxLength={4}
+                      onChange={(e) => setProviderOtp(e.target.value)}
+                      className="h-16 rounded-2xl bg-slate-50 border-slate-200 font-black text-center text-xl tracking-[0.5em] focus:bg-white"
+                    />
+                    <Button disabled={isLoading} className="w-full h-14 bg-slate-900 hover:bg-slate-800 text-white rounded-2xl font-bold shadow-xl">
+                      {isLoading ? "Verifying..." : "Verify & Continue"}
+                    </Button>
+                  </form>
+                )}
+              </div>
+            )}
+            {role === "Kitchen" && (
+              <div className="space-y-6 animate-in fade-in duration-300">
+                {providerStep === 1 && (
+                  <form onSubmit={LoginCloudKitchen} className="space-y-5">
+                    {providerMode === "signup" && (
+                      <div className="relative group">
+                        <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-slate-900 transition-colors" />
+                        <Input
+                          placeholder="Provider Name"
+                          value={providerName}
+                          onChange={(e) => setProviderName(e.target.value)}
+                          className="h-14 pl-12 rounded-2xl bg-slate-50 border-slate-200 focus:bg-white font-semibold"
+                        />
+                      </div>
+                    )}
+                    <div className="relative group">
+                      <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-slate-900 transition-colors" />
+                      <Input
+                        placeholder="Phone Number"
+                        value={providerNumber}
+                        onChange={(e) => setProviderNumber(e.target.value)}
+                        className="h-14 pl-12 rounded-2xl bg-slate-50 border-slate-200 focus:bg-white font-semibold"
+                      />
+                    </div>
+                    <Button type="submit" disabled={isLoading} className="w-full h-14 bg-slate-900 hover:bg-slate-800 text-white rounded-2xl font-bold shadow-xl transition-all">
+                      {isLoading ? "Sending..." : "Send OTP"}
+                    </Button>
+                  </form>
+                )}
+
+                {providerStep === 2 && (
+                  <form onSubmit={LoginCloudKitchenOtpVerify} className="space-y-6 text-center animate-in zoom-in duration-300">
                     <div className="p-4 bg-slate-100 rounded-2xl inline-block mb-2">
                       <ShieldCheck className="w-8 h-8 text-slate-900" />
                     </div>

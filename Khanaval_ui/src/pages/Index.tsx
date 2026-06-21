@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Navbar } from "@/components/layout/Navbar";
-
+import { KitchenProviderdata } from "../hooks/Provider"
 import {
   Search,
   Calendar,
@@ -159,6 +159,7 @@ const Index = () => {
   }, []);
   const { AllMESS } = GetALLmess()
   const { userlat, userlng } = useStateContex()
+  const { kitchenprovider } = KitchenProviderdata()
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -256,7 +257,7 @@ const Index = () => {
 
           </div>
         </div>
-        <MessOrbit/>
+        <MessOrbit />
       </section>
 
       <section className=" md:py-5 py-5 bg-background relative overflow-hidden">
@@ -371,98 +372,98 @@ const Index = () => {
             </div>
 
             {/* Right Bento Grid Area */}
-     <div className="relative p-4">
-      {/* Decorative Background Element */}
-      <div className="absolute -top-10 -right-10 w-64 h-64 bg-orange-500/5 rounded-full blur-3xl -z-10" />
+            <div className="relative p-4">
+              {/* Decorative Background Element */}
+              <div className="absolute -top-10 -right-10 w-64 h-64 bg-orange-500/5 rounded-full blur-3xl -z-10" />
 
-      <div className="grid grid-cols-2 gap-4 relative z-10">
-        {isLoading ? (
-          /* 1. LOADING STATE: Skeleton Grid */
-          <>
-            <div className="col-span-2 aspect-[16/9] rounded-[2rem] bg-slate-200 animate-pulse" />
-            <div className="col-span-1 aspect-square rounded-[2rem] bg-slate-200 animate-pulse" />
-            <div className="col-span-1 aspect-square rounded-[2rem] bg-slate-200 animate-pulse" />
-          </>
-        ) : AllMESS.length > 0 ? (
-          /* 2. DATA STATE: Bento Grid Layout */
-          <>
-            {AllMESS.filter((mess)=>mess.messVerified == true).slice(0,3).map((mess, index) => (
-              <Card
-                key={mess._id}
-                onClick={() => navigate(`mess/${mess?._id}`)}
-                className={cn(
-                  "group relative overflow-hidden rounded-[2rem] border-none shadow-lg transition-all duration-500 hover:shadow-2xl cursor-pointer",
-                  index === 0 ? "col-span-2 aspect-[16/9]" : "col-span-1 aspect-square"
-                )}
-              >
-                {/* Image */}
-                <img
-                  src={mess?.media?.cover}
-                  alt={mess.identity?.name}
-                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
-                />
-                
-                {/* Refined Gradient Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
+              <div className="grid grid-cols-2 gap-4 relative z-10">
+                {isLoading ? (
+                  /* 1. LOADING STATE: Skeleton Grid */
+                  <>
+                    <div className="col-span-2 aspect-[16/9] rounded-[2rem] bg-slate-200 animate-pulse" />
+                    <div className="col-span-1 aspect-square rounded-[2rem] bg-slate-200 animate-pulse" />
+                    <div className="col-span-1 aspect-square rounded-[2rem] bg-slate-200 animate-pulse" />
+                  </>
+                ) : AllMESS.length > 0 ? (
+                  /* 2. DATA STATE: Bento Grid Layout */
+                  <>
+                    {AllMESS.filter((mess) => mess.messVerified == true).slice(0, 3).map((mess, index) => (
+                      <Card
+                        key={mess._id}
+                        onClick={() => navigate(`mess/${mess?._id}`)}
+                        className={cn(
+                          "group relative overflow-hidden rounded-[2rem] border-none shadow-lg transition-all duration-500 hover:shadow-2xl cursor-pointer",
+                          index === 0 ? "col-span-2 aspect-[16/9]" : "col-span-1 aspect-square"
+                        )}
+                      >
+                        {/* Image */}
+                        <img
+                          src={mess?.media?.cover}
+                          alt={mess.identity?.name}
+                          className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+                        />
 
-                {/* Content Container */}
-                <div className={cn(
-                  "absolute bottom-0 left-0 right-0 p-5 md:p-8",
-                  index !== 0 && "p-4" // Smaller padding for square tiles
-                )}>
-                  <Badge className={cn(
-                    "mb-3 border-none text-white backdrop-blur-md font-bold uppercase text-[10px]",
-                    mess?.identity?.dietaryType ? "bg-emerald-500/80" : "bg-orange-500/80"
-                  )}>
-                    {mess?.identity?.dietaryType ? "Pure Veg" : "Non-Veg Available"}
-                  </Badge>
+                        {/* Refined Gradient Overlay */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
 
-                  <h4 className={cn(
-                    "font-extrabold text-white mb-2 line-clamp-1 tracking-tight",
-                    index === 0 ? "text-2xl md:text-4xl" : "text-lg md:text-xl"
-                  )}>
-                    {mess?.identity?.name}
-                  </h4>
+                        {/* Content Container */}
+                        <div className={cn(
+                          "absolute bottom-0 left-0 right-0 p-5 md:p-8",
+                          index !== 0 && "p-4" // Smaller padding for square tiles
+                        )}>
+                          <Badge className={cn(
+                            "mb-3 border-none text-white backdrop-blur-md font-bold uppercase text-[10px]",
+                            mess?.identity?.dietaryType ? "bg-emerald-500/80" : "bg-orange-500/80"
+                          )}>
+                            {mess?.identity?.dietaryType ? "Pure Veg" : "Non-Veg Available"}
+                          </Badge>
 
-                  <div className="flex items-center gap-3">
-                    <div className="flex items-center divide-x divide-white/20 bg-white/10 backdrop-blur-md rounded-xl border border-white/20 overflow-hidden">
-                      {/* Rating */}
-                      <div className="flex items-center gap-1.5 px-3 py-1.5">
-                        <Star className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" />
-                        <span className="font-bold text-xs text-white">4.2</span>
-                      </div>
+                          <h4 className={cn(
+                            "font-extrabold text-white mb-2 line-clamp-1 tracking-tight",
+                            index === 0 ? "text-2xl md:text-4xl" : "text-lg md:text-xl"
+                          )}>
+                            {mess?.identity?.name}
+                          </h4>
 
-                      {/* Distance */}
-                      <div className="flex items-center gap-1.5 px-3 py-1.5">
-                        <MapPin className="w-3.5 h-3.5 text-white/90" />
-                        <span className="text-[10px] md:text-xs font-bold text-white/90">
-                          {calculateDistance(userlat, userlng, mess.location.lat, mess.location.lng)} km
-                        </span>
-                      </div>
-                    </div>
+                          <div className="flex items-center gap-3">
+                            <div className="flex items-center divide-x divide-white/20 bg-white/10 backdrop-blur-md rounded-xl border border-white/20 overflow-hidden">
+                              {/* Rating */}
+                              <div className="flex items-center gap-1.5 px-3 py-1.5">
+                                <Star className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" />
+                                <span className="font-bold text-xs text-white">4.2</span>
+                              </div>
+
+                              {/* Distance */}
+                              <div className="flex items-center gap-1.5 px-3 py-1.5">
+                                <MapPin className="w-3.5 h-3.5 text-white/90" />
+                                <span className="text-[10px] md:text-xs font-bold text-white/90">
+                                  {calculateDistance(userlat, userlng, mess.location.lat, mess.location.lng)} km
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </Card>
+                    ))}
+
+                    {/* View All Button */}
+                    <Link to="/mess" className="col-span-2 group/btn mt-2">
+                      <Button className="w-full h-16 rounded-[1.5rem] bg-slate-900 text-white hover:bg-slate-800 text-lg font-bold shadow-xl transition-all hover:scale-[1.01] active:scale-[0.99]">
+                        Explore All Local Messes
+                        <ArrowRight className="ml-2 w-6 h-6 transition-transform group-hover/btn:translate-x-2" />
+                      </Button>
+                    </Link>
+                  </>
+                ) : (
+                  /* 3. EMPTY STATE */
+                  <div className="col-span-2 py-20 text-center bg-slate-50 rounded-[2.5rem] border-2 border-dashed border-slate-200">
+                    <Utensils className="w-12 h-12 text-slate-300 mx-auto mb-4" />
+                    <h3 className="text-xl font-bold text-slate-800">No Verified Messes</h3>
+                    <p className="text-slate-500">We couldn't find any verified messes in your area.</p>
                   </div>
-                </div>
-              </Card>
-            ))}
-
-            {/* View All Button */}
-            <Link to="/mess" className="col-span-2 group/btn mt-2">
-              <Button className="w-full h-16 rounded-[1.5rem] bg-slate-900 text-white hover:bg-slate-800 text-lg font-bold shadow-xl transition-all hover:scale-[1.01] active:scale-[0.99]">
-                Explore All Local Messes
-                <ArrowRight className="ml-2 w-6 h-6 transition-transform group-hover/btn:translate-x-2" />
-              </Button>
-            </Link>
-          </>
-        ) : (
-          /* 3. EMPTY STATE */
-          <div className="col-span-2 py-20 text-center bg-slate-50 rounded-[2.5rem] border-2 border-dashed border-slate-200">
-            <Utensils className="w-12 h-12 text-slate-300 mx-auto mb-4" />
-            <h3 className="text-xl font-bold text-slate-800">No Verified Messes</h3>
-            <p className="text-slate-500">We couldn't find any verified messes in your area.</p>
-          </div>
-        )}
-      </div>
-    </div>
+                )}
+              </div>
+            </div>
 
           </div>
         </div>

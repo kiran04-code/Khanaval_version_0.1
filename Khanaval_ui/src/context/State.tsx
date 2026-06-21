@@ -24,7 +24,10 @@ export const StateContextProvider = ({ children }: { children: ReactNode }) => {
     const baseurl = import.meta.env.VITE_BACKEND_API;
   const axioseInstace = axios.create({
         withCredentials:true,
-        baseURL:baseurl
+        baseURL:baseurl,
+        headers:{
+            Authorization:`Bearer ${localStorage.getItem("client_token")}`
+        }
     })
     return <StateContex.Provider value={{userlat,setUserLat,userlng,setUserLng,axioseInstace}}>
         {children}

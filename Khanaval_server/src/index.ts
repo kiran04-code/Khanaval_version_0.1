@@ -8,6 +8,7 @@ import { connectDB } from "./config/mongodb.js"
 import jwtService from "./services/JwtToken.js"
 import providerRoutes from "./routes/Provider.js"
 import CloudProviderRouter from "./routes/CloudKitchenOwner.js"
+import { AuthMiddleware } from "./middleware/Auth.js"
 dotenv.config()
 const app = express()
 const PORT = process.env.PORT || 3002
@@ -24,6 +25,7 @@ app.use(cors({
 }));
 
 app.use(express.json({limit:"50mb"}))
+app.use(AuthMiddleware)
 app.use(express.urlencoded({extended:true,limit:"50mb" }))
 app.use((req, res, next) => {
     res.setHeader('Cross-Origin-Opener-Policy', 'same-origin-allow-popups');

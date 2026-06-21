@@ -18,7 +18,7 @@ class jwtService {
     public static Jwtdecoder(token:string | undefined){
 
      if(token){
-        const data = Jwt.verify(token,jwtSecret)
+        const data = Jwt.verify(token,jwtSecret) as JwtToken
         return data;
      }
     }

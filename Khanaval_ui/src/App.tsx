@@ -27,6 +27,7 @@ import FeedbackForm from "./pages/FeedBackFrom";
 import MealRedeemPage from "./pages/MealReademPage";
 import Paas from "./pages/Paas";
 import Announcements from "./pages/Anniumment";
+import CloudeKitchen from "./pages/KitchenDashBorad/CloudeKitchen";
 const queryClient = new QueryClient();
 
 const App = () => {
@@ -54,6 +55,7 @@ const App = () => {
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<PublicRoute><AuthPage/></PublicRoute>} />
+            <Route path="/CloudeKitchen" element={<CloudeKitchen />} />
             <Route path="/dashboard" element={<UserDashboard />} />
             <Route path="/profile" element={<ProtectedRoutes><KhanavalProfile /></ProtectedRoutes>} />
             <Route path="/mess/:id" element={<MessDetailPage />} />

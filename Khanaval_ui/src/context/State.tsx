@@ -1,5 +1,5 @@
 import axios, { type AxiosInstance } from "axios";
-import { createContext, Dispatch, ReactNode, SetStateAction, useContext, useEffect, useState } from "react";
+import { createContext, Dispatch, ReactNode, SetStateAction, useContext, useEffect, useMemo, useState } from "react";
 
 interface StateContextType   {
   userlat: number | null;
@@ -22,13 +22,27 @@ export const StateContextProvider = ({ children }: { children: ReactNode }) => {
     const [userlat,setUserLat] = useState<number | null>(null)
     const [userlng,setUserLng] = useState<number | null>(null)
     const baseurl = import.meta.env.VITE_BACKEND_API;
-  const axioseInstace = axios.create({
-        withCredentials:true,
-        baseURL:baseurl,
-        headers:{
-            Authorization:`Bearer ${localStorage.getItem("client_token")}`
-        }
-    })
+    const axioseInstace = useMemo(() => {
+        const instance = axios.create({
+            withCredentials: true,
+            baseURL: baseurl,
+        });
+
+        instance.interceptors.request.use((config) => {
+            const token = localStorage.getItem("client_token");
+
+            if (token) {
+                config.headers.Authorization = `Bearer ${token}`;
+            } else {
+                delete config.headers.Authorization;
+            }
+
+            return config;
+        });
+
+        return instance;
+    }, [baseurl]);
+
     return <StateContex.Provider value={{userlat,setUserLat,userlng,setUserLng,axioseInstace}}>
         {children}
     </StateContex.Provider>

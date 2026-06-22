@@ -218,10 +218,10 @@ export function Navbar() {
             </div>
 
             {!isLoggedIn && (
-              <div className="grid grid-cols-1 gap-3 mt-4">
+             !kitchenprovider ? ( <div className="grid grid-cols-1 gap-3 mt-4">
                 <Link to="/auth?role=user" onClick={() => setMobileMenuOpen(false)}><Button variant="outline" className="w-full h-14 rounded-2xl font-black border-2">USER LOGIN</Button></Link>
                 <Link to="/auth?role=provider" onClick={() => setMobileMenuOpen(false)}><Button className="w-full h-14 bg-orange-600 text-white rounded-2xl font-black">PROVIDER LOGIN</Button></Link>
-              </div>
+              </div>):(  <Link to="/CloudeKitchen" onClick={() => setMobileMenuOpen(false)}><Button className="w-full h-14 bg-orange-600 text-white rounded-2xl font-black">GO TO DASHBOARD</Button></Link>)
             )}
 
             {isLoggedIn && (

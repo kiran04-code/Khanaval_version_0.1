@@ -316,7 +316,7 @@ const Index = () => {
           </div>
           <div className="mt-24 text-center">
             {
-              user || Providerdata ? <Button onClick={() => navigate("/mess")} size="xl" className="rounded-2xl px-12 py-7 text-lg font-bold shadow-[0_20px_50px_rgba(var(--primary-rgb),0.3)]  transition-all">
+            kitchenprovider ||  user || Providerdata ? <Button onClick={() => navigate("/mess")} size="xl" className="rounded-2xl px-12 py-7 text-lg font-bold shadow-[0_20px_50px_rgba(var(--primary-rgb),0.3)]  transition-all">
                 Get Started Now
               </Button> : <Button onClick={() => navigate("/auth")} size="xl" className="rounded-2xl px-12 py-7 text-lg font-bold shadow-[0_20px_50px_rgba(var(--primary-rgb),0.3)]  transition-all">
                 Get Started Now

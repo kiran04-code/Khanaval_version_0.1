@@ -252,6 +252,7 @@ export default function HybridAuthPage() {
         const { data } = await axioseInstace.post("/api/cloudkitchens/send-SignUp-otp", {
           phoneNumber: providerNumber
         })
+        
         if (data.success) {
           toast({ title: data.message, variant: "default" })
         }
@@ -285,6 +286,9 @@ export default function HybridAuthPage() {
         }
         setIsLoading(true)
         localStorage.setItem("client_token", data.responseData.token)
+         queryclinet.invalidateQueries({
+            queryKey: ["KitchenProvider-data"]
+          })
         navigate("/");
       } catch (error) {
         toast({
@@ -311,6 +315,9 @@ export default function HybridAuthPage() {
         }
         setIsLoading(true)
         localStorage.setItem("client_token", data.responseData.token)
+        queryclinet.invalidateQueries({
+            queryKey: ["KitchenProvider-data"]
+          })
         navigate("/");
       } catch (error) {
         toast({

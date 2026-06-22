@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useCurrentUser } from "@/hooks/user-hook";
-import { UserProviderdata } from "@/hooks/Provider";
+import { KitchenProviderdata, UserProviderdata } from "@/hooks/Provider";
 import { cn } from "@/lib/utils";
 import { useQueryClient } from "@tanstack/react-query";
 
@@ -14,10 +14,11 @@ export function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
   const queryClient = useQueryClient();
-
+  
   const token = localStorage.getItem("_user_Token__");
   const { user } = useCurrentUser();
   const { Providerdata } = UserProviderdata();
+  const { kitchenprovider } = KitchenProviderdata();
 
   const isLoggedIn = Boolean(token);
   const isProvider = Boolean(Providerdata);
@@ -79,7 +80,7 @@ export function Navbar() {
             </div>
 
             <div className="h-8 w-[2px] bg-orange-100 mx-1" />
-
+        
             {isLoggedIn ? (
               <div className="flex items-center gap-3 bg-white border border-slate-200 p-1 rounded-full shadow-sm">
 
@@ -114,7 +115,13 @@ export function Navbar() {
                 </Button>
               </div>
             ) : (
-              <div className="flex items-center gap-3">
+                kitchenprovider ? <Link to="/CloudeKitchen">
+                    <Button className="bg-orange-600 hover:bg-orange-700 text-white rounded-full px-6 h-10 text-xs font-black gap-2 shadow-orange-200 shadow-lg">
+                      <LayoutDashboard className="w-4 h-4" />
+                      DASHBOARD
+                    </Button>
+                  </Link>
+               :  <div className="flex items-center gap-3">
                 <Link to="/auth?role=user">
                   <Button variant="ghost" className="text-xs font-black text-slate-700 hover:text-orange-600 uppercase">Login</Button>
                 </Link>
@@ -124,7 +131,10 @@ export function Navbar() {
                   </Button>
                 </Link>
               </div>
-            )}
+          
+            )
+            
+            }
           </div>
 
           {/* MOBILE TOGGLE */}
@@ -225,6 +235,6 @@ export function Navbar() {
           </div>
         )}
       </div>
-    </nav>
+    </nav >
   );
 }

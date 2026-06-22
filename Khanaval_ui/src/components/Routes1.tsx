@@ -9,7 +9,7 @@ export const ProtectedRoutes = ({ children }: { children: ReactNode }) => {
   const { kitchenprovider } = KitchenProviderdata();
 
 
-  if (!user || !kitchenprovider) {
+  if (!user &&  !kitchenprovider) {
     return <Navigate to="/auth" replace />;
   }
   return <>{children}</>;

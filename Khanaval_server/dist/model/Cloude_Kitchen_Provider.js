@@ -20,6 +20,10 @@ const CloudeKitchemProviderSchema = new Schema({
     PushNotifcationToken: {
         type: String,
         default: null
+    },
+    isPaymentDone: {
+        type: Boolean,
+        default: false
     }
 });
 export const CloudKitchenOwner = model("CloudKitchenOwner", CloudeKitchemProviderSchema);

@@ -6,6 +6,7 @@ export interface ICloudeKitchenProviderSchema {
     role: string;
     isMessRegister: Boolean;
     PushNotifcationToken: string;
+    isPaymentDone: Boolean;
 }
 export declare const CloudKitchenOwner: import("mongoose").Model<ICloudeKitchenProviderSchema, {}, {}, {
     id: string;
@@ -82,6 +83,15 @@ export declare const CloudKitchenOwner: import("mongoose").Model<ICloudeKitchenP
         id: string;
     }>;
     PushNotifcationToken?: import("mongoose").SchemaDefinitionProperty<string, ICloudeKitchenProviderSchema, import("mongoose").Document<unknown, {}, ICloudeKitchenProviderSchema, {
+        id: string;
+    }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<ICloudeKitchenProviderSchema & {
+        _id: import("mongoose").Types.ObjectId;
+    } & {
+        __v: number;
+    }, "id"> & {
+        id: string;
+    }>;
+    isPaymentDone?: import("mongoose").SchemaDefinitionProperty<Boolean, ICloudeKitchenProviderSchema, import("mongoose").Document<unknown, {}, ICloudeKitchenProviderSchema, {
         id: string;
     }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<ICloudeKitchenProviderSchema & {
         _id: import("mongoose").Types.ObjectId;

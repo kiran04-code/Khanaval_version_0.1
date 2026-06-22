@@ -6,7 +6,8 @@ export interface ICloudeKitchenProviderSchema {
     phoneNumber: string,
     role: string,
     isMessRegister: Boolean,
-    PushNotifcationToken:string
+    PushNotifcationToken:string,
+    isPaymentDone:Boolean
 }
 const CloudeKitchemProviderSchema = new Schema<ICloudeKitchenProviderSchema>({
     providerName: {
@@ -29,6 +30,10 @@ const CloudeKitchemProviderSchema = new Schema<ICloudeKitchenProviderSchema>({
     PushNotifcationToken:{
         type:String,
         default:null
+    },
+    isPaymentDone:{
+        type:Boolean,
+        default:false
     }
 })
 

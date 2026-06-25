@@ -1,5 +1,7 @@
 import { AlertTriangle, CalendarDays, Clock3, RefreshCcw, Wallet } from "lucide-react";
 
+import { CloudKitchenPaymentLoader } from "@/components/cloud-kitchen/CloudKitchenPaymentLoader";
+import { useCloudKitchenPayment } from "@/components/cloud-kitchen/useCloudKitchenPayment";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -32,11 +34,25 @@ export function RenewSubscriptionScreen({
     subscriptionEndDate,
     lastPaymentDate,
 }: RenewSubscriptionScreenProps) {
+    const {
+        activeLoadingContent,
+        isCheckoutPreparing,
+        loadingStage,
+        loadingSteps,
+        payNow,
+        showProcessingOverlay,
+    } = useCloudKitchenPayment();
     const expiredOn = formatDate(subscriptionEndDate);
     const lastPaidOn = formatDate(lastPaymentDate);
 
     return (
         <div className="min-h-screen bg-[linear-gradient(180deg,#fff7ed_0%,#ffffff_38%,#f8fafc_100%)] px-4 py-8 sm:px-6 lg:px-8">
+            <CloudKitchenPaymentLoader
+                activeLoadingContent={activeLoadingContent}
+                loadingStage={loadingStage}
+                loadingSteps={loadingSteps}
+                show={showProcessingOverlay}
+            />
             <div className="mx-auto flex w-full max-w-5xl flex-col gap-8">
                 <Card className="overflow-hidden rounded-[32px] border-0 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 text-white shadow-[0_28px_60px_rgba(15,23,42,0.2)]">
                     <CardContent className="flex flex-col gap-5 px-6 py-8 sm:px-8 sm:py-10">
@@ -69,8 +85,7 @@ export function RenewSubscriptionScreen({
                                 Renew for Rs. 299
                             </CardTitle>
                             <p className="text-base leading-7 text-slate-600">
-                                This screen is ready for the renewal flow UI. Payment action can be
-                                connected later.
+                                Renew your expired plan and continue using the kitchen dashboard.
                             </p>
                         </CardHeader>
                         <CardContent className="space-y-4">
@@ -90,13 +105,16 @@ export function RenewSubscriptionScreen({
 
                             <Button
                                 type="button"
-                                disabled
+                                onClick={() => payNow(1)}
+                                disabled={isCheckoutPreparing}
                                 className="h-14 w-full rounded-2xl bg-gradient-to-r from-orange-500 to-red-500 text-base font-bold shadow-lg shadow-orange-200 disabled:cursor-not-allowed disabled:opacity-70"
                             >
-                                Renew Subscription for Rs. 299
+                                {isCheckoutPreparing
+                                    ? "Preparing secure checkout..."
+                                    : "Renew Subscription for Rs. 299"}
                             </Button>
                             <p className="text-center text-xs font-medium text-slate-500">
-                                UI only for now. Renewal payment action is not connected yet.
+                                Continue with the same Khanaaval payment flow for renewal.
                             </p>
                         </CardContent>
                     </Card>

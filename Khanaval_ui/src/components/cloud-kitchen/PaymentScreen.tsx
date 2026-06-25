@@ -1,11 +1,3 @@
-declare global {
-    interface Window {
-        Razorpay: any;
-    }
-}
-
-import { useState } from "react";
-
 import {
     ArrowRight,
     BadgeCheck,
@@ -19,299 +11,34 @@ import {
     Zap,
 } from "lucide-react";
 
+import { CloudKitchenPaymentLoader } from "@/components/cloud-kitchen/CloudKitchenPaymentLoader";
 import { subscriptionBenefits, platformGuidelines } from "@/components/cloud-kitchen/mock-data";
+import { useCloudKitchenPayment } from "@/components/cloud-kitchen/useCloudKitchenPayment";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useStateContex } from "@/context/State";
-import { KitchenProviderdata } from "@/hooks/Provider";
-import { toast } from "@/hooks/use-toast";
-import { useQueryClient } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
 
 type PaymentScreenProps = {
     ownerName: string;
 };
 
-type LoadingStage = "idle" | "checkout" | "verifying" | "activating" | "success";
-
 export function PaymentScreen({ ownerName }: PaymentScreenProps) {
-    const { kitchenprovider } = KitchenProviderdata();
-    const { axioseInstace } = useStateContex();
-    const queryclinet = useQueryClient();
-    const navigate = useNavigate();
-    const [loadingStage, setLoadingStage] = useState<LoadingStage>("idle");
+    const {
+        activeLoadingContent,
+        isCheckoutPreparing,
+        loadingStage,
+        loadingSteps,
+        payNow,
+        showProcessingOverlay,
+    } = useCloudKitchenPayment();
 
-    const isCheckoutPreparing = loadingStage === "checkout";
-    const showProcessingOverlay =
-        loadingStage === "verifying" ||
-        loadingStage === "activating" ||
-        loadingStage === "success";
-
-    const loadingContent = {
-        checkout: {
-            index: 0,
-            badge: "Preparing Checkout",
-            title: "Preparing payment",
-            description: "Opening your secure payment window.",
-            note: "Please wait",
-        },
-        verifying: {
-            index: 1,
-            badge: "Payment Received",
-            title: "Verifying payment",
-            description:
-                "Please keep this screen open while Khanaaval confirms your payment details.",
-            note: "Checking payment status",
-        },
-        activating: {
-            index: 2,
-            badge: "Activating Access",
-            title: "Activating your kitchen account",
-            description: "We are enabling your subscription and loading your next screen.",
-            note: "Updating your partner access",
-        },
-        success: {
-            index: 3,
-            badge: "Success",
-            title: "Payment successful",
-            description: "Your Khanaaval subscription is active. Redirecting you now.",
-            note: "Taking you forward",
-        },
-    } satisfies Record<Exclude<LoadingStage, "idle">, {
-        index: number;
-        badge: string;
-        title: string;
-        description: string;
-        note: string;
-    }>;
-
-    const activeLoadingContent =
-        loadingStage === "idle" ? null : loadingContent[loadingStage];
-
-    const loadingSteps = [
-        "Checkout prepared",
-        "Payment verified",
-        "Kitchen access activated",
-    ];
-
-    const delay = (ms: number) => new Promise((resolve) => window.setTimeout(resolve, ms));
-    const STAGE_TEST_DELAY_MS = import.meta.env.DEV ? 900 : 0;
-
-    const addTestingDelay = async () => {
-        if (STAGE_TEST_DELAY_MS > 0) {
-            await delay(STAGE_TEST_DELAY_MS);
-        }
-    };
-
-    const syncPaymentStatus = async () => {
-        setLoadingStage("activating");
-        await addTestingDelay();
-
-        for (let attempt = 0; attempt < 12; attempt += 1) {
-            const { data } = await axioseInstace.get("/api/cloudkitchens/getcurrenr-onwer-cloude");
-            const latestProvider = data?.responseData;
-
-            if (latestProvider?.isPaymentDone) {
-                setLoadingStage("success");
-                await addTestingDelay();
-                await delay(1200);
-                await queryclinet.invalidateQueries({
-                    queryKey: ["KitchenProvider-data"],
-                });
-                await queryclinet.refetchQueries({
-                    queryKey: ["KitchenProvider-data"],
-                });
-                navigate("/CloudeKitchen");
-                return;
-            }
-
-            await delay(1200);
-        }
-
-        setLoadingStage("idle");
-        toast({
-            title: "Activation is taking a little longer",
-            description: "Your payment may be processing. Please wait a moment and try again.",
-        });
-    };
-
-    const PaymentLogic = async (amount: number) => {
-        if (!kitchenprovider?._id) {
-            toast({
-                title: "Profile not ready",
-                description: "Please wait a moment and try payment again.",
-            });
-            return;
-        }
-
-        try {
-            setLoadingStage("checkout");
-            await addTestingDelay();
-            const { data } = await axioseInstace.post("/api/cloudkitchens/makePayment", {
-                amounts: amount,
-            });
-            const { data: keys } = await axioseInstace.get("/api/getkeys");
-            const options = {
-                key: keys.key,
-                amount: data.responseData.amount,
-                currency: data.responseData.currency,
-                name: "Khanaaval",
-                descdescription: "Montly MemberShip",
-                order_id: data.responseData.id,
-                handler: async function (response: any) {
-                    try {
-                        setLoadingStage("verifying");
-                        await addTestingDelay();
-                        await axioseInstace.post(
-                            `/api/cloudkitchens/UpdatePaymentStatus/${kitchenprovider._id}`,
-                            {
-                                razorpay_payment_id: response.razorpay_payment_id,
-                                razorpay_order_id: response.razorpay_order_id,
-                                razorpay_signature: response.razorpay_signature,
-                                paymentAmmount: amount,
-                            },
-                        );
-                        await syncPaymentStatus();
-                    } catch (error) {
-                        setLoadingStage("idle");
-                        toast({
-                            title: "Payment verification failed",
-                            description:
-                                "We could not confirm the subscription right now. Please try again.",
-                        });
-                        console.log(error);
-                    }
-                },
-                prefill: {
-                    name: kitchenprovider?.providerName,
-                    contact: kitchenprovider?.phoneNumber,
-                },
-                theme: {
-                    color: "#ee6516",
-                },
-                modal: {
-                    ondismiss: () => {
-                        setLoadingStage("idle");
-                    },
-                },
-            };
-            const razorpay = new window.Razorpay(options);
-            setLoadingStage("idle");
-            razorpay.open();
-
-        } catch (error) {
-            setLoadingStage("idle");
-            toast({
-                title: "Unable to start payment",
-                description: "Please try again in a moment.",
-            });
-            console.log(error);
-        }
-    };
     return (
         <div className="min-h-screen bg-[radial-gradient(circle_at_top_right,rgba(249,115,22,0.16),transparent_24%),radial-gradient(circle_at_bottom_left,rgba(15,23,42,0.06),transparent_26%),linear-gradient(180deg,#fff7ed_0%,#ffffff_42%,#f8fafc_100%)] px-4 py-4 sm:px-6 sm:py-8 lg:px-8">
-            {showProcessingOverlay ? (
-                <div className="fixed inset-0 z-[90] bg-white">
-                    <div className="mx-auto flex min-h-screen w-full max-w-3xl items-center justify-center px-4 py-8 sm:px-6">
-                        <div className="w-full max-w-2xl rounded-[28px] border border-slate-200 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.08)]">
-                            <div className="h-1.5 w-full rounded-t-[28px] bg-gradient-to-r from-orange-500 via-orange-400 to-orange-500" />
-                            <div className="p-6 sm:p-8">
-                                <div className="flex items-center gap-3">
-                                    <img src="/logo.png" alt="Khanaaval" className="h-11 w-11 rounded-2xl border border-orange-100 bg-orange-50 p-2" />
-                                    <div>
-                                        <p className="text-sm font-bold text-slate-900">Khanaaval</p>
-                                        <p className="text-xs font-medium uppercase tracking-[0.18em] text-orange-500">
-                                            Cloud Kitchen Payment
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div className="mt-8 flex flex-col items-center text-center">
-                                    <div className="flex h-20 w-20 items-center justify-center rounded-full border border-orange-200 bg-orange-50">
-                                        {loadingStage === "success" ? (
-                                            <BadgeCheck className="h-10 w-10 text-green-600" />
-                                        ) : (
-                                            <LoaderCircle className="h-10 w-10 animate-spin text-orange-500" />
-                                        )}
-                                    </div>
-                                    <p className="mt-4 text-xs font-semibold uppercase tracking-[0.22em] text-orange-500">
-                                        {activeLoadingContent?.badge}
-                                    </p>
-                                    <h2 className="mt-3 text-2xl font-black tracking-tight text-slate-950 sm:text-3xl">
-                                        {activeLoadingContent?.title}
-                                    </h2>
-                                    <p className="mt-3 max-w-lg text-sm leading-6 text-slate-600 sm:text-base">
-                                        {activeLoadingContent?.description}
-                                    </p>
-                                </div>
-
-                                <div className="mt-8 rounded-[24px] border border-slate-200 bg-slate-50 p-4">
-                                    <div className="flex items-center justify-between gap-3">
-                                        <p className="text-sm font-semibold text-slate-900">Current status</p>
-                                        <span className="rounded-full bg-orange-100 px-3 py-1 text-xs font-semibold text-orange-700">
-                                            {activeLoadingContent?.note}
-                                        </span>
-                                    </div>
-                                </div>
-
-                                <div className="mt-6 space-y-3">
-                                    {loadingSteps.map((step, index) => {
-                                        const currentStep = activeLoadingContent?.index ?? 0;
-                                        const isCompleted = currentStep > index + 1 || loadingStage === "success";
-                                        const isActive =
-                                            loadingStage !== "success" && currentStep === index + 1;
-
-                                        return (
-                                            <div
-                                                key={step}
-                                                className={`flex items-center gap-4 rounded-[22px] border px-4 py-4 transition ${
-                                                    isActive
-                                                        ? "border-orange-200 bg-orange-50"
-                                                        : isCompleted
-                                                          ? "border-green-200 bg-green-50"
-                                                          : "border-slate-200 bg-white"
-                                                }`}
-                                            >
-                                                <div
-                                                    className={`flex h-10 w-10 items-center justify-center rounded-full ${
-                                                        isCompleted
-                                                            ? "bg-green-100 text-green-600"
-                                                            : isActive
-                                                              ? "bg-orange-100 text-orange-600"
-                                                              : "bg-slate-100 text-slate-500"
-                                                    }`}
-                                                >
-                                                    {isCompleted ? (
-                                                        <CheckCircle2 className="h-5 w-5" />
-                                                    ) : isActive ? (
-                                                        <LoaderCircle className="h-5 w-5 animate-spin" />
-                                                    ) : (
-                                                        <span className="text-sm font-bold">{index + 1}</span>
-                                                    )}
-                                                </div>
-                                                <div className="min-w-0 flex-1">
-                                                    <p className="text-sm font-semibold text-slate-900">{step}</p>
-                                                    <p className="mt-1 text-xs text-slate-500">
-                                                        {isCompleted
-                                                            ? "Completed"
-                                                            : isActive
-                                                              ? "In progress"
-                                                              : "Waiting"}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        );
-                                    })}
-                                </div>
-
-                                <p className="mt-6 text-center text-xs font-medium text-slate-500">
-                                    Please do not close this screen while we finish your payment setup.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            ) : null}
+            <CloudKitchenPaymentLoader
+                activeLoadingContent={activeLoadingContent}
+                loadingStage={loadingStage}
+                loadingSteps={loadingSteps}
+                show={showProcessingOverlay}
+            />
             <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 pb-24 sm:gap-8 sm:pb-8">
                 <section className="relative overflow-hidden rounded-[30px] border border-orange-100/50 bg-gradient-to-br from-slate-950 via-slate-900 to-orange-600 text-white shadow-[0_30px_70px_rgba(249,115,22,0.22)] sm:rounded-[38px]">
                     <div className="pointer-events-none absolute inset-y-0 right-0 hidden w-1/3 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.16),transparent_58%)] lg:block" />
@@ -462,7 +189,7 @@ export function PaymentScreen({ ownerName }: PaymentScreenProps) {
 
                                 <Button
                                     type="submit"
-                                    onClick={() => PaymentLogic(1)}
+                                    onClick={() => payNow(1)}
                                     disabled={isCheckoutPreparing}
                                     className="mt-2 hidden h-14 w-full rounded-2xl bg-gradient-to-r from-orange-500 via-orange-600 to-red-500 text-base font-bold shadow-lg shadow-orange-300 transition hover:-translate-y-0.5 hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-80 sm:flex"
                                 >
@@ -564,7 +291,7 @@ export function PaymentScreen({ ownerName }: PaymentScreenProps) {
                         <p className="text-xs text-slate-500">Instant activation, zero commission</p>
                     </div>
                     <Button
-                        onClick={() => PaymentLogic(1)}
+                        onClick={() => payNow(1)}
                         disabled={isCheckoutPreparing}
                         className="h-12 rounded-2xl bg-gradient-to-r from-orange-500 via-orange-600 to-red-500 px-5 text-sm font-bold shadow-lg shadow-orange-300 hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-80"
                     >

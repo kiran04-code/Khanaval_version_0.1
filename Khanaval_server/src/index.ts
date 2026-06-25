@@ -44,7 +44,7 @@ app.use("/graphql", expressMiddleware(await StartGraphql(), {
             try {
                 user = jwtService.Jwtdecoder(token)
             } catch (error) {
-                user = undefined
+                user = undefined;
             }
         }
         return { user }

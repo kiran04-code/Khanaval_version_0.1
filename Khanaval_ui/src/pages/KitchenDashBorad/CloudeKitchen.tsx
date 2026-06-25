@@ -61,6 +61,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate } from "react-router-dom";
 import { KitchenRegistrationScreen } from "@/components/cloud-kitchen/KitchenRegistrationScreen";
 import { PaymentScreen } from "@/components/cloud-kitchen/PaymentScreen";
+import { useStateContex } from "@/context/State";
 
 type DashboardSection =
     | "dashboard"
@@ -328,6 +329,7 @@ export default function CloudeKitchen() {
     const navigate = useNavigate();
     const queryClient = useQueryClient();
 
+    const { axioseInstace } = useStateContex()
     const [activeSection, setActiveSection] = useState<DashboardSection>("dashboard");
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [kitchenOpen, setKitchenOpen] = useState(true);
@@ -568,6 +570,8 @@ export default function CloudeKitchen() {
         );
     };
 
+
+   
     const renderLoadingView = () => (
         <div className="space-y-6">
             <Skeleton className="h-40 rounded-[32px]" />

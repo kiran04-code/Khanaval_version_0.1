@@ -24,6 +24,27 @@ const CloudeKitchemProviderSchema = new Schema({
     isPaymentDone: {
         type: Boolean,
         default: false
+    },
+    subscriptionStatus: {
+        type: String,
+        enum: ["inactive", "active", "expired"],
+        default: "inactive",
+    },
+    subscriptionStartDate: {
+        type: Date,
+        default: null,
+    },
+    subscriptionEndDate: {
+        type: Date,
+        default: null,
+    },
+    lastPaymentDate: {
+        type: Date,
+        default: null,
+    },
+    paymentAmount: {
+        type: Number,
+        default: 0,
     }
 });
 export const CloudKitchenOwner = model("CloudKitchenOwner", CloudeKitchemProviderSchema);

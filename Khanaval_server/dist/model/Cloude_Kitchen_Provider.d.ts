@@ -7,6 +7,11 @@ export interface ICloudeKitchenProviderSchema {
     isMessRegister: Boolean;
     PushNotifcationToken: string;
     isPaymentDone: Boolean;
+    subscriptionStatus: String;
+    subscriptionStartDate: Date;
+    subscriptionEndDate: Date;
+    lastPaymentDate: Date;
+    paymentAmount: number;
 }
 export declare const CloudKitchenOwner: import("mongoose").Model<ICloudeKitchenProviderSchema, {}, {}, {
     id: string;
@@ -92,6 +97,51 @@ export declare const CloudKitchenOwner: import("mongoose").Model<ICloudeKitchenP
         id: string;
     }>;
     isPaymentDone?: import("mongoose").SchemaDefinitionProperty<Boolean, ICloudeKitchenProviderSchema, import("mongoose").Document<unknown, {}, ICloudeKitchenProviderSchema, {
+        id: string;
+    }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<ICloudeKitchenProviderSchema & {
+        _id: import("mongoose").Types.ObjectId;
+    } & {
+        __v: number;
+    }, "id"> & {
+        id: string;
+    }>;
+    subscriptionStatus?: import("mongoose").SchemaDefinitionProperty<String, ICloudeKitchenProviderSchema, import("mongoose").Document<unknown, {}, ICloudeKitchenProviderSchema, {
+        id: string;
+    }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<ICloudeKitchenProviderSchema & {
+        _id: import("mongoose").Types.ObjectId;
+    } & {
+        __v: number;
+    }, "id"> & {
+        id: string;
+    }>;
+    subscriptionStartDate?: import("mongoose").SchemaDefinitionProperty<Date, ICloudeKitchenProviderSchema, import("mongoose").Document<unknown, {}, ICloudeKitchenProviderSchema, {
+        id: string;
+    }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<ICloudeKitchenProviderSchema & {
+        _id: import("mongoose").Types.ObjectId;
+    } & {
+        __v: number;
+    }, "id"> & {
+        id: string;
+    }>;
+    subscriptionEndDate?: import("mongoose").SchemaDefinitionProperty<Date, ICloudeKitchenProviderSchema, import("mongoose").Document<unknown, {}, ICloudeKitchenProviderSchema, {
+        id: string;
+    }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<ICloudeKitchenProviderSchema & {
+        _id: import("mongoose").Types.ObjectId;
+    } & {
+        __v: number;
+    }, "id"> & {
+        id: string;
+    }>;
+    lastPaymentDate?: import("mongoose").SchemaDefinitionProperty<Date, ICloudeKitchenProviderSchema, import("mongoose").Document<unknown, {}, ICloudeKitchenProviderSchema, {
+        id: string;
+    }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<ICloudeKitchenProviderSchema & {
+        _id: import("mongoose").Types.ObjectId;
+    } & {
+        __v: number;
+    }, "id"> & {
+        id: string;
+    }>;
+    paymentAmount?: import("mongoose").SchemaDefinitionProperty<number, ICloudeKitchenProviderSchema, import("mongoose").Document<unknown, {}, ICloudeKitchenProviderSchema, {
         id: string;
     }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<ICloudeKitchenProviderSchema & {
         _id: import("mongoose").Types.ObjectId;

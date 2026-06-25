@@ -52,6 +52,11 @@ app.use("/graphql", expressMiddleware(await StartGraphql(), {
 await connectDB();
 app.use("/api", providerRoutes);
 app.use("/api/cloudkitchens", CloudProviderRouter);
+app.get("/api/getkeys", (req, res) => {
+    return res.json({
+        key: process.env.RAZORPAY_KEY_ID
+    });
+});
 // Server IS Listing
 app.listen(PORT, () => {
     console.log(`server is runing on Port http://localhost:${PORT}`);

@@ -1,8 +1,17 @@
+declare global {
+    interface Window {
+        Razorpay: any;
+    }
+}
+
+import { useState } from "react";
+
 import {
     ArrowRight,
     BadgeCheck,
     CheckCircle2,
     CircleDollarSign,
+    LoaderCircle,
     Infinity,
     Sparkles,
     Store,
@@ -13,14 +22,318 @@ import {
 import { subscriptionBenefits, platformGuidelines } from "@/components/cloud-kitchen/mock-data";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useStateContex } from "@/context/State";
+import { KitchenProviderdata } from "@/hooks/Provider";
+import { toast } from "@/hooks/use-toast";
+import { useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 
 type PaymentScreenProps = {
     ownerName: string;
 };
 
+type PaymentFlowState =
+    | "idle"
+    | "creating_order"
+    | "verifying_payment"
+    | "activating_subscription"
+    | "success";
+
 export function PaymentScreen({ ownerName }: PaymentScreenProps) {
+    const { kitchenprovider } = KitchenProviderdata();
+    const { axioseInstace } = useStateContex();
+    const queryclinet = useQueryClient();
+    const navigate = useNavigate();
+    const [paymentFlowState, setPaymentFlowState] = useState<PaymentFlowState>("idle");
+
+    const isCheckoutPreparing = paymentFlowState === "creating_order";
+    const showProcessingOverlay =
+        paymentFlowState === "verifying_payment" ||
+        paymentFlowState === "activating_subscription" ||
+        paymentFlowState === "success";
+
+    const overlayCopy: Record<
+        Exclude<PaymentFlowState, "idle">,
+        { badge: string; title: string; description: string }
+    > = {
+        creating_order: {
+            badge: "Preparing Checkout",
+            title: "Setting up your Khanaaval subscription",
+            description:
+                "We are creating your secure checkout session so activation can start smoothly.",
+        },
+        verifying_payment: {
+            badge: "Payment Verification",
+            title: "Checking your payment details",
+            description:
+                "Please stay on this screen while we verify your payment with the gateway.",
+        },
+        activating_subscription: {
+            badge: "Activating Access",
+            title: "Unlocking your partner dashboard",
+            description:
+                "Your subscription is being activated and your kitchen workspace is loading now.",
+        },
+        success: {
+            badge: "Subscription Active",
+            title: "Your kitchen is ready",
+            description:
+                "Payment confirmed successfully. Taking you to the next Khanaaval setup step.",
+        },
+    };
+
+    const activeOverlayCopy = overlayCopy[paymentFlowState === "idle" ? "creating_order" : paymentFlowState];
+
+    const stepItems = [
+        { id: 0, label: "Checkout created" },
+        { id: 1, label: "Payment verified" },
+        { id: 2, label: "Subscription activated" },
+    ];
+
+    const getCompletedSteps = () => {
+        if (paymentFlowState === "success") {
+            return 3;
+        }
+
+        if (paymentFlowState === "activating_subscription") {
+            return 2;
+        }
+
+        if (paymentFlowState === "verifying_payment") {
+            return 1;
+        }
+
+        if (paymentFlowState === "creating_order") {
+            return 0;
+        }
+
+        return -1;
+    };
+
+    const waitForPaymentActivation = async () => {
+        for (let attempt = 0; attempt < 12; attempt += 1) {
+            setPaymentFlowState("activating_subscription");
+            const { data } = await axioseInstace.get("/api/cloudkitchens/getcurrenr-onwer-cloude");
+            const latestProvider = data?.responseData;
+
+            if (latestProvider?.isPaymentDone) {
+                setPaymentFlowState("success");
+                await new Promise((resolve) => window.setTimeout(resolve, 1200));
+                await queryclinet.invalidateQueries({
+                    queryKey: ["KitchenProvider-data"],
+                });
+                await queryclinet.refetchQueries({
+                    queryKey: ["KitchenProvider-data"],
+                });
+                navigate("/CloudeKitchen");
+                return true;
+            }
+
+            await new Promise((resolve) => window.setTimeout(resolve, 1200));
+        }
+
+        setPaymentFlowState("idle");
+        toast({
+            title: "Activation is taking a little longer",
+            description: "Your payment may be processing. Please wait a moment and try again.",
+        });
+        return false;
+    };
+
+    const PaymentLogic = async (amount: number) => {
+        try {
+            setPaymentFlowState("creating_order");
+            const { data } = await axioseInstace.post("/api/cloudkitchens/makePayment", {
+                amounts: amount,
+            });
+            const { data: keys } = await axioseInstace.get("/api/getkeys");
+            const options = {
+                key: keys.key,
+                amount: data.responseData.amount,
+                currency: data.responseData.currency,
+                name: "Khanaaval",
+                descdescription: "Montly MemberShip",
+                order_id: data.responseData.id,
+                handler: async function (response: any) {
+                    try {
+                        setPaymentFlowState("verifying_payment");
+                        await axioseInstace.post(
+                            `/api/cloudkitchens/UpdatePaymentStatus/${kitchenprovider._id}`,
+                            {
+                                razorpay_payment_id: response.razorpay_payment_id,
+                                razorpay_order_id: response.razorpay_order_id,
+                                razorpay_signature: response.razorpay_signature,
+                                paymentAmmount: amount,
+                            },
+                        );
+                        await waitForPaymentActivation();
+                    } catch (error) {
+                        setPaymentFlowState("idle");
+                        toast({
+                            title: "Payment verification failed",
+                            description:
+                                "We could not confirm the subscription right now. Please try again.",
+                        });
+                        console.log(error);
+                    }
+                },
+                prefill: {
+                    name: kitchenprovider?.providerName,
+                    contact: kitchenprovider?.phoneNumber,
+                },
+                theme: {
+                    color: "#ee6516",
+                },
+                modal: {
+                    ondismiss: () => {
+                        setPaymentFlowState("idle");
+                    },
+                },
+            };
+            const razorpay = new window.Razorpay(options);
+            setPaymentFlowState("idle");
+            razorpay.open();
+
+        } catch (error) {
+            setPaymentFlowState("idle");
+            toast({
+                title: "Unable to start payment",
+                description: "Please try again in a moment.",
+            });
+            console.log(error);
+        }
+    };
     return (
         <div className="min-h-screen bg-[radial-gradient(circle_at_top_right,rgba(249,115,22,0.16),transparent_24%),radial-gradient(circle_at_bottom_left,rgba(15,23,42,0.06),transparent_26%),linear-gradient(180deg,#fff7ed_0%,#ffffff_42%,#f8fafc_100%)] px-4 py-4 sm:px-6 sm:py-8 lg:px-8">
+            {showProcessingOverlay ? (
+                <div className="fixed inset-0 z-[90] overflow-hidden">
+                    <div className="absolute inset-0 bg-slate-950/78 backdrop-blur-xl" />
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(249,115,22,0.35),transparent_28%),radial-gradient(circle_at_bottom_left,rgba(255,255,255,0.08),transparent_24%)]" />
+                    <div className="relative mx-auto flex min-h-screen max-w-6xl items-center justify-center px-4 py-8">
+                        <div className="grid w-full max-w-4xl overflow-hidden rounded-[32px] border border-white/10 bg-white/10 text-white shadow-[0_30px_80px_rgba(15,23,42,0.4)] lg:grid-cols-[1.08fr,0.92fr]">
+                            <div className="border-b border-white/10 bg-gradient-to-br from-orange-500 via-orange-600 to-red-500 p-6 sm:p-8 lg:border-b-0 lg:border-r">
+                                <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-orange-50">
+                                    <Sparkles className="h-4 w-4" />
+                                    Khanaaval Subscription
+                                </div>
+                                <h2 className="mt-5 text-3xl font-black leading-tight sm:text-4xl">
+                                    {activeOverlayCopy.title}
+                                </h2>
+                                <p className="mt-4 max-w-xl text-sm leading-7 text-orange-50/90 sm:text-base">
+                                    {activeOverlayCopy.description}
+                                </p>
+
+                                <div className="mt-8 grid gap-3 sm:grid-cols-3">
+                                    {[
+                                        "Secured payment flow",
+                                        "Instant subscription sync",
+                                        "Premium kitchen onboarding",
+                                    ].map((item) => (
+                                        <div
+                                            key={item}
+                                            className="rounded-[22px] border border-white/15 bg-white/10 px-4 py-4 text-sm font-semibold text-orange-50 backdrop-blur"
+                                        >
+                                            {item}
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="p-6 sm:p-8">
+                                <div className="flex items-center justify-between gap-4">
+                                    <div>
+                                        <p className="text-xs font-semibold uppercase tracking-[0.24em] text-orange-300">
+                                            {activeOverlayCopy.badge}
+                                        </p>
+                                        <p className="mt-2 text-sm leading-6 text-slate-200">
+                                            Please keep this screen open while we finish your access.
+                                        </p>
+                                    </div>
+                                    {paymentFlowState === "success" ? (
+                                        <div className="flex h-14 w-14 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-300">
+                                            <BadgeCheck className="h-7 w-7" />
+                                        </div>
+                                    ) : (
+                                        <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white/10 text-orange-300">
+                                            <LoaderCircle className="h-7 w-7 animate-spin" />
+                                        </div>
+                                    )}
+                                </div>
+
+                                <div className="mt-8 flex items-end gap-2">
+                                    {[40, 58, 74, 52].map((height, index) => (
+                                        <span
+                                            key={height}
+                                            className="w-3 rounded-full bg-gradient-to-t from-orange-500 via-orange-400 to-orange-200 animate-pulse"
+                                            style={{
+                                                height,
+                                                animationDelay: `${index * 160}ms`,
+                                            }}
+                                        />
+                                    ))}
+                                </div>
+
+                                <div className="mt-8 space-y-3">
+                                    {stepItems.map((step, index) => {
+                                        const completedSteps = getCompletedSteps();
+                                        const isComplete = completedSteps > index;
+                                        const isActive =
+                                            paymentFlowState !== "success" &&
+                                            completedSteps === index;
+
+                                        return (
+                                            <div
+                                                key={step.label}
+                                                className="flex items-center gap-3 rounded-[22px] border border-white/10 bg-white/5 px-4 py-4"
+                                            >
+                                                <div
+                                                    className={`flex h-10 w-10 items-center justify-center rounded-full ${
+                                                        isComplete
+                                                            ? "bg-emerald-500/20 text-emerald-300"
+                                                            : isActive
+                                                              ? "bg-orange-500/20 text-orange-300"
+                                                              : "bg-white/10 text-slate-400"
+                                                    }`}
+                                                >
+                                                    {isComplete ? (
+                                                        <CheckCircle2 className="h-5 w-5" />
+                                                    ) : isActive ? (
+                                                        <LoaderCircle className="h-5 w-5 animate-spin" />
+                                                    ) : (
+                                                        <span className="text-sm font-bold">{index + 1}</span>
+                                                    )}
+                                                </div>
+                                                <div>
+                                                    <p className="text-sm font-semibold text-white">
+                                                        {step.label}
+                                                    </p>
+                                                    <p className="mt-1 text-xs text-slate-300">
+                                                        {isComplete
+                                                            ? "Completed"
+                                                            : isActive
+                                                              ? "In progress"
+                                                              : "Waiting"}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+
+                                <div className="mt-8 rounded-[24px] border border-white/10 bg-white/6 px-4 py-4">
+                                    <p className="text-sm font-semibold text-white">
+                                        Premium onboarding in progress
+                                    </p>
+                                    <p className="mt-2 text-sm leading-6 text-slate-300">
+                                        We are securing your subscription and loading the next step
+                                        for your kitchen account.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            ) : null}
             <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 pb-24 sm:gap-8 sm:pb-8">
                 <section className="relative overflow-hidden rounded-[30px] border border-orange-100/50 bg-gradient-to-br from-slate-950 via-slate-900 to-orange-600 text-white shadow-[0_30px_70px_rgba(249,115,22,0.22)] sm:rounded-[38px]">
                     <div className="pointer-events-none absolute inset-y-0 right-0 hidden w-1/3 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.16),transparent_58%)] lg:block" />
@@ -169,8 +482,20 @@ export function PaymentScreen({ ownerName }: PaymentScreenProps) {
                                     </div>
                                 </div>
 
-                                <Button className="mt-2 hidden h-14 w-full rounded-2xl bg-gradient-to-r from-orange-500 via-orange-600 to-red-500 text-base font-bold shadow-lg shadow-orange-300 transition hover:-translate-y-0.5 hover:opacity-95 sm:flex">
-                                    Pay Rs. 299 & Activate Account
+                                <Button
+                                    type="submit"
+                                    onClick={() => PaymentLogic(1)}
+                                    disabled={isCheckoutPreparing}
+                                    className="mt-2 hidden h-14 w-full rounded-2xl bg-gradient-to-r from-orange-500 via-orange-600 to-red-500 text-base font-bold shadow-lg shadow-orange-300 transition hover:-translate-y-0.5 hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-80 sm:flex"
+                                >
+                                    {isCheckoutPreparing ? (
+                                        <>
+                                            <LoaderCircle className="mr-2 h-5 w-5 animate-spin" />
+                                            Preparing secure checkout...
+                                        </>
+                                    ) : (
+                                        "Pay Rs. 299 & Activate Account"
+                                    )}
                                 </Button>
                                 <p className="hidden text-center text-xs font-medium text-slate-500 sm:block">
                                     Instant activation. Cancel anytime. No per-order commission.
@@ -260,8 +585,16 @@ export function PaymentScreen({ ownerName }: PaymentScreenProps) {
                         <p className="mt-1 text-lg font-black text-slate-950">Rs. 299 / Month</p>
                         <p className="text-xs text-slate-500">Instant activation, zero commission</p>
                     </div>
-                    <Button className="h-12 rounded-2xl bg-gradient-to-r from-orange-500 via-orange-600 to-red-500 px-5 text-sm font-bold shadow-lg shadow-orange-300 hover:opacity-95">
-                        Activate
+                    <Button
+                        onClick={() => PaymentLogic(1)}
+                        disabled={isCheckoutPreparing}
+                        className="h-12 rounded-2xl bg-gradient-to-r from-orange-500 via-orange-600 to-red-500 px-5 text-sm font-bold shadow-lg shadow-orange-300 hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-80"
+                    >
+                        {isCheckoutPreparing ? (
+                            <LoaderCircle className="h-4 w-4 animate-spin" />
+                        ) : (
+                            "Activate"
+                        )}
                     </Button>
                 </div>
             </div>

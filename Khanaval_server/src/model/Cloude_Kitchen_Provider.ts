@@ -6,8 +6,14 @@ export interface ICloudeKitchenProviderSchema {
     phoneNumber: string,
     role: string,
     isMessRegister: Boolean,
-    PushNotifcationToken:string,
-    isPaymentDone:Boolean
+    PushNotifcationToken: string,
+    isPaymentDone: Boolean,
+    subscriptionStatus:String,
+    subscriptionStartDate:Date,
+    subscriptionEndDate:Date,
+    lastPaymentDate:Date,
+    paymentAmount:number
+
 }
 const CloudeKitchemProviderSchema = new Schema<ICloudeKitchenProviderSchema>({
     providerName: {
@@ -27,13 +33,36 @@ const CloudeKitchemProviderSchema = new Schema<ICloudeKitchenProviderSchema>({
         required: true,
         default: false
     },
-    PushNotifcationToken:{
-        type:String,
-        default:null
+    PushNotifcationToken: {
+        type: String,
+        default: null
     },
-    isPaymentDone:{
-        type:Boolean,
-        default:false
+    isPaymentDone: {
+        type: Boolean,
+        default: false
+    },
+    subscriptionStatus: {
+        type: String,
+        enum: ["inactive", "active", "expired"],
+        default: "inactive",
+    },
+    subscriptionStartDate: {
+        type: Date,
+        default: null,
+    },
+
+    subscriptionEndDate: {
+        type: Date,
+        default: null,
+    },
+
+    lastPaymentDate: {
+        type: Date,
+        default: null,
+    },
+    paymentAmount: {
+        type: Number,
+        default: 0,
     }
 })
 

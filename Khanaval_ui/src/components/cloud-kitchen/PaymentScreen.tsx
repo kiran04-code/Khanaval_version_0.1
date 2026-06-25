@@ -9,15 +9,12 @@ import { useState } from "react";
 import {
     ArrowRight,
     BadgeCheck,
-    ChefHat,
     CheckCircle2,
     CircleDollarSign,
     LoaderCircle,
     Infinity,
     Sparkles,
     Store,
-    ShieldCheck,
-    UtensilsCrossed,
     Wallet,
     Zap,
 } from "lucide-react";
@@ -54,33 +51,31 @@ export function PaymentScreen({ ownerName }: PaymentScreenProps) {
         checkout: {
             index: 0,
             badge: "Preparing Checkout",
-            title: "Setting the table for your Khanaaval pass",
-            description: "Creating your secure payment window for a smooth partner activation.",
-            note: "Secure gateway is warming up",
+            title: "Preparing payment",
+            description: "Opening your secure payment window.",
+            note: "Please wait",
         },
         verifying: {
             index: 1,
-            badge: "Checking Payment",
-            title: "Verifying your subscription payment",
+            badge: "Payment Received",
+            title: "Verifying payment",
             description:
                 "Please keep this screen open while Khanaaval confirms your payment details.",
-            note: "Gateway response is being matched",
+            note: "Checking payment status",
         },
         activating: {
             index: 2,
             badge: "Activating Access",
-            title: "Loading your cloud kitchen workspace",
-            description:
-                "We are turning on your dashboard, subscription, and kitchen partner access now.",
-            note: "Kitchen profile is syncing",
+            title: "Activating your kitchen account",
+            description: "We are enabling your subscription and loading your next screen.",
+            note: "Updating your partner access",
         },
         success: {
             index: 3,
             badge: "Success",
-            title: "Your kitchen is ready to serve",
-            description:
-                "Subscription activated successfully. Moving you into the Khanaaval setup flow.",
-            note: "Dashboard handoff in progress",
+            title: "Payment successful",
+            description: "Your Khanaaval subscription is active. Redirecting you now.",
+            note: "Taking you forward",
         },
     } satisfies Record<Exclude<LoadingStage, "idle">, {
         index: number;
@@ -100,9 +95,17 @@ export function PaymentScreen({ ownerName }: PaymentScreenProps) {
     ];
 
     const delay = (ms: number) => new Promise((resolve) => window.setTimeout(resolve, ms));
+    const STAGE_TEST_DELAY_MS = import.meta.env.DEV ? 900 : 0;
+
+    const addTestingDelay = async () => {
+        if (STAGE_TEST_DELAY_MS > 0) {
+            await delay(STAGE_TEST_DELAY_MS);
+        }
+    };
 
     const syncPaymentStatus = async () => {
         setLoadingStage("activating");
+        await addTestingDelay();
 
         for (let attempt = 0; attempt < 12; attempt += 1) {
             const { data } = await axioseInstace.get("/api/cloudkitchens/getcurrenr-onwer-cloude");
@@ -110,6 +113,7 @@ export function PaymentScreen({ ownerName }: PaymentScreenProps) {
 
             if (latestProvider?.isPaymentDone) {
                 setLoadingStage("success");
+                await addTestingDelay();
                 await delay(1200);
                 await queryclinet.invalidateQueries({
                     queryKey: ["KitchenProvider-data"],
@@ -142,6 +146,7 @@ export function PaymentScreen({ ownerName }: PaymentScreenProps) {
 
         try {
             setLoadingStage("checkout");
+            await addTestingDelay();
             const { data } = await axioseInstace.post("/api/cloudkitchens/makePayment", {
                 amounts: amount,
             });
@@ -156,6 +161,7 @@ export function PaymentScreen({ ownerName }: PaymentScreenProps) {
                 handler: async function (response: any) {
                     try {
                         setLoadingStage("verifying");
+                        await addTestingDelay();
                         await axioseInstace.post(
                             `/api/cloudkitchens/UpdatePaymentStatus/${kitchenprovider._id}`,
                             {
@@ -205,122 +211,46 @@ export function PaymentScreen({ ownerName }: PaymentScreenProps) {
     return (
         <div className="min-h-screen bg-[radial-gradient(circle_at_top_right,rgba(249,115,22,0.16),transparent_24%),radial-gradient(circle_at_bottom_left,rgba(15,23,42,0.06),transparent_26%),linear-gradient(180deg,#fff7ed_0%,#ffffff_42%,#f8fafc_100%)] px-4 py-4 sm:px-6 sm:py-8 lg:px-8">
             {showProcessingOverlay ? (
-                <div className="fixed inset-0 z-[90] overflow-hidden">
-                    <div className="absolute inset-0 bg-[linear-gradient(160deg,rgba(10,18,29,0.96)_0%,rgba(28,31,36,0.92)_48%,rgba(83,33,9,0.94)_100%)] backdrop-blur-xl" />
-                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(251,146,60,0.28),transparent_24%),radial-gradient(circle_at_bottom_left,rgba(255,255,255,0.08),transparent_26%)]" />
-                    <div className="relative mx-auto flex min-h-screen max-w-6xl items-center justify-center px-4 py-8">
-                        <div className="grid w-full max-w-5xl overflow-hidden rounded-[34px] border border-white/10 bg-white/8 text-white shadow-[0_35px_90px_rgba(15,23,42,0.45)] backdrop-blur lg:grid-cols-[1.08fr,0.92fr]">
-                            <div className="relative overflow-hidden border-b border-white/10 bg-gradient-to-br from-[#ff7a18] via-[#f05a28] to-[#24120b] p-6 sm:p-8 lg:border-b-0 lg:border-r lg:p-10">
-                                <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.22),transparent_26%),radial-gradient(circle_at_bottom_right,rgba(255,255,255,0.1),transparent_28%)]" />
-                                <div className="relative">
-                                    <div className="inline-flex items-center gap-3 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-orange-50">
-                                        <img src="/logo.png" alt="Khanaaval" className="h-7 w-7 rounded-full bg-white/90 p-1" />
-                                        Khanaaval Premium
-                                    </div>
-
-                                    <div className="relative mt-8 flex min-h-[250px] items-center justify-center sm:min-h-[290px]">
-                                        <div className="absolute h-52 w-52 rounded-full border border-white/15 bg-white/10 blur-3xl" />
-                                        <div className="absolute h-60 w-60 rounded-full border border-white/10" />
-                                        <div className="absolute h-44 w-44 rounded-full border border-dashed border-white/20 animate-spin [animation-duration:12s]" />
-
-                                        <div className="absolute left-4 top-6 rounded-[24px] border border-white/15 bg-black/15 px-4 py-3 backdrop-blur sm:left-8">
-                                            <ChefHat className="h-5 w-5 text-orange-100" />
-                                            <p className="mt-2 text-sm font-semibold text-white">Kitchen ready</p>
-                                            <p className="text-xs text-orange-100/85">Owner setup in progress</p>
-                                        </div>
-
-                                        <div className="absolute bottom-5 left-8 rounded-[24px] border border-white/15 bg-black/15 px-4 py-3 backdrop-blur">
-                                            <UtensilsCrossed className="h-5 w-5 text-orange-100" />
-                                            <p className="mt-2 text-sm font-semibold text-white">Thali service</p>
-                                            <p className="text-xs text-orange-100/85">Menu tools unlocking</p>
-                                        </div>
-
-                                        <div className="absolute right-3 top-16 rounded-[24px] border border-white/15 bg-black/15 px-4 py-3 backdrop-blur sm:right-8">
-                                            <ShieldCheck className="h-5 w-5 text-orange-100" />
-                                            <p className="mt-2 text-sm font-semibold text-white">Safe payment</p>
-                                            <p className="text-xs text-orange-100/85">Gateway protected</p>
-                                        </div>
-
-                                        <div className="relative z-10 flex h-36 w-36 flex-col items-center justify-center rounded-full border border-white/20 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.35),rgba(255,255,255,0.08))] shadow-[0_20px_60px_rgba(0,0,0,0.2)] backdrop-blur">
-                                            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white text-orange-600 shadow-lg">
-                                                {loadingStage === "success" ? (
-                                                    <BadgeCheck className="h-8 w-8" />
-                                                ) : (
-                                                    <ChefHat className="h-8 w-8" />
-                                                )}
-                                            </div>
-                                            <p className="mt-3 text-sm font-bold text-white">Khanaaval</p>
-                                            <p className="text-[11px] uppercase tracking-[0.18em] text-orange-100">
-                                                Partner Pass
-                                            </p>
-                                        </div>
-                                    </div>
-
-                                    <h2 className="mt-3 max-w-xl text-3xl font-black leading-tight sm:text-4xl">
-                                        {activeLoadingContent?.title}
-                                    </h2>
-                                    <p className="mt-4 max-w-xl text-sm leading-7 text-orange-50/90 sm:text-base">
-                                        {activeLoadingContent?.description}
-                                    </p>
-
-                                    <div className="mt-6 flex flex-wrap gap-3">
-                                        {["Branded onboarding", "Cloud kitchen tools", "Premium mobile flow"].map((item) => (
-                                            <div
-                                                key={item}
-                                                className="rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-semibold text-orange-50 sm:text-sm"
-                                            >
-                                                {item}
-                                            </div>
-                                        ))}
+                <div className="fixed inset-0 z-[90] bg-white">
+                    <div className="mx-auto flex min-h-screen w-full max-w-3xl items-center justify-center px-4 py-8 sm:px-6">
+                        <div className="w-full max-w-2xl rounded-[28px] border border-slate-200 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.08)]">
+                            <div className="h-1.5 w-full rounded-t-[28px] bg-gradient-to-r from-orange-500 via-orange-400 to-orange-500" />
+                            <div className="p-6 sm:p-8">
+                                <div className="flex items-center gap-3">
+                                    <img src="/logo.png" alt="Khanaaval" className="h-11 w-11 rounded-2xl border border-orange-100 bg-orange-50 p-2" />
+                                    <div>
+                                        <p className="text-sm font-bold text-slate-900">Khanaaval</p>
+                                        <p className="text-xs font-medium uppercase tracking-[0.18em] text-orange-500">
+                                            Cloud Kitchen Payment
+                                        </p>
                                     </div>
                                 </div>
-                            </div>
 
-                            <div className="p-6 sm:p-8 lg:p-10">
-                                <div className="flex items-start justify-between gap-4">
-                                    <div>
-                                        <p className="text-xs font-semibold uppercase tracking-[0.24em] text-orange-300">
-                                            {activeLoadingContent?.badge}
-                                        </p>
-                                        <p className="mt-2 text-sm leading-6 text-slate-200">
-                                            {activeLoadingContent?.note}
-                                        </p>
-                                    </div>
-                                    <div className="flex h-14 w-14 items-center justify-center rounded-full border border-white/10 bg-white/10">
+                                <div className="mt-8 flex flex-col items-center text-center">
+                                    <div className="flex h-20 w-20 items-center justify-center rounded-full border border-orange-200 bg-orange-50">
                                         {loadingStage === "success" ? (
-                                            <BadgeCheck className="h-7 w-7 text-emerald-300" />
+                                            <BadgeCheck className="h-10 w-10 text-green-600" />
                                         ) : (
-                                            <LoaderCircle className="h-7 w-7 animate-spin text-orange-300" />
+                                            <LoaderCircle className="h-10 w-10 animate-spin text-orange-500" />
                                         )}
                                     </div>
+                                    <p className="mt-4 text-xs font-semibold uppercase tracking-[0.22em] text-orange-500">
+                                        {activeLoadingContent?.badge}
+                                    </p>
+                                    <h2 className="mt-3 text-2xl font-black tracking-tight text-slate-950 sm:text-3xl">
+                                        {activeLoadingContent?.title}
+                                    </h2>
+                                    <p className="mt-3 max-w-lg text-sm leading-6 text-slate-600 sm:text-base">
+                                        {activeLoadingContent?.description}
+                                    </p>
                                 </div>
 
-                                <div className="mt-8 rounded-[28px] border border-white/10 bg-white/6 p-5">
-                                    <div className="flex items-center justify-between gap-4">
-                                        <div>
-                                            <p className="text-sm font-semibold text-white">
-                                                Live payment status
-                                            </p>
-                                            <p className="mt-1 text-xs text-slate-300">
-                                                Simple flow while testing and while real payments run.
-                                            </p>
-                                        </div>
-                                        <div className="rounded-full bg-emerald-500/12 px-3 py-1 text-xs font-semibold text-emerald-300">
-                                            Khanaaval Sync
-                                        </div>
-                                    </div>
-
-                                    <div className="mt-5 flex items-end gap-2">
-                                        {[34, 52, 70, 48, 62].map((height, index) => (
-                                            <span
-                                                key={height}
-                                                className="w-3 rounded-full bg-gradient-to-t from-orange-500 via-orange-400 to-orange-200 animate-pulse"
-                                                style={{
-                                                    height,
-                                                    animationDelay: `${index * 140}ms`,
-                                                }}
-                                            />
-                                        ))}
+                                <div className="mt-8 rounded-[24px] border border-slate-200 bg-slate-50 p-4">
+                                    <div className="flex items-center justify-between gap-3">
+                                        <p className="text-sm font-semibold text-slate-900">Current status</p>
+                                        <span className="rounded-full bg-orange-100 px-3 py-1 text-xs font-semibold text-orange-700">
+                                            {activeLoadingContent?.note}
+                                        </span>
                                     </div>
                                 </div>
 
@@ -334,15 +264,22 @@ export function PaymentScreen({ ownerName }: PaymentScreenProps) {
                                         return (
                                             <div
                                                 key={step}
-                                                className="flex items-center gap-3 rounded-[22px] border border-white/10 bg-white/5 px-4 py-4"
+                                                className={`flex items-center gap-4 rounded-[22px] border px-4 py-4 transition ${
+                                                    isActive
+                                                        ? "border-orange-200 bg-orange-50"
+                                                        : isCompleted
+                                                          ? "border-green-200 bg-green-50"
+                                                          : "border-slate-200 bg-white"
+                                                }`}
                                             >
                                                 <div
-                                                    className={`flex h-11 w-11 items-center justify-center rounded-full ${isCompleted
-                                                            ? "bg-emerald-500/20 text-emerald-300"
+                                                    className={`flex h-10 w-10 items-center justify-center rounded-full ${
+                                                        isCompleted
+                                                            ? "bg-green-100 text-green-600"
                                                             : isActive
-                                                                ? "bg-orange-500/20 text-orange-300"
-                                                                : "bg-white/10 text-slate-400"
-                                                        }`}
+                                                              ? "bg-orange-100 text-orange-600"
+                                                              : "bg-slate-100 text-slate-500"
+                                                    }`}
                                                 >
                                                     {isCompleted ? (
                                                         <CheckCircle2 className="h-5 w-5" />
@@ -352,14 +289,14 @@ export function PaymentScreen({ ownerName }: PaymentScreenProps) {
                                                         <span className="text-sm font-bold">{index + 1}</span>
                                                     )}
                                                 </div>
-                                                <div className="min-w-0">
-                                                    <p className="text-sm font-semibold text-white">{step}</p>
-                                                    <p className="mt-1 text-xs text-slate-300">
+                                                <div className="min-w-0 flex-1">
+                                                    <p className="text-sm font-semibold text-slate-900">{step}</p>
+                                                    <p className="mt-1 text-xs text-slate-500">
                                                         {isCompleted
-                                                            ? "Done"
+                                                            ? "Completed"
                                                             : isActive
-                                                                ? "Running now"
-                                                                : "Coming next"}
+                                                              ? "In progress"
+                                                              : "Waiting"}
                                                     </p>
                                                 </div>
                                             </div>
@@ -367,29 +304,9 @@ export function PaymentScreen({ ownerName }: PaymentScreenProps) {
                                     })}
                                 </div>
 
-                                <div className="mt-6 grid gap-3 sm:grid-cols-3">
-                                    {[
-                                        { icon: Sparkles, label: "Premium UI" },
-                                        { icon: Store, label: "Kitchen access" },
-                                        { icon: Wallet, label: "Payment sync" },
-                                    ].map((item) => {
-                                        const Icon = item.icon;
-
-                                        return (
-                                            <div
-                                                key={item.label}
-                                                className="rounded-[22px] border border-white/10 bg-white/6 px-4 py-4 text-center"
-                                            >
-                                                <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-orange-300">
-                                                    <Icon className="h-5 w-5" />
-                                                </div>
-                                                <p className="mt-3 text-xs font-semibold uppercase tracking-[0.16em] text-slate-200">
-                                                    {item.label}
-                                                </p>
-                                            </div>
-                                        );
-                                    })}
-                                </div>
+                                <p className="mt-6 text-center text-xs font-medium text-slate-500">
+                                    Please do not close this screen while we finish your payment setup.
+                                </p>
                             </div>
                         </div>
                     </div>

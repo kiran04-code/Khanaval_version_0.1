@@ -61,6 +61,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate } from "react-router-dom";
 import { KitchenRegistrationScreen } from "@/components/cloud-kitchen/KitchenRegistrationScreen";
 import { PaymentScreen } from "@/components/cloud-kitchen/PaymentScreen";
+import { RenewSubscriptionScreen } from "@/components/cloud-kitchen/RenewSubscriptionScreen";
 import { useStateContex } from "@/context/State";
 
 type DashboardSection =
@@ -357,6 +358,24 @@ export default function CloudeKitchen() {
         `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(ownerName)}`;
     const isPaymentDone = Boolean(kitchenprovider?.isPaymentDone);
     const isMessRegistered = Boolean(kitchenprovider?.isMessRegister);
+    const subscriptionStatus = kitchenprovider?.subscriptionStatus;
+    const subscriptionEndDate =
+        typeof kitchenprovider?.subscriptionEndDate === "string"
+            ? new Date(kitchenprovider.subscriptionEndDate)
+            : null;
+    const hasValidSubscriptionEndDate = Boolean(
+        subscriptionEndDate && !Number.isNaN(subscriptionEndDate.getTime()),
+    );
+    const isSubscriptionExpired = Boolean(
+        isPaymentDone &&
+            hasValidSubscriptionEndDate &&
+            subscriptionEndDate &&
+            subscriptionEndDate.getTime() <= Date.now(),
+    );
+    const isSubscriptionInactive = Boolean(
+        isPaymentDone && subscriptionStatus && subscriptionStatus !== "active",
+    );
+    const shouldShowRenewScreen = isSubscriptionExpired || isSubscriptionInactive;
 
     const newOrders = orders.filter((order) => order.status === "new");
     const acceptedOrders = orders.filter((order) => order.status === "preparing");
@@ -1544,6 +1563,16 @@ export default function CloudeKitchen() {
 
     if (!isPaymentDone) {
         return <PaymentScreen ownerName={ownerName} />;
+    }
+
+    if (shouldShowRenewScreen) {
+        return (
+            <RenewSubscriptionScreen
+                ownerName={ownerName}
+                subscriptionEndDate={kitchenprovider?.subscriptionEndDate}
+                lastPaymentDate={kitchenprovider?.lastPaymentDate}
+            />
+        );
     }
 
     if (isPaymentDone && !isMessRegistered) {

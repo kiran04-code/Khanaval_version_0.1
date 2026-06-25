@@ -9,12 +9,15 @@ import { useState } from "react";
 import {
     ArrowRight,
     BadgeCheck,
+    ChefHat,
     CheckCircle2,
     CircleDollarSign,
     LoaderCircle,
     Infinity,
     Sparkles,
     Store,
+    ShieldCheck,
+    UtensilsCrossed,
     Wallet,
     Zap,
 } from "lucide-react";
@@ -32,93 +35,82 @@ type PaymentScreenProps = {
     ownerName: string;
 };
 
-type PaymentFlowState =
-    | "idle"
-    | "creating_order"
-    | "verifying_payment"
-    | "activating_subscription"
-    | "success";
+type LoadingStage = "idle" | "checkout" | "verifying" | "activating" | "success";
 
 export function PaymentScreen({ ownerName }: PaymentScreenProps) {
     const { kitchenprovider } = KitchenProviderdata();
     const { axioseInstace } = useStateContex();
     const queryclinet = useQueryClient();
     const navigate = useNavigate();
-    const [paymentFlowState, setPaymentFlowState] = useState<PaymentFlowState>("idle");
+    const [loadingStage, setLoadingStage] = useState<LoadingStage>("idle");
 
-    const isCheckoutPreparing = paymentFlowState === "creating_order";
+    const isCheckoutPreparing = loadingStage === "checkout";
     const showProcessingOverlay =
-        paymentFlowState === "verifying_payment" ||
-        paymentFlowState === "activating_subscription" ||
-        paymentFlowState === "success";
+        loadingStage === "verifying" ||
+        loadingStage === "activating" ||
+        loadingStage === "success";
 
-    const overlayCopy: Record<
-        Exclude<PaymentFlowState, "idle">,
-        { badge: string; title: string; description: string }
-    > = {
-        creating_order: {
+    const loadingContent = {
+        checkout: {
+            index: 0,
             badge: "Preparing Checkout",
-            title: "Setting up your Khanaaval subscription",
-            description:
-                "We are creating your secure checkout session so activation can start smoothly.",
+            title: "Setting the table for your Khanaaval pass",
+            description: "Creating your secure payment window for a smooth partner activation.",
+            note: "Secure gateway is warming up",
         },
-        verifying_payment: {
-            badge: "Payment Verification",
-            title: "Checking your payment details",
+        verifying: {
+            index: 1,
+            badge: "Checking Payment",
+            title: "Verifying your subscription payment",
             description:
-                "Please stay on this screen while we verify your payment with the gateway.",
+                "Please keep this screen open while Khanaaval confirms your payment details.",
+            note: "Gateway response is being matched",
         },
-        activating_subscription: {
+        activating: {
+            index: 2,
             badge: "Activating Access",
-            title: "Unlocking your partner dashboard",
+            title: "Loading your cloud kitchen workspace",
             description:
-                "Your subscription is being activated and your kitchen workspace is loading now.",
+                "We are turning on your dashboard, subscription, and kitchen partner access now.",
+            note: "Kitchen profile is syncing",
         },
         success: {
-            badge: "Subscription Active",
-            title: "Your kitchen is ready",
+            index: 3,
+            badge: "Success",
+            title: "Your kitchen is ready to serve",
             description:
-                "Payment confirmed successfully. Taking you to the next Khanaaval setup step.",
+                "Subscription activated successfully. Moving you into the Khanaaval setup flow.",
+            note: "Dashboard handoff in progress",
         },
-    };
+    } satisfies Record<Exclude<LoadingStage, "idle">, {
+        index: number;
+        badge: string;
+        title: string;
+        description: string;
+        note: string;
+    }>;
 
-    const activeOverlayCopy = overlayCopy[paymentFlowState === "idle" ? "creating_order" : paymentFlowState];
+    const activeLoadingContent =
+        loadingStage === "idle" ? null : loadingContent[loadingStage];
 
-    const stepItems = [
-        { id: 0, label: "Checkout created" },
-        { id: 1, label: "Payment verified" },
-        { id: 2, label: "Subscription activated" },
+    const loadingSteps = [
+        "Checkout prepared",
+        "Payment verified",
+        "Kitchen access activated",
     ];
 
-    const getCompletedSteps = () => {
-        if (paymentFlowState === "success") {
-            return 3;
-        }
+    const delay = (ms: number) => new Promise((resolve) => window.setTimeout(resolve, ms));
 
-        if (paymentFlowState === "activating_subscription") {
-            return 2;
-        }
+    const syncPaymentStatus = async () => {
+        setLoadingStage("activating");
 
-        if (paymentFlowState === "verifying_payment") {
-            return 1;
-        }
-
-        if (paymentFlowState === "creating_order") {
-            return 0;
-        }
-
-        return -1;
-    };
-
-    const waitForPaymentActivation = async () => {
         for (let attempt = 0; attempt < 12; attempt += 1) {
-            setPaymentFlowState("activating_subscription");
             const { data } = await axioseInstace.get("/api/cloudkitchens/getcurrenr-onwer-cloude");
             const latestProvider = data?.responseData;
 
             if (latestProvider?.isPaymentDone) {
-                setPaymentFlowState("success");
-                await new Promise((resolve) => window.setTimeout(resolve, 1200));
+                setLoadingStage("success");
+                await delay(1200);
                 await queryclinet.invalidateQueries({
                     queryKey: ["KitchenProvider-data"],
                 });
@@ -126,23 +118,30 @@ export function PaymentScreen({ ownerName }: PaymentScreenProps) {
                     queryKey: ["KitchenProvider-data"],
                 });
                 navigate("/CloudeKitchen");
-                return true;
+                return;
             }
 
-            await new Promise((resolve) => window.setTimeout(resolve, 1200));
+            await delay(1200);
         }
 
-        setPaymentFlowState("idle");
+        setLoadingStage("idle");
         toast({
             title: "Activation is taking a little longer",
             description: "Your payment may be processing. Please wait a moment and try again.",
         });
-        return false;
     };
 
     const PaymentLogic = async (amount: number) => {
+        if (!kitchenprovider?._id) {
+            toast({
+                title: "Profile not ready",
+                description: "Please wait a moment and try payment again.",
+            });
+            return;
+        }
+
         try {
-            setPaymentFlowState("creating_order");
+            setLoadingStage("checkout");
             const { data } = await axioseInstace.post("/api/cloudkitchens/makePayment", {
                 amounts: amount,
             });
@@ -156,7 +155,7 @@ export function PaymentScreen({ ownerName }: PaymentScreenProps) {
                 order_id: data.responseData.id,
                 handler: async function (response: any) {
                     try {
-                        setPaymentFlowState("verifying_payment");
+                        setLoadingStage("verifying");
                         await axioseInstace.post(
                             `/api/cloudkitchens/UpdatePaymentStatus/${kitchenprovider._id}`,
                             {
@@ -166,9 +165,9 @@ export function PaymentScreen({ ownerName }: PaymentScreenProps) {
                                 paymentAmmount: amount,
                             },
                         );
-                        await waitForPaymentActivation();
+                        await syncPaymentStatus();
                     } catch (error) {
-                        setPaymentFlowState("idle");
+                        setLoadingStage("idle");
                         toast({
                             title: "Payment verification failed",
                             description:
@@ -186,16 +185,16 @@ export function PaymentScreen({ ownerName }: PaymentScreenProps) {
                 },
                 modal: {
                     ondismiss: () => {
-                        setPaymentFlowState("idle");
+                        setLoadingStage("idle");
                     },
                 },
             };
             const razorpay = new window.Razorpay(options);
-            setPaymentFlowState("idle");
+            setLoadingStage("idle");
             razorpay.open();
 
         } catch (error) {
-            setPaymentFlowState("idle");
+            setLoadingStage("idle");
             toast({
                 title: "Unable to start payment",
                 description: "Please try again in a moment.",
@@ -207,95 +206,145 @@ export function PaymentScreen({ ownerName }: PaymentScreenProps) {
         <div className="min-h-screen bg-[radial-gradient(circle_at_top_right,rgba(249,115,22,0.16),transparent_24%),radial-gradient(circle_at_bottom_left,rgba(15,23,42,0.06),transparent_26%),linear-gradient(180deg,#fff7ed_0%,#ffffff_42%,#f8fafc_100%)] px-4 py-4 sm:px-6 sm:py-8 lg:px-8">
             {showProcessingOverlay ? (
                 <div className="fixed inset-0 z-[90] overflow-hidden">
-                    <div className="absolute inset-0 bg-slate-950/78 backdrop-blur-xl" />
-                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(249,115,22,0.35),transparent_28%),radial-gradient(circle_at_bottom_left,rgba(255,255,255,0.08),transparent_24%)]" />
+                    <div className="absolute inset-0 bg-[linear-gradient(160deg,rgba(10,18,29,0.96)_0%,rgba(28,31,36,0.92)_48%,rgba(83,33,9,0.94)_100%)] backdrop-blur-xl" />
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(251,146,60,0.28),transparent_24%),radial-gradient(circle_at_bottom_left,rgba(255,255,255,0.08),transparent_26%)]" />
                     <div className="relative mx-auto flex min-h-screen max-w-6xl items-center justify-center px-4 py-8">
-                        <div className="grid w-full max-w-4xl overflow-hidden rounded-[32px] border border-white/10 bg-white/10 text-white shadow-[0_30px_80px_rgba(15,23,42,0.4)] lg:grid-cols-[1.08fr,0.92fr]">
-                            <div className="border-b border-white/10 bg-gradient-to-br from-orange-500 via-orange-600 to-red-500 p-6 sm:p-8 lg:border-b-0 lg:border-r">
-                                <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-orange-50">
-                                    <Sparkles className="h-4 w-4" />
-                                    Khanaaval Subscription
-                                </div>
-                                <h2 className="mt-5 text-3xl font-black leading-tight sm:text-4xl">
-                                    {activeOverlayCopy.title}
-                                </h2>
-                                <p className="mt-4 max-w-xl text-sm leading-7 text-orange-50/90 sm:text-base">
-                                    {activeOverlayCopy.description}
-                                </p>
+                        <div className="grid w-full max-w-5xl overflow-hidden rounded-[34px] border border-white/10 bg-white/8 text-white shadow-[0_35px_90px_rgba(15,23,42,0.45)] backdrop-blur lg:grid-cols-[1.08fr,0.92fr]">
+                            <div className="relative overflow-hidden border-b border-white/10 bg-gradient-to-br from-[#ff7a18] via-[#f05a28] to-[#24120b] p-6 sm:p-8 lg:border-b-0 lg:border-r lg:p-10">
+                                <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.22),transparent_26%),radial-gradient(circle_at_bottom_right,rgba(255,255,255,0.1),transparent_28%)]" />
+                                <div className="relative">
+                                    <div className="inline-flex items-center gap-3 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-orange-50">
+                                        <img src="/logo.png" alt="Khanaaval" className="h-7 w-7 rounded-full bg-white/90 p-1" />
+                                        Khanaaval Premium
+                                    </div>
 
-                                <div className="mt-8 grid gap-3 sm:grid-cols-3">
-                                    {[
-                                        "Secured payment flow",
-                                        "Instant subscription sync",
-                                        "Premium kitchen onboarding",
-                                    ].map((item) => (
-                                        <div
-                                            key={item}
-                                            className="rounded-[22px] border border-white/15 bg-white/10 px-4 py-4 text-sm font-semibold text-orange-50 backdrop-blur"
-                                        >
-                                            {item}
+                                    <div className="relative mt-8 flex min-h-[250px] items-center justify-center sm:min-h-[290px]">
+                                        <div className="absolute h-52 w-52 rounded-full border border-white/15 bg-white/10 blur-3xl" />
+                                        <div className="absolute h-60 w-60 rounded-full border border-white/10" />
+                                        <div className="absolute h-44 w-44 rounded-full border border-dashed border-white/20 animate-spin [animation-duration:12s]" />
+
+                                        <div className="absolute left-4 top-6 rounded-[24px] border border-white/15 bg-black/15 px-4 py-3 backdrop-blur sm:left-8">
+                                            <ChefHat className="h-5 w-5 text-orange-100" />
+                                            <p className="mt-2 text-sm font-semibold text-white">Kitchen ready</p>
+                                            <p className="text-xs text-orange-100/85">Owner setup in progress</p>
                                         </div>
-                                    ))}
+
+                                        <div className="absolute bottom-5 left-8 rounded-[24px] border border-white/15 bg-black/15 px-4 py-3 backdrop-blur">
+                                            <UtensilsCrossed className="h-5 w-5 text-orange-100" />
+                                            <p className="mt-2 text-sm font-semibold text-white">Thali service</p>
+                                            <p className="text-xs text-orange-100/85">Menu tools unlocking</p>
+                                        </div>
+
+                                        <div className="absolute right-3 top-16 rounded-[24px] border border-white/15 bg-black/15 px-4 py-3 backdrop-blur sm:right-8">
+                                            <ShieldCheck className="h-5 w-5 text-orange-100" />
+                                            <p className="mt-2 text-sm font-semibold text-white">Safe payment</p>
+                                            <p className="text-xs text-orange-100/85">Gateway protected</p>
+                                        </div>
+
+                                        <div className="relative z-10 flex h-36 w-36 flex-col items-center justify-center rounded-full border border-white/20 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.35),rgba(255,255,255,0.08))] shadow-[0_20px_60px_rgba(0,0,0,0.2)] backdrop-blur">
+                                            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white text-orange-600 shadow-lg">
+                                                {loadingStage === "success" ? (
+                                                    <BadgeCheck className="h-8 w-8" />
+                                                ) : (
+                                                    <ChefHat className="h-8 w-8" />
+                                                )}
+                                            </div>
+                                            <p className="mt-3 text-sm font-bold text-white">Khanaaval</p>
+                                            <p className="text-[11px] uppercase tracking-[0.18em] text-orange-100">
+                                                Partner Pass
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <h2 className="mt-3 max-w-xl text-3xl font-black leading-tight sm:text-4xl">
+                                        {activeLoadingContent?.title}
+                                    </h2>
+                                    <p className="mt-4 max-w-xl text-sm leading-7 text-orange-50/90 sm:text-base">
+                                        {activeLoadingContent?.description}
+                                    </p>
+
+                                    <div className="mt-6 flex flex-wrap gap-3">
+                                        {["Branded onboarding", "Cloud kitchen tools", "Premium mobile flow"].map((item) => (
+                                            <div
+                                                key={item}
+                                                className="rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-semibold text-orange-50 sm:text-sm"
+                                            >
+                                                {item}
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
 
-                            <div className="p-6 sm:p-8">
-                                <div className="flex items-center justify-between gap-4">
+                            <div className="p-6 sm:p-8 lg:p-10">
+                                <div className="flex items-start justify-between gap-4">
                                     <div>
                                         <p className="text-xs font-semibold uppercase tracking-[0.24em] text-orange-300">
-                                            {activeOverlayCopy.badge}
+                                            {activeLoadingContent?.badge}
                                         </p>
                                         <p className="mt-2 text-sm leading-6 text-slate-200">
-                                            Please keep this screen open while we finish your access.
+                                            {activeLoadingContent?.note}
                                         </p>
                                     </div>
-                                    {paymentFlowState === "success" ? (
-                                        <div className="flex h-14 w-14 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-300">
-                                            <BadgeCheck className="h-7 w-7" />
-                                        </div>
-                                    ) : (
-                                        <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white/10 text-orange-300">
-                                            <LoaderCircle className="h-7 w-7 animate-spin" />
-                                        </div>
-                                    )}
+                                    <div className="flex h-14 w-14 items-center justify-center rounded-full border border-white/10 bg-white/10">
+                                        {loadingStage === "success" ? (
+                                            <BadgeCheck className="h-7 w-7 text-emerald-300" />
+                                        ) : (
+                                            <LoaderCircle className="h-7 w-7 animate-spin text-orange-300" />
+                                        )}
+                                    </div>
                                 </div>
 
-                                <div className="mt-8 flex items-end gap-2">
-                                    {[40, 58, 74, 52].map((height, index) => (
-                                        <span
-                                            key={height}
-                                            className="w-3 rounded-full bg-gradient-to-t from-orange-500 via-orange-400 to-orange-200 animate-pulse"
-                                            style={{
-                                                height,
-                                                animationDelay: `${index * 160}ms`,
-                                            }}
-                                        />
-                                    ))}
+                                <div className="mt-8 rounded-[28px] border border-white/10 bg-white/6 p-5">
+                                    <div className="flex items-center justify-between gap-4">
+                                        <div>
+                                            <p className="text-sm font-semibold text-white">
+                                                Live payment status
+                                            </p>
+                                            <p className="mt-1 text-xs text-slate-300">
+                                                Simple flow while testing and while real payments run.
+                                            </p>
+                                        </div>
+                                        <div className="rounded-full bg-emerald-500/12 px-3 py-1 text-xs font-semibold text-emerald-300">
+                                            Khanaaval Sync
+                                        </div>
+                                    </div>
+
+                                    <div className="mt-5 flex items-end gap-2">
+                                        {[34, 52, 70, 48, 62].map((height, index) => (
+                                            <span
+                                                key={height}
+                                                className="w-3 rounded-full bg-gradient-to-t from-orange-500 via-orange-400 to-orange-200 animate-pulse"
+                                                style={{
+                                                    height,
+                                                    animationDelay: `${index * 140}ms`,
+                                                }}
+                                            />
+                                        ))}
+                                    </div>
                                 </div>
 
-                                <div className="mt-8 space-y-3">
-                                    {stepItems.map((step, index) => {
-                                        const completedSteps = getCompletedSteps();
-                                        const isComplete = completedSteps > index;
+                                <div className="mt-6 space-y-3">
+                                    {loadingSteps.map((step, index) => {
+                                        const currentStep = activeLoadingContent?.index ?? 0;
+                                        const isCompleted = currentStep > index + 1 || loadingStage === "success";
                                         const isActive =
-                                            paymentFlowState !== "success" &&
-                                            completedSteps === index;
+                                            loadingStage !== "success" && currentStep === index + 1;
 
                                         return (
                                             <div
-                                                key={step.label}
+                                                key={step}
                                                 className="flex items-center gap-3 rounded-[22px] border border-white/10 bg-white/5 px-4 py-4"
                                             >
                                                 <div
-                                                    className={`flex h-10 w-10 items-center justify-center rounded-full ${
-                                                        isComplete
+                                                    className={`flex h-11 w-11 items-center justify-center rounded-full ${isCompleted
                                                             ? "bg-emerald-500/20 text-emerald-300"
                                                             : isActive
-                                                              ? "bg-orange-500/20 text-orange-300"
-                                                              : "bg-white/10 text-slate-400"
-                                                    }`}
+                                                                ? "bg-orange-500/20 text-orange-300"
+                                                                : "bg-white/10 text-slate-400"
+                                                        }`}
                                                 >
-                                                    {isComplete ? (
+                                                    {isCompleted ? (
                                                         <CheckCircle2 className="h-5 w-5" />
                                                     ) : isActive ? (
                                                         <LoaderCircle className="h-5 w-5 animate-spin" />
@@ -303,16 +352,14 @@ export function PaymentScreen({ ownerName }: PaymentScreenProps) {
                                                         <span className="text-sm font-bold">{index + 1}</span>
                                                     )}
                                                 </div>
-                                                <div>
-                                                    <p className="text-sm font-semibold text-white">
-                                                        {step.label}
-                                                    </p>
+                                                <div className="min-w-0">
+                                                    <p className="text-sm font-semibold text-white">{step}</p>
                                                     <p className="mt-1 text-xs text-slate-300">
-                                                        {isComplete
-                                                            ? "Completed"
+                                                        {isCompleted
+                                                            ? "Done"
                                                             : isActive
-                                                              ? "In progress"
-                                                              : "Waiting"}
+                                                                ? "Running now"
+                                                                : "Coming next"}
                                                     </p>
                                                 </div>
                                             </div>
@@ -320,14 +367,28 @@ export function PaymentScreen({ ownerName }: PaymentScreenProps) {
                                     })}
                                 </div>
 
-                                <div className="mt-8 rounded-[24px] border border-white/10 bg-white/6 px-4 py-4">
-                                    <p className="text-sm font-semibold text-white">
-                                        Premium onboarding in progress
-                                    </p>
-                                    <p className="mt-2 text-sm leading-6 text-slate-300">
-                                        We are securing your subscription and loading the next step
-                                        for your kitchen account.
-                                    </p>
+                                <div className="mt-6 grid gap-3 sm:grid-cols-3">
+                                    {[
+                                        { icon: Sparkles, label: "Premium UI" },
+                                        { icon: Store, label: "Kitchen access" },
+                                        { icon: Wallet, label: "Payment sync" },
+                                    ].map((item) => {
+                                        const Icon = item.icon;
+
+                                        return (
+                                            <div
+                                                key={item.label}
+                                                className="rounded-[22px] border border-white/10 bg-white/6 px-4 py-4 text-center"
+                                            >
+                                                <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-orange-300">
+                                                    <Icon className="h-5 w-5" />
+                                                </div>
+                                                <p className="mt-3 text-xs font-semibold uppercase tracking-[0.16em] text-slate-200">
+                                                    {item.label}
+                                                </p>
+                                            </div>
+                                        );
+                                    })}
                                 </div>
                             </div>
                         </div>

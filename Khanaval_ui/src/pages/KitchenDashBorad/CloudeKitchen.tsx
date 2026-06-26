@@ -368,9 +368,9 @@ export default function CloudeKitchen() {
     );
     const isSubscriptionExpired = Boolean(
         isPaymentDone &&
-            hasValidSubscriptionEndDate &&
-            subscriptionEndDate &&
-            subscriptionEndDate.getTime() <= Date.now(),
+        hasValidSubscriptionEndDate &&
+        subscriptionEndDate &&
+        subscriptionEndDate.getTime() <= Date.now(),
     );
     const isSubscriptionInactive = Boolean(
         isPaymentDone && subscriptionStatus && subscriptionStatus !== "active",
@@ -590,7 +590,7 @@ export default function CloudeKitchen() {
     };
 
 
-   
+
     const renderLoadingView = () => (
         <div className="space-y-6">
             <Skeleton className="h-40 rounded-[32px]" />
@@ -748,53 +748,73 @@ export default function CloudeKitchen() {
 
     const renderDashboardSection = () => (
         <div className="space-y-6">
-            <div className="overflow-hidden rounded-[32px] bg-gradient-to-br from-slate-950 via-slate-900 to-orange-600 text-white shadow-[0_28px_65px_rgba(249,115,22,0.18)]">
-                <div className="grid gap-6 px-6 py-8 sm:px-8 sm:py-9 xl:grid-cols-[1.15fr,0.85fr]">
+            <div className="relative overflow-hidden rounded-[32px] bg-gradient-to-br from-slate-950 via-slate-900 to-orange-600 text-white shadow-[0_28px_65px_rgba(249,115,22,0.18)]">
+                {/* Background Image */}
+                <img
+                    src={kitchenprovider?.CloudKitchenID?.CloudKitchenimage}
+                    alt="Cloud Kitchen"
+                    className="absolute inset-0 h-full w-full object-cover"
+                />
+
+                {/* Dark Overlay */}
+                <div className="absolute inset-0 bg-black/60" />
+
+                {/* Content */}
+                <div className="relative z-10 grid gap-6 px-6 py-8 sm:px-8 sm:py-9 xl:grid-cols-[1.15fr,0.85fr]">
                     <div className="space-y-4">
                         <div className="inline-flex w-fit items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-sm font-semibold text-orange-100 backdrop-blur">
                             <Sparkles className="h-4 w-4" />
                             Today's Summary
                         </div>
+
                         <div className="space-y-3">
                             <h2 className="max-w-2xl text-4xl font-black tracking-tight sm:text-5xl">
-                                Welcome back, {ownerName}
+                                Welcome back, {kitchenprovider?.CloudKitchenID?.CloudKitchenName}
                             </h2>
+
                             <p className="max-w-2xl text-base leading-7 text-slate-200">
                                 Everything you need for orders, menu, customers, and earnings is organized
                                 here in a simple mobile-friendly flow.
                             </p>
                         </div>
+
                         <div className="flex flex-wrap gap-3 pt-2">
                             <Button className="h-12 rounded-2xl bg-white px-5 text-slate-950 hover:bg-orange-50">
                                 View Orders
                             </Button>
+
                             <Button
                                 variant="outline"
-                                className="h-12 rounded-2xl border-white/20 bg-white/8 px-5 text-white hover:bg-white/12 hover:text-white"
+                                className="h-12 rounded-2xl border-white/20 bg-white/10 px-5 text-white hover:bg-white/20 hover:text-white"
                             >
                                 Manage Menu
                             </Button>
                         </div>
                     </div>
+
                     <div className="grid gap-3">
-                        <div className="rounded-[24px] border border-white/12 bg-white/10 px-4 py-4 backdrop-blur">
+                        <div className="rounded-[24px] border border-white/20 bg-white/10 px-4 py-4 backdrop-blur">
                             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-orange-200">
                                 Kitchen Status
                             </p>
+
                             <div className="mt-3 flex items-start justify-between gap-3">
                                 <div>
                                     <p className="text-2xl font-black text-white">
                                         {kitchenOpen ? "Kitchen is open" : "Kitchen is closed"}
                                     </p>
+
                                     <p className="mt-2 text-sm text-slate-200">
                                         {kitchenOpen
                                             ? "You are accepting fresh orders right now."
                                             : "New orders are paused until you reopen the kitchen."}
                                     </p>
                                 </div>
+
                                 <Switch checked={kitchenOpen} onCheckedChange={setKitchenOpen} />
                             </div>
                         </div>
+
                         {[
                             { label: "Lunch Peak", value: "12:30 PM" },
                             { label: "Avg Rating", value: "4.5" },
@@ -802,18 +822,20 @@ export default function CloudeKitchen() {
                         ].map((item) => (
                             <div
                                 key={item.label}
-                                className="rounded-[24px] border border-white/10 bg-white/10 px-4 py-4 backdrop-blur"
+                                className="rounded-[24px] border border-white/20 bg-white/10 px-4 py-4 backdrop-blur"
                             >
                                 <p className="text-xs font-semibold uppercase tracking-[0.2em] text-orange-200">
                                     {item.label}
                                 </p>
-                                <p className="mt-3 text-4xl font-black text-white">{item.value}</p>
+
+                                <p className="mt-3 text-4xl font-black text-white">
+                                    {item.value}
+                                </p>
                             </div>
                         ))}
                     </div>
                 </div>
             </div>
-
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
                 {[
                     { label: "Today's Orders", value: "4", helper: "Across all delivery apps", icon: ShoppingBag, tone: "bg-orange-50 text-orange-600" },
@@ -1338,7 +1360,7 @@ export default function CloudeKitchen() {
             <Card className={cn(detailCardClass, "overflow-hidden")}>
                 <div className="relative h-48 w-full overflow-hidden sm:h-56">
                     <img
-                        src={defaultKitchenImage}
+                        src={kitchenprovider?.CloudKitchenID?.CloudKitchenimage}
                         alt="Cloud kitchen"
                         className="h-full w-full object-cover"
                     />
@@ -1348,7 +1370,7 @@ export default function CloudeKitchen() {
                             <p className="text-xs font-semibold uppercase tracking-[0.22em] text-orange-200">
                                 Business Profile
                             </p>
-                            <h2 className="mt-2 text-2xl font-black text-white">{kitchenName}</h2>
+                            <h2 className="mt-2 text-2xl font-black text-white">{kitchenprovider?.CloudKitchenID?.CloudKitchenName}</h2>
                         </div>
                         <button className="rounded-2xl bg-white/15 px-4 py-2 text-sm font-semibold text-white backdrop-blur">
                             Change Photo
@@ -1390,7 +1412,7 @@ export default function CloudeKitchen() {
                                 </p>
                                 <p className="flex items-center gap-2">
                                     <MapPin className="h-4 w-4 text-orange-500" />
-                                    Baner, Pune
+                                    {kitchenprovider?.CloudKitchenID?.CloudKitchenAdress.address}
                                 </p>
                             </div>
                         </div>
@@ -1399,8 +1421,7 @@ export default function CloudeKitchen() {
                                 Operating Hours
                             </p>
                             <div className="mt-3 space-y-2 text-sm text-slate-700">
-                                <p>Lunch: 11:00 AM to 3:30 PM</p>
-                                <p>Dinner: 7:00 PM to 11:30 PM</p>
+                                <p>Lunch: {kitchenprovider?.CloudKitchenID?.CloudKitchenCloseTime} to {kitchenprovider?.CloudKitchenID?.CloudKitchenOpenTime}</p>
                             </div>
                         </div>
                     </div>

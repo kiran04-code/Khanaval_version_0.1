@@ -27,6 +27,7 @@ import MealRedeemPage from "./pages/MealReademPage";
 import Paas from "./pages/Paas";
 import Announcements from "./pages/Anniumment";
 import CloudeKitchen from "./pages/KitchenDashBorad/CloudeKitchen";
+import CloudKitchenOnboarding from "./pages/KitchenDashBorad/CloudKitchenOnboarding";
 
 const App = () => {
   useEffect(() => {
@@ -53,6 +54,7 @@ const App = () => {
           <Route path="/" element={<Index />} />
           <Route path="/auth" element={<PublicRoute><AuthPage/></PublicRoute>} />
           <Route path="/CloudeKitchen" element={<CloudeKitchen />} />
+          <Route path="/CloudeKitchen/register-kitchen" element={<ProtectedRoutes><CloudKitchenOnboarding /></ProtectedRoutes>} />
           <Route path="/dashboard" element={<UserDashboard />} />
           <Route path="/profile" element={<ProtectedRoutes><KhanavalProfile /></ProtectedRoutes>} />
           <Route path="/mess/:id" element={<MessDetailPage />} />

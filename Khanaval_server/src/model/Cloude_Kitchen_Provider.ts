@@ -1,4 +1,4 @@
-import { model, Schema } from "mongoose"
+import mongoose, { model, Schema } from "mongoose"
 
 export interface ICloudeKitchenProviderSchema {
     id?: string,
@@ -12,7 +12,8 @@ export interface ICloudeKitchenProviderSchema {
     subscriptionStartDate:Date,
     subscriptionEndDate:Date,
     lastPaymentDate:Date,
-    paymentAmount:number
+    paymentAmount:number,
+    CloudKitchenID:mongoose.Types.ObjectId
 
 }
 const CloudeKitchemProviderSchema = new Schema<ICloudeKitchenProviderSchema>({
@@ -63,6 +64,11 @@ const CloudeKitchemProviderSchema = new Schema<ICloudeKitchenProviderSchema>({
     paymentAmount: {
         type: Number,
         default: 0,
+    },
+    CloudKitchenID:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"MessAsCloudeKitche",
+        require:true,
     }
 })
 

@@ -22,11 +22,13 @@ export interface JwtToken {
     providerName?: string;
     phoneNumber?: string;
     role?: string;
+    ispaymentDone?: Boolean;
 }
 export interface JwtTokeninput {
     id: string;
     providerName?: string;
     phoneNumber?: string;
     role?: string;
+    ispaymentDone?: Boolean;
 }
 //# sourceMappingURL=types.d.ts.map

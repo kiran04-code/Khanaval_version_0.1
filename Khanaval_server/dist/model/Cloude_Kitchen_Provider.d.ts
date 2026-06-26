@@ -1,4 +1,4 @@
-import { Schema } from "mongoose";
+import mongoose from "mongoose";
 export interface ICloudeKitchenProviderSchema {
     id?: string;
     providerName: string;
@@ -12,139 +12,149 @@ export interface ICloudeKitchenProviderSchema {
     subscriptionEndDate: Date;
     lastPaymentDate: Date;
     paymentAmount: number;
+    CloudKitchenID: mongoose.Types.ObjectId;
 }
-export declare const CloudKitchenOwner: import("mongoose").Model<ICloudeKitchenProviderSchema, {}, {}, {
+export declare const CloudKitchenOwner: mongoose.Model<ICloudeKitchenProviderSchema, {}, {}, {
     id: string;
-}, import("mongoose").Document<unknown, {}, ICloudeKitchenProviderSchema, {
+}, mongoose.Document<unknown, {}, ICloudeKitchenProviderSchema, {
     id: string;
-}, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<ICloudeKitchenProviderSchema & {
-    _id: import("mongoose").Types.ObjectId;
+}, mongoose.ResolveSchemaOptions<mongoose.DefaultSchemaOptions>> & Omit<ICloudeKitchenProviderSchema & {
+    _id: mongoose.Types.ObjectId;
 } & {
     __v: number;
 }, "id"> & {
     id: string;
-}, Schema<ICloudeKitchenProviderSchema, import("mongoose").Model<ICloudeKitchenProviderSchema, any, any, any, (import("mongoose").Document<unknown, any, ICloudeKitchenProviderSchema, any, import("mongoose").DefaultSchemaOptions> & ICloudeKitchenProviderSchema & {
-    _id: import("mongoose").Types.ObjectId;
+}, mongoose.Schema<ICloudeKitchenProviderSchema, mongoose.Model<ICloudeKitchenProviderSchema, any, any, any, (mongoose.Document<unknown, any, ICloudeKitchenProviderSchema, any, mongoose.DefaultSchemaOptions> & ICloudeKitchenProviderSchema & {
+    _id: mongoose.Types.ObjectId;
 } & {
     __v: number;
 } & {
     id: string;
-}) | (import("mongoose").Document<unknown, any, ICloudeKitchenProviderSchema, any, import("mongoose").DefaultSchemaOptions> & ICloudeKitchenProviderSchema & {
-    _id: import("mongoose").Types.ObjectId;
+}) | (mongoose.Document<unknown, any, ICloudeKitchenProviderSchema, any, mongoose.DefaultSchemaOptions> & ICloudeKitchenProviderSchema & {
+    _id: mongoose.Types.ObjectId;
 } & {
     __v: number;
-}), any, ICloudeKitchenProviderSchema>, {}, {}, {}, {}, import("mongoose").DefaultSchemaOptions, ICloudeKitchenProviderSchema, import("mongoose").Document<unknown, {}, ICloudeKitchenProviderSchema, {
+}), any, ICloudeKitchenProviderSchema>, {}, {}, {}, {}, mongoose.DefaultSchemaOptions, ICloudeKitchenProviderSchema, mongoose.Document<unknown, {}, ICloudeKitchenProviderSchema, {
     id: string;
-}, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<ICloudeKitchenProviderSchema & {
-    _id: import("mongoose").Types.ObjectId;
+}, mongoose.ResolveSchemaOptions<mongoose.DefaultSchemaOptions>> & Omit<ICloudeKitchenProviderSchema & {
+    _id: mongoose.Types.ObjectId;
 } & {
     __v: number;
 }, "id"> & {
     id: string;
 }, {
-    id?: import("mongoose").SchemaDefinitionProperty<string | undefined, ICloudeKitchenProviderSchema, import("mongoose").Document<unknown, {}, ICloudeKitchenProviderSchema, {
+    id?: mongoose.SchemaDefinitionProperty<string | undefined, ICloudeKitchenProviderSchema, mongoose.Document<unknown, {}, ICloudeKitchenProviderSchema, {
         id: string;
-    }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<ICloudeKitchenProviderSchema & {
-        _id: import("mongoose").Types.ObjectId;
+    }, mongoose.ResolveSchemaOptions<mongoose.DefaultSchemaOptions>> & Omit<ICloudeKitchenProviderSchema & {
+        _id: mongoose.Types.ObjectId;
     } & {
         __v: number;
     }, "id"> & {
         id: string;
     }>;
-    providerName?: import("mongoose").SchemaDefinitionProperty<string, ICloudeKitchenProviderSchema, import("mongoose").Document<unknown, {}, ICloudeKitchenProviderSchema, {
+    providerName?: mongoose.SchemaDefinitionProperty<string, ICloudeKitchenProviderSchema, mongoose.Document<unknown, {}, ICloudeKitchenProviderSchema, {
         id: string;
-    }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<ICloudeKitchenProviderSchema & {
-        _id: import("mongoose").Types.ObjectId;
+    }, mongoose.ResolveSchemaOptions<mongoose.DefaultSchemaOptions>> & Omit<ICloudeKitchenProviderSchema & {
+        _id: mongoose.Types.ObjectId;
     } & {
         __v: number;
     }, "id"> & {
         id: string;
     }>;
-    phoneNumber?: import("mongoose").SchemaDefinitionProperty<string, ICloudeKitchenProviderSchema, import("mongoose").Document<unknown, {}, ICloudeKitchenProviderSchema, {
+    phoneNumber?: mongoose.SchemaDefinitionProperty<string, ICloudeKitchenProviderSchema, mongoose.Document<unknown, {}, ICloudeKitchenProviderSchema, {
         id: string;
-    }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<ICloudeKitchenProviderSchema & {
-        _id: import("mongoose").Types.ObjectId;
+    }, mongoose.ResolveSchemaOptions<mongoose.DefaultSchemaOptions>> & Omit<ICloudeKitchenProviderSchema & {
+        _id: mongoose.Types.ObjectId;
     } & {
         __v: number;
     }, "id"> & {
         id: string;
     }>;
-    role?: import("mongoose").SchemaDefinitionProperty<string, ICloudeKitchenProviderSchema, import("mongoose").Document<unknown, {}, ICloudeKitchenProviderSchema, {
+    role?: mongoose.SchemaDefinitionProperty<string, ICloudeKitchenProviderSchema, mongoose.Document<unknown, {}, ICloudeKitchenProviderSchema, {
         id: string;
-    }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<ICloudeKitchenProviderSchema & {
-        _id: import("mongoose").Types.ObjectId;
+    }, mongoose.ResolveSchemaOptions<mongoose.DefaultSchemaOptions>> & Omit<ICloudeKitchenProviderSchema & {
+        _id: mongoose.Types.ObjectId;
     } & {
         __v: number;
     }, "id"> & {
         id: string;
     }>;
-    isMessRegister?: import("mongoose").SchemaDefinitionProperty<Boolean, ICloudeKitchenProviderSchema, import("mongoose").Document<unknown, {}, ICloudeKitchenProviderSchema, {
+    isMessRegister?: mongoose.SchemaDefinitionProperty<Boolean, ICloudeKitchenProviderSchema, mongoose.Document<unknown, {}, ICloudeKitchenProviderSchema, {
         id: string;
-    }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<ICloudeKitchenProviderSchema & {
-        _id: import("mongoose").Types.ObjectId;
+    }, mongoose.ResolveSchemaOptions<mongoose.DefaultSchemaOptions>> & Omit<ICloudeKitchenProviderSchema & {
+        _id: mongoose.Types.ObjectId;
     } & {
         __v: number;
     }, "id"> & {
         id: string;
     }>;
-    PushNotifcationToken?: import("mongoose").SchemaDefinitionProperty<string, ICloudeKitchenProviderSchema, import("mongoose").Document<unknown, {}, ICloudeKitchenProviderSchema, {
+    PushNotifcationToken?: mongoose.SchemaDefinitionProperty<string, ICloudeKitchenProviderSchema, mongoose.Document<unknown, {}, ICloudeKitchenProviderSchema, {
         id: string;
-    }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<ICloudeKitchenProviderSchema & {
-        _id: import("mongoose").Types.ObjectId;
+    }, mongoose.ResolveSchemaOptions<mongoose.DefaultSchemaOptions>> & Omit<ICloudeKitchenProviderSchema & {
+        _id: mongoose.Types.ObjectId;
     } & {
         __v: number;
     }, "id"> & {
         id: string;
     }>;
-    isPaymentDone?: import("mongoose").SchemaDefinitionProperty<Boolean, ICloudeKitchenProviderSchema, import("mongoose").Document<unknown, {}, ICloudeKitchenProviderSchema, {
+    isPaymentDone?: mongoose.SchemaDefinitionProperty<Boolean, ICloudeKitchenProviderSchema, mongoose.Document<unknown, {}, ICloudeKitchenProviderSchema, {
         id: string;
-    }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<ICloudeKitchenProviderSchema & {
-        _id: import("mongoose").Types.ObjectId;
+    }, mongoose.ResolveSchemaOptions<mongoose.DefaultSchemaOptions>> & Omit<ICloudeKitchenProviderSchema & {
+        _id: mongoose.Types.ObjectId;
     } & {
         __v: number;
     }, "id"> & {
         id: string;
     }>;
-    subscriptionStatus?: import("mongoose").SchemaDefinitionProperty<String, ICloudeKitchenProviderSchema, import("mongoose").Document<unknown, {}, ICloudeKitchenProviderSchema, {
+    subscriptionStatus?: mongoose.SchemaDefinitionProperty<String, ICloudeKitchenProviderSchema, mongoose.Document<unknown, {}, ICloudeKitchenProviderSchema, {
         id: string;
-    }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<ICloudeKitchenProviderSchema & {
-        _id: import("mongoose").Types.ObjectId;
+    }, mongoose.ResolveSchemaOptions<mongoose.DefaultSchemaOptions>> & Omit<ICloudeKitchenProviderSchema & {
+        _id: mongoose.Types.ObjectId;
     } & {
         __v: number;
     }, "id"> & {
         id: string;
     }>;
-    subscriptionStartDate?: import("mongoose").SchemaDefinitionProperty<Date, ICloudeKitchenProviderSchema, import("mongoose").Document<unknown, {}, ICloudeKitchenProviderSchema, {
+    subscriptionStartDate?: mongoose.SchemaDefinitionProperty<Date, ICloudeKitchenProviderSchema, mongoose.Document<unknown, {}, ICloudeKitchenProviderSchema, {
         id: string;
-    }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<ICloudeKitchenProviderSchema & {
-        _id: import("mongoose").Types.ObjectId;
+    }, mongoose.ResolveSchemaOptions<mongoose.DefaultSchemaOptions>> & Omit<ICloudeKitchenProviderSchema & {
+        _id: mongoose.Types.ObjectId;
     } & {
         __v: number;
     }, "id"> & {
         id: string;
     }>;
-    subscriptionEndDate?: import("mongoose").SchemaDefinitionProperty<Date, ICloudeKitchenProviderSchema, import("mongoose").Document<unknown, {}, ICloudeKitchenProviderSchema, {
+    subscriptionEndDate?: mongoose.SchemaDefinitionProperty<Date, ICloudeKitchenProviderSchema, mongoose.Document<unknown, {}, ICloudeKitchenProviderSchema, {
         id: string;
-    }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<ICloudeKitchenProviderSchema & {
-        _id: import("mongoose").Types.ObjectId;
+    }, mongoose.ResolveSchemaOptions<mongoose.DefaultSchemaOptions>> & Omit<ICloudeKitchenProviderSchema & {
+        _id: mongoose.Types.ObjectId;
     } & {
         __v: number;
     }, "id"> & {
         id: string;
     }>;
-    lastPaymentDate?: import("mongoose").SchemaDefinitionProperty<Date, ICloudeKitchenProviderSchema, import("mongoose").Document<unknown, {}, ICloudeKitchenProviderSchema, {
+    lastPaymentDate?: mongoose.SchemaDefinitionProperty<Date, ICloudeKitchenProviderSchema, mongoose.Document<unknown, {}, ICloudeKitchenProviderSchema, {
         id: string;
-    }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<ICloudeKitchenProviderSchema & {
-        _id: import("mongoose").Types.ObjectId;
+    }, mongoose.ResolveSchemaOptions<mongoose.DefaultSchemaOptions>> & Omit<ICloudeKitchenProviderSchema & {
+        _id: mongoose.Types.ObjectId;
     } & {
         __v: number;
     }, "id"> & {
         id: string;
     }>;
-    paymentAmount?: import("mongoose").SchemaDefinitionProperty<number, ICloudeKitchenProviderSchema, import("mongoose").Document<unknown, {}, ICloudeKitchenProviderSchema, {
+    paymentAmount?: mongoose.SchemaDefinitionProperty<number, ICloudeKitchenProviderSchema, mongoose.Document<unknown, {}, ICloudeKitchenProviderSchema, {
         id: string;
-    }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<ICloudeKitchenProviderSchema & {
-        _id: import("mongoose").Types.ObjectId;
+    }, mongoose.ResolveSchemaOptions<mongoose.DefaultSchemaOptions>> & Omit<ICloudeKitchenProviderSchema & {
+        _id: mongoose.Types.ObjectId;
+    } & {
+        __v: number;
+    }, "id"> & {
+        id: string;
+    }>;
+    CloudKitchenID?: mongoose.SchemaDefinitionProperty<mongoose.Types.ObjectId, ICloudeKitchenProviderSchema, mongoose.Document<unknown, {}, ICloudeKitchenProviderSchema, {
+        id: string;
+    }, mongoose.ResolveSchemaOptions<mongoose.DefaultSchemaOptions>> & Omit<ICloudeKitchenProviderSchema & {
+        _id: mongoose.Types.ObjectId;
     } & {
         __v: number;
     }, "id"> & {

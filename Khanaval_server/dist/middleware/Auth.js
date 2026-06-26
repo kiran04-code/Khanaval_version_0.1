@@ -12,6 +12,7 @@ export const AuthMiddleware = async (req, res, next) => {
             providerName: data?.providerName,
             phoneNumber: data?.phoneNumber,
             role: data?.role,
+            ispaymentDone: data?.ispaymentDone
         };
         return next();
     }

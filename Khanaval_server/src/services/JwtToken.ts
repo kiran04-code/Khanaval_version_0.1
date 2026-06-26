@@ -10,7 +10,8 @@ class jwtService {
             _id: user.id!,
             providerName: user.providerName!,
             phoneNumber: user.phoneNumber!,
-            role: user.role!
+            role: user.role!,
+            ispaymentDone:user.ispaymentDone!
         }
         const token = Jwt.sign(payload, jwtSecret)
         return token

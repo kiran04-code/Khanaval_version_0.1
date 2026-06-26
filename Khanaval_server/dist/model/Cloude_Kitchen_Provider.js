@@ -1,4 +1,4 @@
-import { model, Schema } from "mongoose";
+import mongoose, { model, Schema } from "mongoose";
 const CloudeKitchemProviderSchema = new Schema({
     providerName: {
         type: String,
@@ -45,6 +45,11 @@ const CloudeKitchemProviderSchema = new Schema({
     paymentAmount: {
         type: Number,
         default: 0,
+    },
+    CloudKitchenID: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "MessAsCloudeKitche",
+        require: true,
     }
 });
 export const CloudKitchenOwner = model("CloudKitchenOwner", CloudeKitchemProviderSchema);

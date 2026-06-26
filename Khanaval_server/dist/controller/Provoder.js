@@ -10,7 +10,6 @@ import { Subscription } from "../model/Subscriber.js";
 import { SubscribeRequest } from "../model/SubscripeRequest.js";
 import { error } from "node:console";
 export const BufferimagetoURlimage = async (req, res) => {
-    res.setHeader("Access-Control-Allow-Origin", "*");
     try {
         if (!req.files) {
             return res.status(400).json({ success: false, message: "No files uploaded" });

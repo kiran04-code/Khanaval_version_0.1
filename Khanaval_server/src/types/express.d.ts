@@ -6,6 +6,7 @@ declare global {
         providerName: string;
         phoneNumber: string;
         role: string;
+        ispaymentDone:Boolean
       };
     }
   }

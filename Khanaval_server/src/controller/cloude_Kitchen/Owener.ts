@@ -3,6 +3,7 @@ import { senderror, sendReponse } from "../../utils/Response.js";
 import { Provider } from "../../services/Cloudekitchen/Provider.js";
 import { ApiError } from "../../utils/Apierror.js";
 import { CloudKitchenOwner } from "../../model/Cloude_Kitchen_Provider.js";
+import { CloudKitchen } from "../../model/MessAsCloude.js";
 
 export const SendOtp = async (req: Request, res: Response) => {
     try {
@@ -72,9 +73,10 @@ export const loginverifyOtp = async (req: Request, res: Response) => {
 
 export const getCloudeCurrentUser = async (req: Request, res: Response) => {
     if (req.CloudeUser?.id) {
-        const getCurrentdata = await CloudKitchenOwner.findById(req.CloudeUser.id)
+        const getCurrentdata = await CloudKitchenOwner.findById(req.CloudeUser.id).populate('CloudKitchenID')
         return sendReponse(res, 200, "sucessfully fetchUser Data", getCurrentdata)
     } else {
         return senderror(res, 404, "User UnAuthorised")
     }
 }
+

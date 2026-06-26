@@ -3,6 +3,7 @@ import { senderror, sendReponse } from "../../utils/Response.js";
 import { Provider } from "../../services/Cloudekitchen/Provider.js";
 import { ApiError } from "../../utils/Apierror.js";
 import { CloudKitchenOwner } from "../../model/Cloude_Kitchen_Provider.js";
+import { CloudKitchen } from "../../model/MessAsCloude.js";
 export const SendOtp = async (req, res) => {
     try {
         const { phoneNumber } = req.body;
@@ -57,7 +58,7 @@ export const loginverifyOtp = async (req, res) => {
 };
 export const getCloudeCurrentUser = async (req, res) => {
     if (req.CloudeUser?.id) {
-        const getCurrentdata = await CloudKitchenOwner.findById(req.CloudeUser.id);
+        const getCurrentdata = await CloudKitchenOwner.findById(req.CloudeUser.id).populate('CloudKitchenID');
         return sendReponse(res, 200, "sucessfully fetchUser Data", getCurrentdata);
     }
     else {

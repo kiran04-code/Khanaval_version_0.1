@@ -24,12 +24,14 @@ export  interface JwtToken {
     _id:string,
     providerName?:string,
     phoneNumber?:string,
-    role?:string
+    role?:string,
+    ispaymentDone?:Boolean
 
 }
 export  interface JwtTokeninput {
     id:string,
     providerName?:string,
     phoneNumber?:string
-    role?:string
+    role?:string,
+    ispaymentDone?:Boolean
 }

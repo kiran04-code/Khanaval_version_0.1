@@ -13,6 +13,7 @@ export const AuthMiddleware = async (req: Request, res: Response, next: NextFunc
             providerName: data?.providerName!,
             phoneNumber: data?.phoneNumber!,
             role: data?.role!,
+            ispaymentDone:data?.ispaymentDone!
         };
         return next()
     } catch (error) {

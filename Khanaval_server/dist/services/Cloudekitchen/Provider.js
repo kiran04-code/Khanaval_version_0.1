@@ -33,6 +33,7 @@ export class Provider {
         const provider_id = await CloudKitchenOwner.create({
             providerName,
             phoneNumber,
+            isPaymentDone: false
         });
         const token = await jwtService.createToken(provider_id);
         await redisclient.del(OPTKEY(phoneNumber));

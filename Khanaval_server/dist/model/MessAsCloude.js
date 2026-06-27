@@ -64,7 +64,13 @@ const MessAsCloudeKitcheSchema = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "CloudKitchenOwner",
         required: true,
-    }
+    },
+    MenuId: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "KitchenMenu"
+        }
+    ]
 });
 export const CloudKitchen = model("MessAsCloudeKitche", MessAsCloudeKitcheSchema);
 //# sourceMappingURL=MessAsCloude.js.map

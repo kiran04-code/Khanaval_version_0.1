@@ -73,7 +73,12 @@ export const loginverifyOtp = async (req: Request, res: Response) => {
 
 export const getCloudeCurrentUser = async (req: Request, res: Response) => {
     if (req.CloudeUser?.id) {
-        const getCurrentdata = await CloudKitchenOwner.findById(req.CloudeUser.id).populate('CloudKitchenID')
+        const getCurrentdata = await CloudKitchenOwner.findById(req.CloudeUser.id).populate({
+            path:"CloudKitchenID",
+            populate:{
+                path:"MenuId"
+            }
+        })
         return sendReponse(res, 200, "sucessfully fetchUser Data", getCurrentdata)
     } else {
         return senderror(res, 404, "User UnAuthorised")

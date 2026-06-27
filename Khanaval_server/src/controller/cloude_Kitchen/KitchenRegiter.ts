@@ -1,7 +1,9 @@
-import {type Request,type Response} from "express"
+import { type Request, type Response } from "express"
 import { CloudKitchenOwner } from "../../model/Cloude_Kitchen_Provider.js";
 import { CloudKitchen } from "../../model/MessAsCloude.js";
 import { senderror, sendReponse } from "../../utils/Response.js";
+import { ApiError } from "../../utils/Apierror.js";
+import { KitchenService } from "../../services/Cloudekitchen/KitchenAsMessService.js";
 
 export const registerCloudKitchen = async (req: Request, res: Response) => {
     try {
@@ -74,7 +76,7 @@ export const registerCloudKitchen = async (req: Request, res: Response) => {
 
         await CloudKitchenOwner.findByIdAndUpdate(req.CloudeUser.id, {
             isMessRegister: true,
-            CloudKitchenID:cloudKitchen._id,
+            CloudKitchenID: cloudKitchen._id,
         });
 
         return sendReponse(res, 201, "Cloud kitchen registered successfully", cloudKitchen);
@@ -82,3 +84,21 @@ export const registerCloudKitchen = async (req: Request, res: Response) => {
         return senderror(res, 500, "Internal Server Error in cloud kitchen register route", error);
     }
 };
+
+
+export const AddItemToMenu = async (req: Request, res: Response) => {
+    try {
+        const { productName, productprice, productimage,productCategory } = req.body
+        if (!productName || !productprice || !productimage) {
+            return senderror(res, 400, "Bad request body Miss Some data")
+        }
+        const kitchenId = req.params.kid!
+         await KitchenService.AddItemToMenu(productName, productprice, productimage,productCategory, kitchenId)
+        return sendReponse(res, 201, "Menu Create Suucesfully")
+    } catch (error) {
+        if (error instanceof ApiError) {
+            return senderror(res, error.statusCode, error.message)
+        }
+        return senderror(res, 500, "Internal server Error")
+    }
+}

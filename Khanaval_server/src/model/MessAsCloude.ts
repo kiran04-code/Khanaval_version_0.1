@@ -26,6 +26,7 @@ interface MessAsCloudeKitche {
     CloudKitchenDetails?: string,
     CloudKitchenIsOpen: Boolean,
     KitchenOwnerId: mongoose.Types.ObjectId,
+    MenuId: mongoose.Types.ObjectId[],
 }
 const MessAsCloudeKitcheSchema = new Schema<MessAsCloudeKitche>({
     CloudKitchenName: {
@@ -91,8 +92,14 @@ const MessAsCloudeKitcheSchema = new Schema<MessAsCloudeKitche>({
         type: mongoose.Schema.Types.ObjectId,
         ref: "CloudKitchenOwner",
         required: true,
-    }
+    },
+    MenuId: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "KitchenMenu"
+        }
+    ]
 })
 
 
-export const  CloudKitchen = model("MessAsCloudeKitche",MessAsCloudeKitcheSchema)
+export const CloudKitchen = model("MessAsCloudeKitche", MessAsCloudeKitcheSchema)

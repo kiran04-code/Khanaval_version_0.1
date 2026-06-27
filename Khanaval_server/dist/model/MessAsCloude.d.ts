@@ -25,6 +25,7 @@ interface MessAsCloudeKitche {
     CloudKitchenDetails?: string;
     CloudKitchenIsOpen: Boolean;
     KitchenOwnerId: mongoose.Types.ObjectId;
+    MenuId: mongoose.Types.ObjectId[];
 }
 export declare const CloudKitchen: mongoose.Model<MessAsCloudeKitche, {}, {}, {
     id: string;
@@ -164,6 +165,15 @@ export declare const CloudKitchen: mongoose.Model<MessAsCloudeKitche, {}, {}, {
         id: string;
     }>;
     KitchenOwnerId?: mongoose.SchemaDefinitionProperty<mongoose.Types.ObjectId, MessAsCloudeKitche, mongoose.Document<unknown, {}, MessAsCloudeKitche, {
+        id: string;
+    }, mongoose.ResolveSchemaOptions<mongoose.DefaultSchemaOptions>> & Omit<MessAsCloudeKitche & {
+        _id: mongoose.Types.ObjectId;
+    } & {
+        __v: number;
+    }, "id"> & {
+        id: string;
+    }>;
+    MenuId?: mongoose.SchemaDefinitionProperty<mongoose.Types.ObjectId[], MessAsCloudeKitche, mongoose.Document<unknown, {}, MessAsCloudeKitche, {
         id: string;
     }, mongoose.ResolveSchemaOptions<mongoose.DefaultSchemaOptions>> & Omit<MessAsCloudeKitche & {
         _id: mongoose.Types.ObjectId;

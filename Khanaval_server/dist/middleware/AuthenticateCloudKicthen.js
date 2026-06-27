@@ -5,7 +5,7 @@ export const CloudKitchenAuth = async (req, res, next) => {
         if (!req.CloudeUser?.id) {
             return senderror(res, 401, "Non-Autherizsed Acesss");
         }
-        if (!req.CloudeUser.ispaymentDone) {
+        if (req.CloudeUser?.ispaymentDone == false) {
             return senderror(res, 402, "Payment Require");
         }
         next();

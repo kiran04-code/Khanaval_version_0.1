@@ -13,6 +13,6 @@ CloudProviderRouter.post("/makePayment", CreateOrderforClient);
 CloudProviderRouter.post("/UpdatePaymentStatus/:id", UpdateUserSatus);
 // After payment this All Routes we to Used on Cloude Kitchen
 CloudProviderRouter.post("/register-kitchen", CloudKitchenAuth, registerCloudKitchen);
-CloudProviderRouter.post("/AddItem-To-Menu/:kid", AddItemToMenu);
+CloudProviderRouter.post("/AddItem-To-Menu/:kid", CloudKitchenAuth, AddItemToMenu);
 export default CloudProviderRouter;
 //# sourceMappingURL=CloudKitchenOwner.js.map

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { ChangeEvent, useEffect, useRef, useState } from "react";
 import type { LucideIcon } from "lucide-react";
 import {
     ArrowUpRight,
@@ -63,6 +63,7 @@ import { KitchenRegistrationScreen } from "@/components/cloud-kitchen/KitchenReg
 import { PaymentScreen } from "@/components/cloud-kitchen/PaymentScreen";
 import { RenewSubscriptionScreen } from "@/components/cloud-kitchen/RenewSubscriptionScreen";
 import { useStateContex } from "@/context/State";
+import { toast } from "@/hooks/use-toast";
 
 type DashboardSection =
     | "dashboard"
@@ -98,6 +99,15 @@ type KitchenMenuItem = {
     category: string;
     image: string;
     available: boolean;
+};
+
+type CloudKitchenMenuRecord = {
+    _id?: string;
+    productName?: string;
+    productprice?: number | string;
+    productCategory?: string;
+    productimage?: string;
+    Visible_to_customers?: boolean;
 };
 
 type CustomerSummary = {
@@ -335,7 +345,7 @@ export default function CloudeKitchen() {
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [kitchenOpen, setKitchenOpen] = useState(true);
     const [orders, setOrders] = useState(initialOrders);
-    const [menuItems, setMenuItems] = useState(initialMenuItems);
+    const [menuItems, setMenuItems] = useState<KitchenMenuItem[]>(initialMenuItems);
     const [settingsState, setSettingsState] = useState({
         instantAlerts: true,
         autoAcceptVIP: false,
@@ -376,6 +386,30 @@ export default function CloudeKitchen() {
         isPaymentDone && subscriptionStatus && subscriptionStatus !== "active",
     );
     const shouldShowRenewScreen = isSubscriptionExpired || isSubscriptionInactive;
+
+    useEffect(() => {
+        const cloudKitchenMenu = Array.isArray(kitchenprovider?.CloudKitchenID?.MenuId)
+            ? (kitchenprovider.CloudKitchenID.MenuId as CloudKitchenMenuRecord[])
+            : [];
+
+        if (cloudKitchenMenu.length === 0) {
+            setMenuItems([]);
+            return;
+        }
+
+        const mappedMenuItems = cloudKitchenMenu.map((menuItem, index) => ({
+            id: menuItem._id || `cloud-menu-${index}`,
+            name: menuItem.productName || "Untitled item",
+            price: Number(menuItem.productprice || 0),
+            category: menuItem.productCategory || "Main Course",
+            image:
+                menuItem.productimage ||
+                "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=900&q=80",
+            available: Boolean(menuItem.Visible_to_customers),
+        }));
+
+        setMenuItems(mappedMenuItems);
+    }, [kitchenprovider?.CloudKitchenID?.MenuId]);
 
     const newOrders = orders.filter((order) => order.status === "new");
     const acceptedOrders = orders.filter((order) => order.status === "preparing");
@@ -493,7 +527,77 @@ export default function CloudeKitchen() {
         queryClient.clear();
         navigate("/");
     };
+    // AddItem To menu
+    const [selectedImage, setSelectedImage] = useState<File | null>(null);
+    const [selectedImageName, setSelectedImageName] = useState("");
+    const fileInputRef = useRef<HTMLInputElement | null>(null)
+    const openerFileper = () => {
+        fileInputRef.current?.click()
+    }
+    const handlimage = (event: ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0]
+        if (!file) {
+            return;
+        }
+        setSelectedImage(file)
+        setSelectedImageName(file.name)
+    }
+    const AddIteamToMenu = async (e: ChangeEvent<HTMLFormElement>) => {
+        try {
+            e.preventDefault()
+            if (!selectedImage) {
+                toast({
+                    title: "Kitchen image is required",
+                    description: "Upload one kitchen image before moving ahead.",
+                });
+                return false;
+            }
+            if (!newItemForm.category || !newItemForm.name || !newItemForm.price) {
+                toast({
+                    title: "Please fill All require deatils of menu",
+                });
+                return
+            }
+            const fromdata = new FormData()
+            fromdata.append("cover", selectedImage)
+            fromdata.append("kitchen", selectedImage)
+            const uploadResponse = await axioseInstace.post("/api/provider/ImageUrl", fromdata, {
+                headers: {
+                    "application": "multipart-form/data"
+                },
+            })
+            const imageUrl =
+                uploadResponse.data?.urls?.kitchen || uploadResponse.data?.urls?.cover;
+            const payload = {
+                productName: newItemForm.name,
+                productprice: newItemForm.price,
+                productimage: imageUrl,
+                productCategory: newItemForm.category
 
+            }
+            const { data } = await
+                axioseInstace.post(`/api/cloudkitchens/AddItem-To-Menu/${kitchenprovider?.CloudKitchenID?._id}`, payload)
+            if (data.success) {
+                await queryClient.invalidateQueries({
+                    queryKey: ["KitchenProvider-data"],
+                });
+                await queryClient.refetchQueries({
+                    queryKey: ["KitchenProvider-data"],
+                });
+                toast({
+                    title: `${data.message}`,
+                    description: "Your cloud kitchen setup is complete.",
+                });
+                setNewItemForm({
+                    name: "",
+                    price: "",
+                    category: "Main Course",
+                });
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
     const acceptOrder = (orderId: string) => {
         setOrders((currentOrders) =>
             currentOrders.map((order) =>
@@ -975,49 +1079,85 @@ export default function CloudeKitchen() {
     );
 
     const renderMenuSection = () => (
-        <div className="grid gap-4 xl:grid-cols-2">
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            {menuItems.length === 0 ? (
+                <Card className={cn(detailCardClass, "sm:col-span-2 xl:col-span-3")}>
+                    <CardContent className="flex flex-col items-center justify-center px-6 py-14 text-center">
+                        <UtensilsCrossed className="h-10 w-10 text-orange-500" />
+                        <h3 className="mt-4 text-xl font-bold text-slate-900">
+                            No menu items added yet
+                        </h3>
+                        <p className="mt-2 max-w-md text-sm leading-6 text-slate-500">
+                            Add your first kitchen item and it will appear here in the menu
+                            management section.
+                        </p>
+                    </CardContent>
+                </Card>
+            ) : null}
             {menuItems.map((menuItem) => (
-                <Card key={menuItem.id} className={detailCardClass}>
-                    <div className="aspect-[16/10] overflow-hidden rounded-t-[28px]">
+                <Card
+                    key={menuItem.id}
+                    className="overflow-hidden rounded-[26px] border border-slate-200/80 bg-white shadow-[0_14px_35px_rgba(15,23,42,0.06)]"
+                >
+                    <div className="aspect-[16/10] overflow-hidden sm:aspect-[16/11]">
                         <img
                             src={menuItem.image}
                             alt={menuItem.name}
-                            className="h-full w-full object-cover"
+                            className="h-full w-full object-cover transition duration-300 hover:scale-[1.03]"
                         />
                     </div>
-                    <CardContent className="p-5">
-                        <div className="flex items-start justify-between gap-4">
-                            <div>
+                    <CardContent className="space-y-3 p-3 sm:space-y-4 sm:p-4">
+                        <div className="flex items-start justify-between gap-3">
+                            <div className="min-w-0">
                                 <div className="flex flex-wrap items-center gap-2">
-                                    <h3 className="text-lg font-bold text-slate-900">{menuItem.name}</h3>
-                                    <Badge variant="soft" className="rounded-full px-3 py-1">
+                                    <h3 className="line-clamp-1 text-sm font-bold text-slate-900 sm:text-base">
+                                        {menuItem.name}
+                                    </h3>
+                                    <Badge
+                                        variant="soft"
+                                        className="rounded-full bg-orange-50 px-2.5 py-1 text-[10px] font-semibold text-orange-600"
+                                    >
                                         {menuItem.category}
                                     </Badge>
                                 </div>
-                                <p className="mt-2 text-xl font-black text-slate-950">Rs. {menuItem.price}</p>
+                                <p className="mt-1.5 text-xl font-black tracking-tight text-slate-950 sm:mt-2 sm:text-2xl">
+                                    Rs. {menuItem.price}
+                                </p>
                             </div>
-                            <span className={`rounded-full px-3 py-1 text-xs font-semibold ${menuItem.available ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-600"}`}>
+                            <span
+                                className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-semibold ${
+                                    menuItem.available
+                                        ? "bg-emerald-100 text-emerald-700"
+                                        : "bg-slate-100 text-slate-600"
+                                }`}
+                            >
                                 {menuItem.available ? "Available" : "Paused"}
                             </span>
                         </div>
 
-                        <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                            <div className="flex items-center gap-3">
+                        <div className="flex flex-col gap-3 border-t border-slate-100 pt-3 sm:flex-row sm:items-center sm:justify-between">
+                            <div className="flex min-w-0 items-center gap-2.5">
                                 <Switch
                                     checked={menuItem.available}
                                     onCheckedChange={() => toggleMenuItemAvailability(menuItem.id)}
                                 />
-                                <span className="text-sm font-medium text-slate-600">
-                                    {menuItem.available ? "Visible to customers" : "Hidden from customers"}
+                                <span className="text-xs font-medium text-slate-600">
+                                    {menuItem.available ? "Visible" : "Hidden"}
                                 </span>
                             </div>
-                            <div className="flex gap-2">
-                                <Button variant="outline" className="h-11 rounded-2xl px-4">
-                                    <Pencil className="mr-1 h-4 w-4" />
+                            <div className="grid grid-cols-2 gap-2 sm:flex">
+                                <Button
+                                    variant="outline"
+                                    className="h-9 rounded-full border-slate-200 px-3 text-xs"
+                                >
+                                    <Pencil className="mr-1 h-3.5 w-3.5" />
                                     Edit
                                 </Button>
-                                <Button variant="outline" className="h-11 rounded-2xl border-rose-200 px-4 text-rose-600 hover:bg-rose-50 hover:text-rose-700">
-                                    <Trash2 className="mr-1 h-4 w-4" />
+                                <Button
+                                    variant="outline"
+                                    className="h-9 rounded-full border-rose-200 px-3 text-xs text-rose-600 hover:bg-rose-50 hover:text-rose-700"
+                                >
+                                    <Trash2 className="mr-1 h-3.5 w-3.5" />
                                     Delete
                                 </Button>
                             </div>
@@ -1038,7 +1178,7 @@ export default function CloudeKitchen() {
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <form className="space-y-4" onSubmit={(event) => event.preventDefault()}>
+                    <form className="space-y-4" onSubmit={AddIteamToMenu}>
                         <div className="grid gap-4 sm:grid-cols-2">
                             <label className="space-y-2">
                                 <span className="text-sm font-semibold text-slate-700">Item Name</span>
@@ -1090,16 +1230,24 @@ export default function CloudeKitchen() {
                         </label>
 
                         <div className="rounded-[28px] border border-dashed border-orange-200 bg-orange-50/70 p-5 text-center">
-                            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-orange-500 shadow-sm">
-                                <Camera className="h-6 w-6" />
-                            </div>
+                            <input type="file" ref={fileInputRef}
+                                className="hidden"
+                                onChange={handlimage}
+                            />
+                            <Button
+                                type="button"
+                                onClick={openerFileper}
+                                className="mx-auto flex h-20 w-20 items-center justify-center rounded-full border-2 border-dashed border-orange-300 bg-white text-orange-500 transition-all duration-300 hover:border-orange-500 hover:bg-orange-500 hover:text-white"
+                            >
+                                <Camera className="h-8 w-8" />
+                            </Button> {selectedImageName}
                             <p className="mt-3 font-semibold text-slate-900">Upload food image later</p>
                             <p className="mt-1 text-sm text-slate-500">
                                 For now, the app uses a clean placeholder image.
                             </p>
                         </div>
 
-                        <Button className="h-12 w-full rounded-2xl bg-orange-500 text-base hover:bg-orange-600">
+                        <Button type="submit" className="h-12 w-full rounded-2xl bg-orange-500 text-base hover:bg-orange-600">
                             Save Item
                         </Button>
                     </form>
@@ -1408,7 +1556,7 @@ export default function CloudeKitchen() {
                             <div className="mt-3 space-y-2 text-sm text-slate-700">
                                 <p className="flex items-center gap-2">
                                     <Phone className="h-4 w-4 text-orange-500" />
-                                    {ownerPhone}
+                                    https://youtu.be/GQzfF5EMD7o?si=dOlQJRSKW5Hprx6i              {ownerPhone}
                                 </p>
                                 <p className="flex items-center gap-2">
                                     <MapPin className="h-4 w-4 text-orange-500" />

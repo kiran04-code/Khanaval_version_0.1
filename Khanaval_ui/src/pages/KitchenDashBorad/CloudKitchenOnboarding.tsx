@@ -296,8 +296,6 @@ export default function CloudKitchenOnboarding() {
                     "Content-Type": "multipart/form-data",
                 },
             });
-
-            console.log(uploadResponse)
             const imageUrl =
                 uploadResponse.data?.urls?.kitchen || uploadResponse.data?.urls?.cover;
 

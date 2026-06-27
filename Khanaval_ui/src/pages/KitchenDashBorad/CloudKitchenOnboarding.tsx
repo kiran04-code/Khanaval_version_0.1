@@ -298,29 +298,29 @@ export default function CloudKitchenOnboarding() {
             });
             const imageUrl =
                 uploadResponse.data?.urls?.kitchen || uploadResponse.data?.urls?.cover;
-
-            if (!imageUrl) {
-                throw new Error("Image upload failed");
-            }
-            setActiveSubmitStage(2);
-            await axioseInstace.post("/api/cloudkitchens/register-kitchen", {
-                kitchenName: formState.kitchenName,
-                kitchenType: formState.kitchenType,
-                foodCategory: formState.foodCategory,
-                serviceLanguage: formState.serviceLanguage,
-                phoneNumber: formState.phoneNumber,
-                whatsappNumber: formState.whatsappNumber,
-                operatingHours: formState.operatingHours,
-                aboutKitchen: formState.aboutKitchen,
-                imageUrl,
-                addressLine: formState.addressLine,
-                landmark: formState.landmark,
-                city: formState.city,
-                state: formState.state,
-                pincode: formState.pincode,
-                latitude: formState.latitude,
-                longitude: formState.longitude,
-            });
+                if (!imageUrl) {
+                    throw new Error("Image upload failed");
+                }
+                setActiveSubmitStage(2);
+                const {data} = await axioseInstace.post("/api/cloudkitchens/register-kitchen", {
+                    kitchenName: formState.kitchenName,
+                    kitchenType: formState.kitchenType,
+                    foodCategory: formState.foodCategory,
+                    serviceLanguage: formState.serviceLanguage,
+                    phoneNumber: formState.phoneNumber,
+                    whatsappNumber: formState.whatsappNumber,
+                    operatingHours: formState.operatingHours,
+                    aboutKitchen: formState.aboutKitchen,
+                    imageUrl,
+                    addressLine: formState.addressLine,
+                    landmark: formState.landmark,
+                    city: formState.city,
+                    state: formState.state,
+                    pincode: formState.pincode,
+                    latitude: formState.latitude,
+                    longitude: formState.longitude,
+                });
+                console.log(data)
 
             setActiveSubmitStage(3);
             await queryClient.invalidateQueries({

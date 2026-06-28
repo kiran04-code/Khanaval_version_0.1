@@ -4,6 +4,8 @@ import { CloudKitchen } from "../../model/MessAsCloude.js";
 import { senderror, sendReponse } from "../../utils/Response.js";
 import { ApiError } from "../../utils/Apierror.js";
 import { KitchenService } from "../../services/Cloudekitchen/KitchenAsMessService.js";
+import { redisclient } from "../../config/redis.js";
+import { KitchenMenu } from "../../model/KicthenMenu.js";
 export const registerCloudKitchen = async (req, res) => {
     try {
         if (!req.CloudeUser?.id) {
@@ -66,6 +68,59 @@ export const AddItemToMenu = async (req, res) => {
         const kitchenId = req.params.kid;
         await KitchenService.AddItemToMenu(productName, productprice, productimage, productCategory, kitchenId);
         return sendReponse(res, 201, "Menu Create Suucesfully");
+    }
+    catch (error) {
+        if (error instanceof ApiError) {
+            return senderror(res, error.statusCode, error.message);
+        }
+        return senderror(res, 500, "Internal server Error");
+    }
+};
+const KEYFORMESDATA = "CLOUDEMESS";
+export const GetAllCloudeKitchne = async (req, res) => {
+    try {
+        const data = await redisclient.get(KEYFORMESDATA);
+        // Cache hit
+        if (data) {
+            return sendReponse(res, 201, "Menu Create Suucesfully", JSON.parse(data));
+        }
+        // Cache mess
+        const getAllCloudeMess = await CloudKitchen.find({})
+            .populate("KitchenOwnerId")
+            .populate("MenuId");
+        await redisclient.setex(KEYFORMESDATA, 60 * 60, JSON.stringify(getAllCloudeMess));
+        return sendReponse(res, 201, "Menu Create Suucesfully", getAllCloudeMess);
+    }
+    catch (error) {
+        if (error instanceof ApiError) {
+            return senderror(res, error.statusCode, error.message);
+        }
+        return senderror(res, 500, "Internal server Error");
+    }
+};
+export const DeleteMenuByID = async (req, res) => {
+    try {
+        const menuId = req?.params.menuId;
+        await KitchenMenu.findByIdAndDelete(menuId);
+        return sendReponse(res, 200, "Menu Delete Suucesfully");
+    }
+    catch (error) {
+        if (error instanceof ApiError) {
+            return senderror(res, error.statusCode, error.message);
+        }
+        return senderror(res, 500, "Internal server Error");
+    }
+};
+export const MessOnOffByid = async (req, res) => {
+    try {
+        const messId = req?.params.messId;
+        const kitchen = await CloudKitchen.findByIdAndUpdate(messId);
+        if (!kitchen) {
+            return senderror(res, 404, "Cloud Kitchen not found");
+        }
+        kitchen.CloudKitchenIsOpen = !kitchen.CloudKitchenIsOpen;
+        kitchen.save();
+        return sendReponse(res, 200, `Kitchen is now ${kitchen.CloudKitchenIsOpen ? "Open" : "Closed"}`, kitchen);
     }
     catch (error) {
         if (error instanceof ApiError) {

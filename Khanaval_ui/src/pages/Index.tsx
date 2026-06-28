@@ -191,98 +191,112 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <section className="relative pt-[75px] pb-16 md:pt-16 md:pb-3 overflow-hidden bg-dot-pattern">
-        {/* Optional: Decorative background blur */}
-        <div className="absolute top-0 right-0 -z-10 h-[500px] w-[500px] bg-orange-100/50 blur-[120px] rounded-full" />
+      <section className="relative overflow-hidden bg-[radial-gradient(circle_at_top_left,rgba(255,237,213,0.75),transparent_28%),radial-gradient(circle_at_top_right,rgba(254,215,170,0.55),transparent_24%),linear-gradient(180deg,#fffdfb_0%,#fff7ed_52%,#ffffff_100%)] pb-14 pt-[92px] md:pb-16 md:pt-24">
+        <div className="absolute left-10 top-20 -z-10 h-40 w-40 rounded-full bg-orange-200/35 blur-3xl" />
+        <div className="absolute top-0 right-0 -z-10 h-[420px] w-[420px] rounded-full bg-orange-100/45 blur-[120px]" />
 
         <div className="container mx-auto px-4">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
+          <div className="mx-auto max-w-4xl">
 
-            {/* LEFT CONTENT */}
-            <div className="text-center py-[15px] md:py-20 lg:text-left animate-slide-up z-10">
-              <Badge variant="soft" className="mb-6 px-4 py-1.5 text-sm uppercase tracking-wide border-orange-100">
-                🍛 India’s Trusted Mess Discovery
+            <motion.div
+              initial={{ opacity: 0, y: 18 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.45 }}
+              className="z-10 text-center lg:text-left"
+            >
+              <Badge className="mb-6 rounded-full border border-orange-200 bg-white/90 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.18em] text-orange-600 shadow-sm">
+                <ShieldAlert className="mr-2 h-3.5 w-3.5" />
+                Trusted Mess Discovery
               </Badge>
 
-              <h1 className="text-4xl md:text-6xl font-extrabold text-foreground tracking-tight leading-[1.1] mb-6">
-                Your Daily Food, <br />
-                <span className="text-gradient">Simplified.</span>
+              <h1 className="max-w-3xl text-5xl font-black tracking-tight text-slate-950 sm:text-6xl lg:text-7xl">
+                Your daily food,
+                <span className="mt-1 block text-orange-500">simplified.</span>
               </h1>
-              <div className="space-y-6 mb-10 max-w-xl mx-auto lg:mx-0">
-                {/* The Paragraph - Refined */}
-                <p className="text-lg md:text-xl text-slate-600 leading-relaxed">
-                  Discover the most <span className="text-orange-600 font-black italic">trusted</span> messes in your city.
-                  Built for students and professionals who value quality.
-                </p>
 
-                {/* Feature Highlights Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-                  <div className="flex items-center gap-3 p-3 rounded-2xl bg-white border border-slate-100 shadow-sm hover:border-orange-200 transition-colors">
-                    <div className="bg-orange-100 p-2 rounded-xl text-orange-600">
-                      <ShieldAlert className="w-5 h-5" />
-                    </div>
-                    <span className="text-sm font-bold text-slate-700 uppercase tracking-tight">Hygienic & Verified</span>
-                  </div>
+              <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-slate-600 lg:mx-0">
+                Find nearby messes and tiffin services with verified hygiene, live menus,
+                and regular home-style meals for students and professionals.
+              </p>
 
-                  <div className="flex items-center gap-3 p-3 rounded-2xl bg-white border border-slate-100 shadow-sm hover:border-orange-200 transition-colors">
-                    <div className="bg-orange-100 p-2 rounded-xl text-orange-600">
-                      <Timer className="w-5 h-5" />
+              <div className="mt-8 grid gap-3 sm:grid-cols-2 xl:max-w-2xl">
+                <div className="rounded-[22px] border border-slate-200/80 bg-white/90 p-4 shadow-[0_12px_30px_rgba(15,23,42,0.05)]">
+                  <div className="flex items-center gap-3">
+                    <div className="rounded-2xl bg-orange-50 p-2.5 text-orange-600">
+                      <ShieldAlert className="h-5 w-5" />
                     </div>
-                    <span className="text-sm font-bold text-slate-700 uppercase tracking-tight">Real-time Menus</span>
+                    <div className="text-left">
+                      <p className="text-sm font-black uppercase tracking-[0.06em] text-slate-800">
+                        Hygienic & Verified
+                      </p>
+                      <p className="mt-1 text-sm text-slate-500">
+                        Trusted local kitchens with better confidence.
+                      </p>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-3 p-3 rounded-2xl bg-white border border-slate-100 shadow-sm hover:border-orange-200 transition-colors">
-                    <div className="bg-orange-100 p-2 rounded-xl text-orange-600">
-                      <Utensils className="w-5 h-5" />
+                </div>
+
+                <div className="rounded-[22px] border border-slate-200/80 bg-white/90 p-4 shadow-[0_12px_30px_rgba(15,23,42,0.05)]">
+                  <div className="flex items-center gap-3">
+                    <div className="rounded-2xl bg-orange-50 p-2.5 text-orange-600">
+                      <Timer className="h-5 w-5" />
                     </div>
-                    <span className="text-sm font-bold text-slate-700 uppercase tracking-tight">Home-Cooked Taste</span>
+                    <div className="text-left">
+                      <p className="text-sm font-black uppercase tracking-[0.06em] text-slate-800">
+                        Real-time Menus
+                      </p>
+                      <p className="mt-1 text-sm text-slate-500">
+                        Check what is available before you decide.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="rounded-[22px] border border-slate-200/80 bg-white/90 p-4 shadow-[0_12px_30px_rgba(15,23,42,0.05)] sm:col-span-2 xl:max-w-[360px]">
+                  <div className="flex items-center gap-3">
+                    <div className="rounded-2xl bg-orange-50 p-2.5 text-orange-600">
+                      <Utensils className="h-5 w-5" />
+                    </div>
+                    <div className="text-left">
+                      <p className="text-sm font-black uppercase tracking-[0.06em] text-slate-800">
+                        Home-Cooked Taste
+                      </p>
+                      <p className="mt-1 text-sm text-slate-500">
+                        Daily food that feels local, simple, and familiar.
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
 
-              {/* CTAs */}
-              <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
+              <div className="mt-9 flex flex-col items-center gap-4 sm:flex-row lg:justify-start">
                 <Link to="/mess" className="w-full sm:w-auto">
-                  <Button variant="hero" size="xl" className="w-full shadow-lg shadow-orange-200">
-                    <MapPin className="w-5 h-5 mr-2" />
+                  <Button variant="hero" size="xl" className="w-full rounded-2xl shadow-[0_18px_40px_rgba(249,115,22,0.28)]">
+                    <MapPin className="mr-2 h-5 w-5" />
                     Find Verified Mess
                   </Button>
                 </Link>
-                <Button onClick={() => navigate("/how-it-works")} variant="ghost" size="xl" className="w-full sm:w-auto">
+                <Button
+                  onClick={() => navigate("/how-it-works")}
+                  variant="ghost"
+                  size="xl"
+                  className="w-full rounded-2xl text-slate-800 sm:w-auto"
+                >
                   How it works
                 </Button>
               </div>
-              <div className="mt-12 flex flex-col sm:flex-row items-center gap-6 justify-center lg:justify-start border-t border-border pt-8">
-                <div className="text-center lg:text-left">
-                  <p className="text-sm text-muted-foreground mt-1">Trusting <span className="font-semibold text-orange-600 text-3xl">Khanaval.com</span> every day</p>
-                </div>
+
+              <div className="mt-8 flex flex-wrap items-center justify-center gap-3 text-sm text-slate-500 lg:justify-start">
+                <span className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 shadow-sm ring-1 ring-slate-200/70">
+                  <CheckCircle className="h-4 w-4 text-emerald-500" />
+                  Verified hygiene
+                </span>
+                <span className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 shadow-sm ring-1 ring-slate-200/70">
+                  <Timer className="h-4 w-4 text-orange-500" />
+                  Daily menu updates
+                </span>
               </div>
-            </div>
-
-            {/* RIGHT IMAGE */}
-            <div className="relative md:pb-12 lg:mb-20 animate-fade-in lg:block" style={{ animationDelay: "0.2s" }}>
-              <div className="relative">
-                {/* Decorative Element */}
-                <div className="absolute inset-0 bg-gradient-to-tr from-orange-100 to-transparent rounded-3xl -rotate-3 scale-105 -z-10" />
-
-                <img
-                  src="/hero-food.jpg"
-                  alt="Verified Indian mess food platform"
-                  className="rounded-3xl shadow-2xl shadow-orange-900/10 border-dashed border border-orange-500 transform hover:scale-[1.02] transition-transform duration-500"
-                />
-
-                {/* Floating Card UI (Optional Highlight) */}
-                <div className="absolute -bottom-6 -left-6 bg-white p-4 rounded-xl shadow-xl hidden md:flex items-center gap-4 animate-bounce-slow">
-                  <div className="bg-green-100 p-2 rounded-full">
-                    <CheckCircle className="text-green-600 w-6 h-6" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-bold">Verified Hygiene</p>
-                    <p className="text-xs text-muted-foreground">FSSAI Standards</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
+            </motion.div>
           </div>
         </div>
         <MessOrbit />

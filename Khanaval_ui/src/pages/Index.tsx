@@ -23,7 +23,8 @@ import {
   ShieldAlert,
   Heart,
   ChevronRight,
-  Sparkles
+  Sparkles,
+  PlayCircleIcon
 } from "lucide-react";
 
 
@@ -202,30 +203,30 @@ const Index = () => {
               initial={{ opacity: 0, y: 18 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.45 }}
-              className="z-10 text-center lg:text-left"
+              className="z-10 text-center"
             >
               <Badge className="mb-6 rounded-full border border-orange-200 bg-white/90 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.18em] text-orange-600 shadow-sm">
                 <ShieldAlert className="mr-2 h-3.5 w-3.5" />
                 Trusted Mess Discovery
               </Badge>
 
-              <h1 className="max-w-3xl text-5xl font-black tracking-tight text-slate-950 sm:text-6xl lg:text-7xl">
+              <h1 className="mx-auto max-w-3xl text-5xl font-black tracking-tight text-slate-950 sm:text-6xl lg:text-7xl">
                 Your daily food,
                 <span className="mt-1 block text-orange-500">simplified.</span>
               </h1>
 
-              <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-slate-600 lg:mx-0">
+              <p className="mx-auto mt-2 max-w-2xl text-lg leading-8 text-slate-600">
                 Find nearby messes and tiffin services with verified hygiene, live menus,
                 and regular home-style meals for students and professionals.
               </p>
 
-              <div className="mt-8 grid gap-3 sm:grid-cols-2 xl:max-w-2xl">
+              <div className="mx-auto mt-8 grid w-full max-w-[1600px] grid-cols-1 gap-6 px-6 md:grid-cols-2">
                 <div className="rounded-[22px] border border-slate-200/80 bg-white/90 p-4 shadow-[0_12px_30px_rgba(15,23,42,0.05)]">
                   <div className="flex items-center gap-3">
                     <div className="rounded-2xl bg-orange-50 p-2.5 text-orange-600">
                       <ShieldAlert className="h-5 w-5" />
                     </div>
-                    <div className="text-left">
+                    <div>
                       <p className="text-sm font-black uppercase tracking-[0.06em] text-slate-800">
                         Hygienic & Verified
                       </p>
@@ -241,7 +242,7 @@ const Index = () => {
                     <div className="rounded-2xl bg-orange-50 p-2.5 text-orange-600">
                       <Timer className="h-5 w-5" />
                     </div>
-                    <div className="text-left">
+                    <div>
                       <p className="text-sm font-black uppercase tracking-[0.06em] text-slate-800">
                         Real-time Menus
                       </p>
@@ -251,13 +252,27 @@ const Index = () => {
                     </div>
                   </div>
                 </div>
-
-                <div className="rounded-[22px] border border-slate-200/80 bg-white/90 p-4 shadow-[0_12px_30px_rgba(15,23,42,0.05)] sm:col-span-2 xl:max-w-[360px]">
+                <div className="rounded-[22px] border border-slate-200/80 bg-white/90 p-4 shadow-[0_12px_30px_rgba(15,23,42,0.05)]">
+                  <div className="flex items-center gap-3">
+                    <div className="rounded-2xl bg-orange-50 p-2.5 text-orange-600">
+                      <Timer className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-black uppercase tracking-[0.06em] text-slate-800">
+                        Cloud Kitchen
+                      </p>
+                      <p className="mt-1 text-sm text-slate-500">
+                        Fresh,  meals delivered straight to your doorstep.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div className="rounded-[22px] border border-slate-200/80 bg-white/90 p-4 shadow-[0_12px_30px_rgba(15,23,42,0.05)]">
                   <div className="flex items-center gap-3">
                     <div className="rounded-2xl bg-orange-50 p-2.5 text-orange-600">
                       <Utensils className="h-5 w-5" />
                     </div>
-                    <div className="text-left">
+                    <div>
                       <p className="text-sm font-black uppercase tracking-[0.06em] text-slate-800">
                         Home-Cooked Taste
                       </p>
@@ -268,25 +283,43 @@ const Index = () => {
                   </div>
                 </div>
               </div>
-
-              <div className="mt-9 flex flex-col items-center gap-4 sm:flex-row lg:justify-start">
+              <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row sm:flex-wrap">
+                {/* Primary CTA */}
                 <Link to="/mess" className="w-full sm:w-auto">
-                  <Button variant="hero" size="xl" className="w-full rounded-2xl shadow-[0_18px_40px_rgba(249,115,22,0.28)]">
-                    <MapPin className="mr-2 h-5 w-5" />
+                  <Button
+                    variant="hero"
+                    size="xl"
+                    className="group h-14 w-full rounded-2xl bg-orange-500 px-8 font-semibold text-white shadow-lg shadow-orange-500/30 transition-all duration-300 hover:-translate-y-1 hover:bg-orange-600 hover:shadow-xl hover:shadow-orange-500/40"
+                  >
+                    <MapPin className="mr-2 h-5 w-5 transition-transform duration-300 group-hover:scale-110" />
                     Find Verified Mess
                   </Button>
                 </Link>
+                {/* Ghost CTA */}
                 <Button
                   onClick={() => navigate("/how-it-works")}
                   variant="ghost"
                   size="xl"
-                  className="w-full rounded-2xl text-slate-800 sm:w-auto"
+                  className="group h-14 w-full rounded-2xl border border-slate-300 bg-white px-8 font-semibold text-slate-700 transition-all duration-300 hover:-translate-y-1 hover:border-orange-300 hover:bg-orange-50 hover:text-orange-600 sm:w-auto"
                 >
-                  How it works
+                  <PlayCircleIcon className="mr-2 h-5 w-5 transition-transform duration-300 group-hover:scale-110" />
+                  How it Works
                 </Button>
+                {/* Secondary CTA */}
+                <Link to="/getCloudeMess" className="w-full sm:w-auto">
+                  <Button
+                    size="xl"
+                    className="group h-14 w-full rounded-2xl bg-slate-900 px-8 font-semibold text-white shadow-lg transition-all duration-300 hover:-translate-y-1 hover:bg-slate-800 hover:shadow-xl"
+                  >
+                    <Utensils className="mr-2 h-5 w-5 transition-transform duration-300 group-hover:rotate-6" />
+                    Order Food
+                  </Button>
+                </Link>
+
+
               </div>
 
-              <div className="mt-8 flex flex-wrap items-center justify-center gap-3 text-sm text-slate-500 lg:justify-start">
+              <div className="mt-8 flex flex-wrap items-center justify-center gap-3 text-sm text-slate-500">
                 <span className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 shadow-sm ring-1 ring-slate-200/70">
                   <CheckCircle className="h-4 w-4 text-emerald-500" />
                   Verified hygiene
@@ -491,7 +524,7 @@ const Index = () => {
           </div>
           <div className="mt-24 text-center">
             {
-            kitchenprovider ||  user || Providerdata ? <Button onClick={() => navigate("/mess")} size="xl" className="rounded-2xl px-12 py-7 text-lg font-bold shadow-[0_20px_50px_rgba(var(--primary-rgb),0.3)]  transition-all">
+              kitchenprovider || user || Providerdata ? <Button onClick={() => navigate("/mess")} size="xl" className="rounded-2xl px-12 py-7 text-lg font-bold shadow-[0_20px_50px_rgba(var(--primary-rgb),0.3)]  transition-all">
                 Get Started Now
               </Button> : <Button onClick={() => navigate("/auth")} size="xl" className="rounded-2xl px-12 py-7 text-lg font-bold shadow-[0_20px_50px_rgba(var(--primary-rgb),0.3)]  transition-all">
                 Get Started Now
@@ -644,7 +677,7 @@ const Index = () => {
         </div>
       </section>
 
-  
+
 
       {/* bannrs */}
       <section className="py-8 md:py-5 relative overflow-hidden">

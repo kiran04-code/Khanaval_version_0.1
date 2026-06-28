@@ -86,6 +86,25 @@ const benefits = [
     description: "All providers are verified with hygiene ratings.",
   },
 ];
+
+const cloudKitchenHighlights = [
+  {
+    title: "Order nearby",
+    description: "Cloud kitchens near your area for quick local ordering.",
+    icon: MapPin,
+  },
+  {
+    title: "Daily live menu",
+    description: "See today’s available dishes before opening full details.",
+    icon: Utensils,
+  },
+  {
+    title: "Home-style choices",
+    description: "Explore local kitchens serving regular daily food.",
+    icon: Timer,
+  },
+];
+
 const DUMMY_THALIS = [
   "https://images.unsplash.com/photo-1546833999-b9f581a1996d?q=80&w=800&auto=format&fit=crop",
   "https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?q=80&w=800&auto=format&fit=crop",
@@ -321,6 +340,29 @@ const Index = () => {
               </CardContent>
             </Card>
           </motion.div>
+
+          <div className="mt-6 grid gap-3 md:grid-cols-3">
+            {cloudKitchenHighlights.map((item) => {
+              const Icon = item.icon;
+
+              return (
+                <div
+                  key={item.title}
+                  className="rounded-[24px] border border-slate-200/80 bg-white/90 p-4 shadow-[0_12px_30px_rgba(15,23,42,0.04)]"
+                >
+                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-orange-50 text-orange-600">
+                    <Icon className="h-5 w-5" />
+                  </div>
+                  <h3 className="mt-4 text-lg font-black text-slate-950">
+                    {item.title}
+                  </h3>
+                  <p className="mt-2 text-sm leading-6 text-slate-500">
+                    {item.description}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
 
           <div className="mt-8">
             <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">

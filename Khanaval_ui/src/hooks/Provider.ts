@@ -20,3 +20,11 @@ export const KitchenProviderdata = () =>{
     })
     return {...query ,kitchenprovider:query.data?.data.responseData}
 }
+export const KitchenMessData = () =>{
+    const {axioseInstace} = useStateContex()
+    const query = useQuery({
+        queryKey:["Kithen-data"],
+        queryFn: async ()=> await axioseInstace.get("/api/cloudkitchens/getCloudKitchen")
+    })
+    return {...query ,KitchenMessINFO:query.data?.data.responseData}
+}

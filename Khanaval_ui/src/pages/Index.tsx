@@ -38,6 +38,9 @@ import { useCurrentUser } from "@/hooks/user-hook";
 import { Skeleton } from "@/components/common/Skeleton";
 import { cn } from "@/lib/utils";
 import MessOrbit from "./MessOrbit";
+import { KitchenMessData } from "@/hooks/Provider";
+import { CloudKitchenCard } from "@/components/cloud-kitchen-public/CloudKitchenCard";
+import { CloudKitchenRecord } from "@/components/cloud-kitchen-public/cloudKitchenUtils";
 const features = [
   {
     icon: <Search className="w-6 h-6" />,
@@ -160,6 +163,10 @@ const Index = () => {
   const { AllMESS } = GetALLmess()
   const { userlat, userlng } = useStateContex()
   const { kitchenprovider } = KitchenProviderdata()
+  const { KitchenMessINFO, isLoading: isCloudKitchenLoading } = KitchenMessData()
+  const featuredCloudKitchens = Array.isArray(KitchenMessINFO)
+    ? (KitchenMessINFO as CloudKitchenRecord[]).slice(0, 8)
+    : []
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -468,6 +475,78 @@ const Index = () => {
           </div>
         </div>
       </section>
+
+      <section className="py-16 md:py-24 bg-[linear-gradient(180deg,#ffffff_0%,#fff7ed_100%)] overflow-hidden">
+        <div className="container mx-auto px-4">
+          <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+            <div className="space-y-3">
+              <Badge
+                variant="outline"
+                className="rounded-full border-orange-200 bg-orange-50 px-4 py-1.5 text-[11px] font-black uppercase tracking-[0.18em] text-orange-600"
+              >
+                Cloud Kitchens Near You
+              </Badge>
+              <div>
+                <h2 className="text-3xl md:text-5xl font-black tracking-tight text-slate-950">
+                  Fast menus, premium kitchens, cleaner discovery
+                </h2>
+                <p className="mt-3 max-w-2xl text-sm md:text-base leading-7 text-slate-600">
+                  Browse featured cloud kitchens on Khanaaval with cuisine-first cards,
+                  live open status, menu counts, and quick access to full details.
+                </p>
+              </div>
+            </div>
+
+            <Link to="/getCloudeMess" className="w-full md:w-auto">
+              <Button className="h-12 w-full rounded-full bg-slate-950 px-6 text-sm font-bold text-white hover:bg-orange-500 md:w-auto">
+                View All Cloud Kitchens
+                <ChevronRight className="ml-2 h-4 w-4" />
+              </Button>
+            </Link>
+          </div>
+
+          {isCloudKitchenLoading ? (
+            <div className="flex gap-5 overflow-x-auto pb-3">
+              {Array.from({ length: 5 }).map((_, index) => (
+                <div
+                  key={index}
+                  className="min-w-[280px] max-w-[320px] flex-1 rounded-[28px] border border-slate-200/80 bg-white p-4 shadow-sm"
+                >
+                  <div className="aspect-[16/12] w-full animate-pulse rounded-[22px] bg-slate-200" />
+                  <div className="mt-4 space-y-3">
+                    <div className="h-5 w-2/3 animate-pulse rounded-full bg-slate-200" />
+                    <div className="flex gap-2">
+                      <div className="h-6 w-20 animate-pulse rounded-full bg-slate-200" />
+                      <div className="h-6 w-16 animate-pulse rounded-full bg-slate-200" />
+                    </div>
+                    <div className="h-20 w-full animate-pulse rounded-[20px] bg-slate-200" />
+                    <div className="h-11 w-full animate-pulse rounded-2xl bg-slate-200" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : featuredCloudKitchens.length > 0 ? (
+            <div className="flex gap-5 overflow-x-auto pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              {featuredCloudKitchens.map((kitchen) => (
+                <div key={kitchen._id} className="shrink-0">
+                  <CloudKitchenCard kitchen={kitchen} compact />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="rounded-[32px] border border-dashed border-slate-300 bg-white px-6 py-14 text-center shadow-sm">
+              <Utensils className="mx-auto h-10 w-10 text-orange-400" />
+              <h3 className="mt-4 text-2xl font-black text-slate-950">
+                No cloud kitchens available
+              </h3>
+              <p className="mt-2 text-sm leading-7 text-slate-500">
+                Featured cloud kitchens will appear here when providers publish their kitchens and menus.
+              </p>
+            </div>
+          )}
+        </div>
+      </section>
+
       {/* bannrs */}
       <section className="py-8 md:py-5 relative overflow-hidden">
         <div className="container mx-auto px-4">

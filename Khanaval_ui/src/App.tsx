@@ -28,6 +28,8 @@ import Paas from "./pages/Paas";
 import Announcements from "./pages/Anniumment";
 import CloudeKitchen from "./pages/KitchenDashBorad/CloudeKitchen";
 import CloudKitchenOnboarding from "./pages/KitchenDashBorad/CloudKitchenOnboarding";
+import AllCloudeMess from "./pages/CloudeKitchenPages/AllCloudeMess";
+import CloudKitchenDetailPage from "./pages/CloudeKitchenPages/CloudKitchenDetailPage";
 
 const App = () => {
   useEffect(() => {
@@ -70,6 +72,8 @@ const App = () => {
           <Route path="/HelpSupport" element={<HelpSupport/>} />
           <Route path="/tiffin" element={<UserDashboard />} />
           <Route path="/FeedBack" element={<FeedbackForm />} />
+          <Route path="/getCloudeMess" element={<AllCloudeMess />} />
+          <Route path="/getCloudeMess/:kitchenId" element={<CloudKitchenDetailPage />} />
           <Route path="/pass/:ids" element={<Paas />} />
           <Route path="/Annousment" element={<Announcements />} />
           <Route path="*" element={<NotFound />} />

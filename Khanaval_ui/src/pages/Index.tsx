@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Navbar } from "@/components/layout/Navbar";
 import { KitchenProviderdata } from "../hooks/Provider"
@@ -28,6 +28,7 @@ import {
 
 
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import { UserProviderdata } from "@/hooks/Provider";
 import { GetALLmess } from "@/hooks/MessData";
 import { calculateDistance } from "./components/Distance";
@@ -41,6 +42,7 @@ import MessOrbit from "./MessOrbit";
 import { KitchenMessData } from "@/hooks/Provider";
 import { CloudKitchenCard } from "@/components/cloud-kitchen-public/CloudKitchenCard";
 import { CloudKitchenRecord } from "@/components/cloud-kitchen-public/cloudKitchenUtils";
+
 const features = [
   {
     icon: <Search className="w-6 h-6" />,
@@ -266,7 +268,117 @@ const Index = () => {
         </div>
         <MessOrbit />
       </section>
+      <section className="relative overflow-hidden border-b border-orange-100/70 bg-[radial-gradient(circle_at_top_right,rgba(249,115,22,0.18),transparent_22%),linear-gradient(135deg,#fff7ed_0%,#ffffff_48%,#f8fafc_100%)] py-12 md:py-16">
+        <div className="absolute right-0 top-0 h-72 w-72 rounded-full bg-orange-200/30 blur-3xl" />
+        <div className="container mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45 }}
+            className="grid gap-8 lg:grid-cols-[1.15fr,0.85fr] lg:items-end"
+          >
+            <div className="space-y-4">
+              <Badge className="w-fit rounded-full border-none bg-slate-950 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.18em] text-white">
+                <Sparkles className="mr-2 h-3.5 w-3.5" />
+                Cloud Kitchens Near You
+              </Badge>
+              <div className="space-y-3">
+                <h2 className="max-w-3xl text-4xl font-black tracking-tight text-slate-950 sm:text-5xl">
+                  Discover cloud kitchens
+                </h2>
+                <p className="max-w-2xl text-sm leading-7 text-slate-600 sm:text-base">
+                  Browse menus, compare cuisines, and open full kitchen details.
+                </p>
+              </div>
+            </div>
 
+            <Card className="rounded-[30px] border border-slate-200/80 bg-white/95 shadow-[0_22px_60px_rgba(15,23,42,0.08)]">
+              <CardContent className="grid gap-4 p-5 sm:grid-cols-3">
+                <div className="rounded-[22px] bg-orange-50 p-4">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-orange-500">
+                    Kitchens
+                  </p>
+                  <p className="mt-2 text-2xl font-black text-slate-950">
+                    {Array.isArray(KitchenMessINFO) ? KitchenMessINFO.length : 0}
+                  </p>
+                </div>
+                <div className="rounded-[22px] bg-slate-50 p-4">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">
+                    Open Now
+                  </p>
+                  <p className="mt-2 text-2xl font-black text-slate-950">
+                    {featuredCloudKitchens.filter((kitchen) => kitchen.CloudKitchenIsOpen).length}
+                  </p>
+                </div>
+                <div className="rounded-[22px] bg-emerald-50 p-4">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-emerald-600">
+                    Cities
+                  </p>
+                  <p className="mt-2 text-2xl font-black text-slate-950">
+                    {new Set(featuredCloudKitchens.map((kitchen) => kitchen.CloudKitchenAdress?.city).filter(Boolean)).size}
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          <div className="mt-8">
+            <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+              <div>
+                <h3 className="text-3xl font-black tracking-tight text-slate-950 md:text-4xl">
+                  Featured cloud kitchens
+                </h3>
+                <p className="mt-2 max-w-2xl text-sm leading-7 text-slate-600 md:text-base">
+                  Menus, open status, and quick access to details.
+                </p>
+              </div>
+
+              <Link to="/getCloudeMess" className="w-full md:w-auto">
+                <Button className="h-12 w-full rounded-full bg-slate-950 px-6 text-sm font-bold text-white hover:bg-orange-500 md:w-auto">
+                  View All Cloud Kitchens
+                  <ChevronRight className="ml-2 h-4 w-4" />
+                </Button>
+              </Link>
+            </div>
+
+            {isCloudKitchenLoading ? (
+              <div className="flex gap-5 overflow-x-auto pb-3">
+                {Array.from({ length: 5 }).map((_, index) => (
+                  <div
+                    key={index}
+                    className="min-w-[280px] max-w-[320px] flex-1 rounded-[28px] border border-slate-200/80 bg-white p-4 shadow-sm"
+                  >
+                    <div className="aspect-[16/12] w-full animate-pulse rounded-[22px] bg-slate-200" />
+                    <div className="mt-4 space-y-3">
+                      <div className="h-5 w-2/3 animate-pulse rounded-full bg-slate-200" />
+                      <div className="h-5 w-1/2 animate-pulse rounded-full bg-slate-200" />
+                      <div className="h-4 w-1/3 animate-pulse rounded-full bg-slate-200" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : featuredCloudKitchens.length > 0 ? (
+              <div className="flex gap-5 overflow-x-auto pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                {featuredCloudKitchens.map((kitchen) => (
+                  <div key={kitchen._id} className="shrink-0">
+                    <CloudKitchenCard kitchen={kitchen} compact />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="rounded-[32px] border border-dashed border-slate-300 bg-white px-6 py-14 text-center shadow-sm">
+                <Utensils className="mx-auto h-10 w-10 text-orange-400" />
+                <h3 className="mt-4 text-2xl font-black text-slate-950">
+                  No cloud kitchens available
+                </h3>
+                <p className="mt-2 text-sm leading-7 text-slate-500">
+                  Featured cloud kitchens will appear here when providers publish their kitchens and menus.
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
       <section className=" md:py-5 py-5 bg-background relative overflow-hidden">
         <div className="absolute top-0 left-1/4 w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
         <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
@@ -334,12 +446,12 @@ const Index = () => {
       </section>
 
       {/* mess card */}
-      <section className="py-16 md:py-32 bg-[#FAFAFA] overflow-hidden">
+      <section className="py-16 md:py-24 bg-[#FAFAFA] overflow-hidden">
         <div className="container mx-auto px-4">
-          <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-start">
 
             {/* Left Content Column */}
-            <div className="space-y-10">
+            <div className="space-y-8">
               <div className="space-y-6">
                 <Badge
                   variant="outline"
@@ -350,7 +462,7 @@ const Index = () => {
                 <h2 className="text-5xl md:text-6xl font-black tracking-tight text-slate-900 leading-[1.1]">
                   The Smartest Way to <br />
                   <span className="relative inline-block">
-                    <span className="relative z-10 text-primary italic">Eat Daily</span>
+                    <span className="relative z-10 text-primary   ">Eat Daily</span>
                     <span className="absolute bottom-2 left-0 w-full h-3 bg-primary/10 -z-10" />
                   </span>
                 </h2>
@@ -379,7 +491,7 @@ const Index = () => {
             </div>
 
             {/* Right Bento Grid Area */}
-            <div className="relative p-4">
+            <div className="relative p-2 md:p-4">
               {/* Decorative Background Element */}
               <div className="absolute -top-10 -right-10 w-64 h-64 bg-orange-500/5 rounded-full blur-3xl -z-10" />
 
@@ -476,76 +588,7 @@ const Index = () => {
         </div>
       </section>
 
-      <section className="py-16 md:py-24 bg-[linear-gradient(180deg,#ffffff_0%,#fff7ed_100%)] overflow-hidden">
-        <div className="container mx-auto px-4">
-          <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-            <div className="space-y-3">
-              <Badge
-                variant="outline"
-                className="rounded-full border-orange-200 bg-orange-50 px-4 py-1.5 text-[11px] font-black uppercase tracking-[0.18em] text-orange-600"
-              >
-                Cloud Kitchens Near You
-              </Badge>
-              <div>
-                <h2 className="text-3xl md:text-5xl font-black tracking-tight text-slate-950">
-                  Fast menus, premium kitchens, cleaner discovery
-                </h2>
-                <p className="mt-3 max-w-2xl text-sm md:text-base leading-7 text-slate-600">
-                  Browse featured cloud kitchens on Khanaaval with cuisine-first cards,
-                  live open status, menu counts, and quick access to full details.
-                </p>
-              </div>
-            </div>
-
-            <Link to="/getCloudeMess" className="w-full md:w-auto">
-              <Button className="h-12 w-full rounded-full bg-slate-950 px-6 text-sm font-bold text-white hover:bg-orange-500 md:w-auto">
-                View All Cloud Kitchens
-                <ChevronRight className="ml-2 h-4 w-4" />
-              </Button>
-            </Link>
-          </div>
-
-          {isCloudKitchenLoading ? (
-            <div className="flex gap-5 overflow-x-auto pb-3">
-              {Array.from({ length: 5 }).map((_, index) => (
-                <div
-                  key={index}
-                  className="min-w-[280px] max-w-[320px] flex-1 rounded-[28px] border border-slate-200/80 bg-white p-4 shadow-sm"
-                >
-                  <div className="aspect-[16/12] w-full animate-pulse rounded-[22px] bg-slate-200" />
-                  <div className="mt-4 space-y-3">
-                    <div className="h-5 w-2/3 animate-pulse rounded-full bg-slate-200" />
-                    <div className="flex gap-2">
-                      <div className="h-6 w-20 animate-pulse rounded-full bg-slate-200" />
-                      <div className="h-6 w-16 animate-pulse rounded-full bg-slate-200" />
-                    </div>
-                    <div className="h-20 w-full animate-pulse rounded-[20px] bg-slate-200" />
-                    <div className="h-11 w-full animate-pulse rounded-2xl bg-slate-200" />
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : featuredCloudKitchens.length > 0 ? (
-            <div className="flex gap-5 overflow-x-auto pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-              {featuredCloudKitchens.map((kitchen) => (
-                <div key={kitchen._id} className="shrink-0">
-                  <CloudKitchenCard kitchen={kitchen} compact />
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="rounded-[32px] border border-dashed border-slate-300 bg-white px-6 py-14 text-center shadow-sm">
-              <Utensils className="mx-auto h-10 w-10 text-orange-400" />
-              <h3 className="mt-4 text-2xl font-black text-slate-950">
-                No cloud kitchens available
-              </h3>
-              <p className="mt-2 text-sm leading-7 text-slate-500">
-                Featured cloud kitchens will appear here when providers publish their kitchens and menus.
-              </p>
-            </div>
-          )}
-        </div>
-      </section>
+  
 
       {/* bannrs */}
       <section className="py-8 md:py-5 relative overflow-hidden">

@@ -42,6 +42,33 @@ const sortOptions = [
     { id: "menu-count", label: "Most Menu Items" },
 ] as const;
 
+const discoverySections = [
+    {
+        title: "North Indian",
+        subtitle: "Comfort thalis and rich curries",
+        filter: "North Indian",
+        accent: "from-orange-500 to-amber-400",
+    },
+    {
+        title: "Biryani",
+        subtitle: "Spiced rice bowls and festive meals",
+        filter: "Biryani",
+        accent: "from-rose-500 to-orange-400",
+    },
+    {
+        title: "Thali",
+        subtitle: "Balanced full-plate daily food",
+        filter: "Thali",
+        accent: "from-emerald-500 to-lime-400",
+    },
+    {
+        title: "Chinese",
+        subtitle: "Street-style noodles and combos",
+        filter: "Chinese",
+        accent: "from-slate-900 to-slate-700",
+    },
+] as const;
+
 const getStartingPrice = (kitchen: CloudKitchenRecord) => {
     const items = Array.isArray(kitchen.MenuId) ? kitchen.MenuId : [];
     const prices = items
@@ -91,64 +118,8 @@ export default function AllCloudeMess() {
         <div className="min-h-screen bg-[linear-gradient(180deg,#fffaf5_0%,#ffffff_24%,#f8fafc_100%)]">
             <Navbar />
 
-            <section className="relative overflow-hidden border-b border-orange-100/70 bg-[radial-gradient(circle_at_top_right,rgba(249,115,22,0.18),transparent_22%),linear-gradient(135deg,#fff7ed_0%,#ffffff_48%,#f8fafc_100%)] pt-28">
-                <div className="absolute right-0 top-0 h-72 w-72 rounded-full bg-orange-200/30 blur-3xl" />
-                <div className="container mx-auto px-4 pb-14">
-                    <motion.div
-                        initial={{ opacity: 0, y: 24 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.45 }}
-                        className="grid gap-8 lg:grid-cols-[1.15fr,0.85fr] lg:items-end"
-                    >
-                        <div className="space-y-5">
-                            <Badge className="w-fit rounded-full border-none bg-slate-950 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.18em] text-white">
-                                <Sparkles className="mr-2 h-3.5 w-3.5" />
-                                Cloud Kitchens Near You
-                            </Badge>
-                            <div className="space-y-4">
-                                <h1 className="max-w-3xl text-4xl font-black tracking-tight text-slate-950 sm:text-5xl lg:text-6xl">
-                                    Discover premium cloud kitchens with menu-first browsing
-                                </h1>
-                                <p className="max-w-2xl text-base leading-7 text-slate-600 sm:text-lg">
-                                    Explore modern kitchens, browse live menus, compare cuisines,
-                                    and open full details in one polished Khanaaval experience.
-                                </p>
-                            </div>
-                        </div>
-
-                        <Card className="rounded-[30px] border border-slate-200/80 bg-white/95 shadow-[0_22px_60px_rgba(15,23,42,0.08)]">
-                            <CardContent className="grid gap-4 p-5 sm:grid-cols-3">
-                                <div className="rounded-[22px] bg-orange-50 p-4">
-                                    <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-orange-500">
-                                        Kitchens
-                                    </p>
-                                    <p className="mt-2 text-2xl font-black text-slate-950">
-                                        {kitchens.length}
-                                    </p>
-                                </div>
-                                <div className="rounded-[22px] bg-slate-50 p-4">
-                                    <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">
-                                        Open Now
-                                    </p>
-                                    <p className="mt-2 text-2xl font-black text-slate-950">
-                                        {kitchens.filter((kitchen) => kitchen.CloudKitchenIsOpen).length}
-                                    </p>
-                                </div>
-                                <div className="rounded-[22px] bg-emerald-50 p-4">
-                                    <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-emerald-600">
-                                        Cities
-                                    </p>
-                                    <p className="mt-2 text-2xl font-black text-slate-950">
-                                        {new Set(kitchens.map((kitchen) => kitchen.CloudKitchenAdress?.city).filter(Boolean)).size}
-                                    </p>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    </motion.div>
-                </div>
-            </section>
-
-            <section className="container mx-auto px-4 py-8 sm:py-10">
+           
+            <section className="container mt-20 mx-auto px-4 py-8 sm:py-10">
                 <div className="rounded-[30px] border border-slate-200/80 bg-white p-4 shadow-[0_18px_45px_rgba(15,23,42,0.05)] sm:p-5">
                     <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                         <div className="relative flex-1">
@@ -257,29 +228,6 @@ export default function AllCloudeMess() {
                         ))}
                     </motion.div>
                 )}
-
-                <div className="mt-14 rounded-[32px] border border-slate-200 bg-slate-950 px-6 py-8 text-white shadow-[0_22px_55px_rgba(15,23,42,0.18)] sm:px-8">
-                    <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-                        <div className="space-y-3">
-                            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-orange-300">
-                                More Choices
-                            </p>
-                            <h3 className="text-2xl font-black sm:text-3xl">
-                                Browse menus, compare kitchens, and pick what fits your day
-                            </h3>
-                        </div>
-                        <div className="flex flex-wrap gap-3 text-sm text-slate-200">
-                            <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2">
-                                <MapPin className="h-4 w-4 text-orange-300" />
-                                Multi-city browsing
-                            </div>
-                            <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2">
-                                <UtensilsCrossed className="h-4 w-4 text-orange-300" />
-                                Menu-first discovery
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </section>
 
             <Footer />

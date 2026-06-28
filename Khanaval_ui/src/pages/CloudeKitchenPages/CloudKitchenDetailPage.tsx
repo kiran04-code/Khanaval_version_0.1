@@ -8,6 +8,8 @@ import {
     MapPin,
     Phone,
     Share2,
+    ShieldCheck,
+    Sparkles,
     Star,
     Store,
     UtensilsCrossed,
@@ -57,6 +59,28 @@ export default function CloudKitchenDetailPage() {
     const menuCount = kitchen ? getMenuCount(kitchen) : 0;
     const deliveryWindow = kitchen ? formatDeliveryWindow(kitchen) : "25-35 min";
     const rating = kitchen ? getRatingUi(kitchen) : 4.2;
+    const quickHighlights = groupedMenuItems.slice(0, 4).map(([category, items]) => ({
+        category,
+        count: items.length,
+        topItem: items[0]?.productName || "Fresh kitchen pick",
+    }));
+    const trustFeatures = [
+        {
+            title: "Fresh daily preparation",
+            description: "Menu items are shown directly from the kitchen's visible menu list.",
+            icon: Sparkles,
+        },
+        {
+            title: "Direct kitchen contact",
+            description: "Call or WhatsApp the kitchen without extra steps when you need details.",
+            icon: Phone,
+        },
+        {
+            title: "Reliable ordering flow",
+            description: "Open status, delivery timing, and menu count are visible before browsing.",
+            icon: ShieldCheck,
+        },
+    ];
 
     const updateQuantity = (itemId: string, delta: number) => {
         setCartQuantities((current) => {
@@ -154,8 +178,8 @@ export default function CloudKitchenDetailPage() {
         <div className="min-h-screen bg-[linear-gradient(180deg,#fffaf5_0%,#ffffff_30%,#f8fafc_100%)]">
             <Navbar />
 
-            <section className="container mx-auto px-4 pb-8 pt-28">
-                <div className="mb-5 flex items-center gap-3 text-sm text-slate-500">
+            <section className="container mx-auto px-4 pb-6 pt-24 sm:pb-8 sm:pt-28">
+                <div className="mb-4 hidden items-center gap-3 text-sm text-slate-500 sm:flex">
                     <Link to="/getCloudeMess" className="font-semibold text-orange-500 hover:text-orange-600">
                         Cloud Kitchens
                     </Link>
@@ -167,115 +191,121 @@ export default function CloudKitchenDetailPage() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4 }}
-                    className="overflow-hidden rounded-[34px] border border-slate-200/80 bg-white shadow-[0_24px_65px_rgba(15,23,42,0.08)]"
+                    className="overflow-hidden rounded-[28px] border border-slate-200/80 bg-white shadow-[0_24px_65px_rgba(15,23,42,0.08)]"
                 >
-                    <div className="relative aspect-[16/8] overflow-hidden">
-                        <img
-                            src={kitchen.CloudKitchenimage || cloudKitchenPlaceholderImage}
-                            alt={kitchen.CloudKitchenName || "Cloud kitchen"}
-                            className="h-full w-full object-cover"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/35 to-transparent" />
-                        <div className="absolute left-4 top-4 right-4 flex items-start justify-between gap-3">
-                            <Button
-                                type="button"
-                                variant="outline"
-                                onClick={() => navigate("/getCloudeMess")}
-                                className="rounded-full border-white/30 bg-white/90 px-4 text-slate-900 shadow-sm hover:bg-white"
-                            >
-                                <ArrowLeft className="mr-2 h-4 w-4" />
-                                Back
-                            </Button>
-                            <div className="flex gap-2">
-                                <button
+                    <div className="grid gap-4 p-4 sm:p-5 lg:grid-cols-[1.15fr,0.85fr] lg:items-center">
+                        <div className="space-y-4">
+                            <div className="flex items-center justify-between gap-3">
+                                <Button
                                     type="button"
-                                    onClick={() => setFavouriteKitchen((current) => !current)}
-                                    className={`flex h-11 w-11 items-center justify-center rounded-full border bg-white/90 shadow-sm transition ${
-                                        favouriteKitchen
-                                            ? "border-rose-200 text-rose-500"
-                                            : "border-white/30 text-slate-700"
-                                    }`}
+                                    variant="outline"
+                                    onClick={() => navigate("/getCloudeMess")}
+                                    className="rounded-full border-slate-200 bg-white px-3 text-xs text-slate-900 shadow-sm hover:bg-slate-50 sm:px-4 sm:text-sm"
                                 >
-                                    <Heart className={`h-4.5 w-4.5 ${favouriteKitchen ? "fill-current" : ""}`} />
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={handleShareKitchen}
-                                    className="flex h-11 w-11 items-center justify-center rounded-full border border-white/30 bg-white/90 text-slate-700 shadow-sm"
-                                >
-                                    <Share2 className="h-4.5 w-4.5" />
-                                </button>
+                                    <ArrowLeft className="mr-2 h-4 w-4" />
+                                    Back
+                                </Button>
+                                <div className="flex gap-2">
+                                    <button
+                                        type="button"
+                                        onClick={() => setFavouriteKitchen((current) => !current)}
+                                        className={`flex h-10 w-10 items-center justify-center rounded-full border bg-white shadow-sm transition ${
+                                            favouriteKitchen
+                                                ? "border-rose-200 text-rose-500"
+                                                : "border-slate-200 text-slate-700"
+                                        }`}
+                                    >
+                                        <Heart className={`h-4.5 w-4.5 ${favouriteKitchen ? "fill-current" : ""}`} />
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={handleShareKitchen}
+                                        className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 shadow-sm"
+                                    >
+                                        <Share2 className="h-4.5 w-4.5" />
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div>
+                                <h1 className="text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
+                                    {kitchen.CloudKitchenName}
+                                </h1>
+                                <div className="mt-3 flex flex-wrap items-center gap-2 text-sm font-bold text-slate-800 sm:text-base">
+                                    <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-1 text-emerald-700">
+                                        <Star className="h-4 w-4 fill-current" />
+                                        {rating.toFixed(1)}
+                                    </span>
+                                    <span className="text-slate-400">•</span>
+                                    <span>{deliveryWindow}</span>
+                                    <span className="text-slate-400">•</span>
+                                    <span>{formatPrice(startingPrice)} for two</span>
+                                </div>
+                                <p className="mt-3 text-base font-medium text-orange-600">
+                                    {cuisineTags.join(", ") || "Fresh meals"}
+                                </p>
+                                <div className="mt-3 space-y-2 text-sm text-slate-600 sm:text-base">
+                                    <div className="flex items-center gap-2">
+                                        <MapPin className="h-4 w-4 shrink-0 text-slate-400" />
+                                        <span className="line-clamp-1">{getDisplayAddress(kitchen)}</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <Clock3 className="h-4 w-4 shrink-0 text-slate-400" />
+                                        <span>
+                                            {kitchen.CloudKitchenOpenTime || "9:00 AM"} to{" "}
+                                            {kitchen.CloudKitchenCloseTime || "8:00 PM"}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-3 rounded-[22px] border border-slate-200 bg-slate-50 p-3 sm:grid-cols-4">
+                                <div>
+                                    <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">
+                                        Status
+                                    </p>
+                                    <p className="mt-1 text-sm font-black text-slate-950">
+                                        {kitchen.CloudKitchenIsOpen ? "Open Now" : "Closed"}
+                                    </p>
+                                </div>
+                                <div>
+                                    <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">
+                                        Starts At
+                                    </p>
+                                    <p className="mt-1 text-sm font-black text-slate-950">
+                                        {formatPrice(startingPrice)}
+                                    </p>
+                                </div>
+                                <div>
+                                    <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">
+                                        Menu Items
+                                    </p>
+                                    <p className="mt-1 text-sm font-black text-slate-950">{menuCount}</p>
+                                </div>
+                                <div>
+                                    <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">
+                                        Delivery
+                                    </p>
+                                    <p className="mt-1 text-sm font-black text-slate-950">{deliveryWindow}</p>
+                                </div>
                             </div>
                         </div>
 
-                        <div className="absolute inset-x-0 bottom-0 p-5 sm:p-7">
-                            <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-                                <div className="space-y-4">
-                                    <div className="flex flex-wrap gap-2">
-                                        <Badge
-                                            className={`rounded-full border-none px-3 py-1 text-[11px] font-bold ${
-                                                kitchen.CloudKitchenIsOpen
-                                                    ? "bg-emerald-100 text-emerald-700"
-                                                    : "bg-slate-900 text-white"
-                                            }`}
-                                        >
-                                            {kitchen.CloudKitchenIsOpen ? "Open Now" : "Closed"}
-                                        </Badge>
-                                        <Badge className="rounded-full border-none bg-white/90 px-3 py-1 text-[11px] font-bold text-slate-900">
-                                            {deliveryWindow}
-                                        </Badge>
-                                    </div>
-                                    <div>
-                                        <h1 className="text-3xl font-black tracking-tight text-white sm:text-5xl">
-                                            {kitchen.CloudKitchenName}
-                                        </h1>
-                                        <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-200 sm:text-base">
-                                            {kitchen.CloudKitchenDetails || "Fresh menu items from your nearby cloud kitchen."}
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div className="grid grid-cols-2 gap-3 rounded-[26px] bg-white/92 p-4 text-slate-900 shadow-xl backdrop-blur sm:grid-cols-4">
-                                    <div>
-                                        <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">
-                                            Rating
-                                        </p>
-                                        <p className="mt-1 flex items-center gap-1 text-base font-black">
-                                            <Star className="h-4 w-4 fill-current text-emerald-500" />
-                                            {rating.toFixed(1)}
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">
-                                            Starts At
-                                        </p>
-                                        <p className="mt-1 text-base font-black">
-                                            {formatPrice(startingPrice)}
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">
-                                            Menu Items
-                                        </p>
-                                        <p className="mt-1 text-base font-black">{menuCount}</p>
-                                    </div>
-                                    <div>
-                                        <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">
-                                            Delivery
-                                        </p>
-                                        <p className="mt-1 text-base font-black">{deliveryWindow}</p>
-                                    </div>
-                                </div>
-                            </div>
+                        <div className="overflow-hidden rounded-[24px]">
+                            <img
+                                src={kitchen.CloudKitchenimage || cloudKitchenPlaceholderImage}
+                                alt={kitchen.CloudKitchenName || "Cloud kitchen"}
+                                className="h-[220px] w-full rounded-[24px] object-cover sm:h-[260px] lg:h-[280px]"
+                            />
                         </div>
                     </div>
                 </motion.div>
             </section>
 
-            <section className="container mx-auto grid gap-8 px-4 pb-10 lg:grid-cols-[1.1fr,0.9fr]">
+            <section className="container mx-auto grid gap-5 px-4 pb-8 lg:grid-cols-[1.1fr,0.9fr] lg:gap-8 lg:pb-10">
                 <div className="space-y-6">
-                    <Card className="rounded-[30px] border border-slate-200/80 bg-white shadow-[0_18px_45px_rgba(15,23,42,0.06)]">
-                        <CardContent className="space-y-5 p-5 sm:p-6">
+                    <Card className="rounded-[26px] border border-slate-200/80 bg-white shadow-[0_18px_45px_rgba(15,23,42,0.06)] sm:rounded-[30px]">
+                        <CardContent className="space-y-5 p-4 sm:p-6">
                             <div className="flex flex-wrap gap-2">
                                 {cuisineTags.map((tag) => (
                                     <span
@@ -287,8 +317,8 @@ export default function CloudKitchenDetailPage() {
                                 ))}
                             </div>
 
-                            <div className="grid gap-4 sm:grid-cols-2">
-                                <div className="rounded-[24px] bg-slate-50 p-4">
+                            <div className="grid gap-3 sm:grid-cols-2 sm:gap-4">
+                                <div className="rounded-[20px] bg-slate-50 p-3.5 sm:rounded-[24px] sm:p-4">
                                     <div className="flex items-start gap-3">
                                         <MapPin className="mt-0.5 h-5 w-5 text-orange-500" />
                                         <div>
@@ -300,7 +330,7 @@ export default function CloudKitchenDetailPage() {
                                     </div>
                                 </div>
 
-                                <div className="rounded-[24px] bg-slate-50 p-4">
+                                <div className="rounded-[20px] bg-slate-50 p-3.5 sm:rounded-[24px] sm:p-4">
                                     <div className="flex items-start gap-3">
                                         <Languages className="mt-0.5 h-5 w-5 text-orange-500" />
                                         <div>
@@ -312,7 +342,7 @@ export default function CloudKitchenDetailPage() {
                                     </div>
                                 </div>
 
-                                <div className="rounded-[24px] bg-slate-50 p-4">
+                                <div className="rounded-[20px] bg-slate-50 p-3.5 sm:rounded-[24px] sm:p-4">
                                     <div className="flex items-start gap-3">
                                         <Phone className="mt-0.5 h-5 w-5 text-orange-500" />
                                         <div>
@@ -324,7 +354,7 @@ export default function CloudKitchenDetailPage() {
                                     </div>
                                 </div>
 
-                                <div className="rounded-[24px] bg-slate-50 p-4">
+                                <div className="rounded-[20px] bg-slate-50 p-3.5 sm:rounded-[24px] sm:p-4">
                                     <div className="flex items-start gap-3">
                                         <Clock3 className="mt-0.5 h-5 w-5 text-orange-500" />
                                         <div>
@@ -338,7 +368,7 @@ export default function CloudKitchenDetailPage() {
                                 </div>
                             </div>
 
-                            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
                                 <a
                                     href={`tel:${kitchen.CloudKitchenContactNumber || ""}`}
                                     className="inline-flex items-center justify-center rounded-2xl bg-slate-950 px-4 py-3 text-sm font-bold text-white transition hover:bg-orange-500"
@@ -363,46 +393,100 @@ export default function CloudKitchenDetailPage() {
                                     Get Directions
                                 </a>
                             </div>
+
+                            <div className="grid gap-3 lg:hidden">
+                                {[
+                                    { label: "Kitchen Type", value: kitchen.CloudKitchenType || "Cloud Kitchen" },
+                                    { label: "City", value: kitchen.CloudKitchenAdress?.city || "Not available" },
+                                    { label: "State", value: kitchen.CloudKitchenAdress?.state || "Not available" },
+                                    { label: "WhatsApp", value: kitchen.CloudKitchenWhatsappNumber || "Same as contact" },
+                                ].map((item) => (
+                                    <div
+                                        key={item.label}
+                                        className="flex items-center justify-between gap-4 rounded-[18px] bg-slate-50 px-4 py-3"
+                                    >
+                                        <span className="text-sm font-semibold text-slate-500">{item.label}</span>
+                                        <span className="text-right text-sm font-bold text-slate-900">{item.value}</span>
+                                    </div>
+                                ))}
+                            </div>
                         </CardContent>
                     </Card>
                 </div>
 
-                <Card className="rounded-[30px] border border-slate-200/80 bg-white shadow-[0_18px_45px_rgba(15,23,42,0.06)]">
-                    <CardContent className="space-y-4 p-5 sm:p-6">
-                        <div className="flex items-center gap-3">
-                            <div className="rounded-2xl bg-orange-50 p-3 text-orange-600">
-                                <UtensilsCrossed className="h-5 w-5" />
-                            </div>
-                            <div>
-                                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-orange-500">
-                                    Kitchen Snapshot
-                                </p>
-                                <h2 className="mt-1 text-2xl font-black text-slate-950">
-                                    Quick details
-                                </h2>
-                            </div>
-                        </div>
-                        <div className="space-y-3">
-                            {[
-                                { label: "Kitchen Type", value: kitchen.CloudKitchenType || "Cloud Kitchen" },
-                                { label: "City", value: kitchen.CloudKitchenAdress?.city || "Not available" },
-                                { label: "State", value: kitchen.CloudKitchenAdress?.state || "Not available" },
-                                { label: "WhatsApp", value: kitchen.CloudKitchenWhatsappNumber || "Same as contact" },
-                            ].map((item) => (
-                                <div
-                                    key={item.label}
-                                    className="flex items-center justify-between gap-4 rounded-[22px] bg-slate-50 px-4 py-4"
-                                >
-                                    <span className="text-sm font-semibold text-slate-500">{item.label}</span>
-                                    <span className="text-sm font-bold text-slate-900">{item.value}</span>
+                <div className="hidden space-y-5 lg:block">
+                    <Card className="rounded-[30px] border border-slate-200/80 bg-white shadow-[0_18px_45px_rgba(15,23,42,0.06)]">
+                        <CardContent className="space-y-4 p-5 sm:p-6">
+                            <div className="flex items-center gap-3">
+                                <div className="rounded-2xl bg-orange-50 p-3 text-orange-600">
+                                    <UtensilsCrossed className="h-5 w-5" />
                                 </div>
-                            ))}
-                        </div>
-                    </CardContent>
-                </Card>
+                                <div>
+                                    <p className="text-sm font-semibold uppercase tracking-[0.18em] text-orange-500">
+                                        Kitchen Snapshot
+                                    </p>
+                                    <h2 className="mt-1 text-2xl font-black text-slate-950">
+                                        Quick details
+                                    </h2>
+                                </div>
+                            </div>
+                            <div className="space-y-3">
+                                {[
+                                    { label: "Kitchen Type", value: kitchen.CloudKitchenType || "Cloud Kitchen" },
+                                    { label: "City", value: kitchen.CloudKitchenAdress?.city || "Not available" },
+                                    { label: "State", value: kitchen.CloudKitchenAdress?.state || "Not available" },
+                                    { label: "WhatsApp", value: kitchen.CloudKitchenWhatsappNumber || "Same as contact" },
+                                ].map((item) => (
+                                    <div
+                                        key={item.label}
+                                        className="flex items-center justify-between gap-4 rounded-[22px] bg-slate-50 px-4 py-4"
+                                    >
+                                        <span className="text-sm font-semibold text-slate-500">{item.label}</span>
+                                        <span className="text-sm font-bold text-slate-900">{item.value}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </CardContent>
+                    </Card>
+\
+                </div>
             </section>
 
             <section className="container mx-auto px-4 pb-16">
+                {quickHighlights.length > 0 && (
+                    <div className="mb-8 lg:hidden">
+                        <div className="mb-4 flex items-end justify-between gap-3">
+                            <div>
+                                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-orange-500">
+                                    Quick Picks
+                                </p>
+                                <h2 className="mt-2 text-2xl font-black text-slate-950 sm:text-3xl">
+                                    Find your favorite food
+                                </h2>
+                            </div>
+                        </div>
+
+                        <div className="flex gap-3 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                            {quickHighlights.map((item) => (
+                                <div
+                                    key={item.category}
+                                    className="min-w-[220px] rounded-[24px] border border-slate-200/80 bg-white p-4 shadow-[0_12px_30px_rgba(15,23,42,0.05)]"
+                                >
+                                    <span className="rounded-full bg-orange-50 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.16em] text-orange-600">
+                                        {item.category}
+                                    </span>
+                                    <h3 className="mt-3 text-lg font-black text-slate-950">
+                                        {item.count} items available
+                                    </h3>
+                                    <p className="mt-2 text-sm leading-6 text-slate-500">
+                                        Popular pick: {item.topItem}
+                                    </p>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
                 <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                     <div>
                         <p className="text-sm font-semibold uppercase tracking-[0.18em] text-orange-500">
@@ -433,9 +517,9 @@ export default function CloudKitchenDetailPage() {
                         </CardContent>
                     </Card>
                 ) : (
-                    <div className="space-y-10">
+                    <div className="space-y-8 sm:space-y-10">
                         {groupedMenuItems.map(([category, items]) => (
-                            <div key={category} className="space-y-5">
+                            <div key={category} className="space-y-4 sm:space-y-5">
                                 <div className="flex items-center gap-3">
                                     <div className="rounded-2xl bg-orange-50 p-3 text-orange-600">
                                         <UtensilsCrossed className="h-5 w-5" />
@@ -448,17 +532,18 @@ export default function CloudKitchenDetailPage() {
                                     </div>
                                 </div>
 
-                                <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+                                <div className="grid gap-4 md:grid-cols-2 2xl:grid-cols-3">
                                     {items.map((item) => (
-                                        <CloudKitchenMenuCard
-                                            key={item._id}
-                                            item={item}
-                                            isFavourite={Boolean(favouriteItems[item._id])}
-                                            quantity={cartQuantities[item._id] || 0}
-                                            onDecrease={() => updateQuantity(item._id, -1)}
-                                            onIncrease={() => updateQuantity(item._id, 1)}
-                                            onToggleFavourite={() => toggleFavouriteItem(item._id)}
-                                        />
+                                        <div key={item._id} className="w-full">
+                                            <CloudKitchenMenuCard
+                                                item={item}
+                                                isFavourite={Boolean(favouriteItems[item._id])}
+                                                quantity={cartQuantities[item._id] || 0}
+                                                onDecrease={() => updateQuantity(item._id, -1)}
+                                                onIncrease={() => updateQuantity(item._id, 1)}
+                                                onToggleFavourite={() => toggleFavouriteItem(item._id)}
+                                            />
+                                        </div>
                                     ))}
                                 </div>
                             </div>

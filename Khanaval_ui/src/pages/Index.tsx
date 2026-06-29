@@ -230,9 +230,7 @@ const Index = () => {
                       <p className="text-sm font-black uppercase tracking-[0.06em] text-slate-800">
                         Hygienic & Verified
                       </p>
-                      <p className="mt-1 text-sm text-slate-500">
-                        Trusted local kitchens with better confidence.
-                      </p>
+                   
                     </div>
                   </div>
                 </div>
@@ -246,9 +244,7 @@ const Index = () => {
                       <p className="text-sm font-black uppercase tracking-[0.06em] text-slate-800">
                         Real-time Menus
                       </p>
-                      <p className="mt-1 text-sm text-slate-500">
-                        Check what is available before you decide.
-                      </p>
+                   
                     </div>
                   </div>
                 </div>
@@ -261,9 +257,7 @@ const Index = () => {
                       <p className="text-sm font-black uppercase tracking-[0.06em] text-slate-800">
                         Cloud Kitchen
                       </p>
-                      <p className="mt-1 text-sm text-slate-500">
-                        Fresh,  meals delivered straight to your doorstep.
-                      </p>
+            
                     </div>
                   </div>
                 </div>
@@ -276,9 +270,7 @@ const Index = () => {
                       <p className="text-sm font-black uppercase tracking-[0.06em] text-slate-800">
                         Home-Cooked Taste
                       </p>
-                      <p className="mt-1 text-sm text-slate-500">
-                        Daily food that feels local, simple, and familiar.
-                      </p>
+                     
                     </div>
                   </div>
                 </div>

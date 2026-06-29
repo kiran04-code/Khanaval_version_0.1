@@ -24,7 +24,8 @@ import {
   Heart,
   ChevronRight,
   Sparkles,
-  PlayCircleIcon
+  PlayCircleIcon,
+  ChefHat
 } from "lucide-react";
 
 
@@ -220,7 +221,7 @@ const Index = () => {
                 and regular home-style meals for students and professionals.
               </p>
 
-              <div className="mx-auto mt-8 grid w-full max-w-[1600px] grid-cols-1 gap-6 px-6 md:grid-cols-2">
+              <div className="mx-auto mt-8 grid w-full max-w-[1800px] grid-cols-1 gap-6 px-6 md:grid-cols-2">
                 <div className="rounded-[22px] border border-slate-200/80 bg-white/90 p-4 shadow-[0_12px_30px_rgba(15,23,42,0.05)]">
                   <div className="flex items-center gap-3">
                     <div className="rounded-2xl bg-orange-50 p-2.5 text-orange-600">
@@ -251,7 +252,7 @@ const Index = () => {
                 <div className="rounded-[22px] border border-slate-200/80 bg-white/90 p-4 shadow-[0_12px_30px_rgba(15,23,42,0.05)]">
                   <div className="flex items-center gap-3">
                     <div className="rounded-2xl bg-orange-50 p-2.5 text-orange-600">
-                      <Timer className="h-5 w-5" />
+                      <ChefHat className="h-5 w-5" />
                     </div>
                     <div>
                       <p className="text-sm font-black uppercase tracking-[0.06em] text-slate-800">

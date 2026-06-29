@@ -329,6 +329,12 @@ export default function CloudKitchenOnboarding() {
             await queryClient.refetchQueries({
                 queryKey: ["KitchenProvider-data"],
             });
+             await queryClient.invalidateQueries({
+                queryKey: ["Kithen-data"],
+            });
+            await queryClient.refetchQueries({
+                queryKey: ["Kithen-data"],
+            });
 
             toast({
                 title: "Kitchen registered successfully",

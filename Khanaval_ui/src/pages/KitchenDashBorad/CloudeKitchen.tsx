@@ -13,6 +13,7 @@ import {
     Flame,
     IndianRupee,
     LayoutDashboard,
+    Loader2,
     LogOut,
     MapPin,
     Menu,
@@ -37,7 +38,7 @@ import {
     XCircle,
 } from "lucide-react";
 
-import { KitchenProviderdata } from "@/hooks/Provider";
+import { KitchenMessData, KitchenProviderdata } from "@/hooks/Provider";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -530,6 +531,8 @@ export default function CloudeKitchen() {
     // AddItem To menu
     const [selectedImage, setSelectedImage] = useState<File | null>(null);
     const [selectedImageName, setSelectedImageName] = useState("");
+    const [isSavingMenuItem, setIsSavingMenuItem] = useState(false);
+    const [isKitchenStatusUpdating, setIsKitchenStatusUpdating] = useState(false);
     const fileInputRef = useRef<HTMLInputElement | null>(null)
     const openerFileper = () => {
         fileInputRef.current?.click()
@@ -558,6 +561,7 @@ export default function CloudeKitchen() {
                 });
                 return
             }
+            setIsSavingMenuItem(true)
             const fromdata = new FormData()
             fromdata.append("cover", selectedImage)
             fromdata.append("kitchen", selectedImage)
@@ -584,6 +588,12 @@ export default function CloudeKitchen() {
                 await queryClient.refetchQueries({
                     queryKey: ["KitchenProvider-data"],
                 });
+                await queryClient.invalidateQueries({
+                    queryKey: ["Kithen-data"],
+                });
+                await queryClient.refetchQueries({
+                    queryKey: ["Kithen-data"],
+                });
                 toast({
                     title: `${data.message}`,
                     description: "Your cloud kitchen setup is complete.",
@@ -593,10 +603,28 @@ export default function CloudeKitchen() {
                     price: "",
                     category: "Main Course",
                 });
+                setSelectedImage(null);
+                setSelectedImageName("");
             }
         } catch (error) {
             console.error(error)
+        } finally {
+            setIsSavingMenuItem(false)
         }
+    }
+    const refreshCloudKitchenQueries = async () => {
+        await queryClient.invalidateQueries({
+            queryKey: ["KitchenProvider-data"],
+        });
+        await queryClient.refetchQueries({
+            queryKey: ["KitchenProvider-data"],
+        });
+        await queryClient.invalidateQueries({
+            queryKey: ["Kithen-data"],
+        });
+        await queryClient.refetchQueries({
+            queryKey: ["Kithen-data"],
+        });
     }
     const acceptOrder = (orderId: string) => {
         setOrders((currentOrders) =>
@@ -605,7 +633,64 @@ export default function CloudeKitchen() {
             ),
         );
     };
+    const DeleteMenuByID = async (id: string) => {
+        console.log(id)
+        try {
+            const { data } = await axioseInstace.get(`/api/cloudkitchens/DeleteMenuByID/${id}`)
+            console.log(data)
+            if (data.success) {
+                await queryClient.invalidateQueries({
+                    queryKey: ["KitchenProvider-data"],
+                });
+                await queryClient.refetchQueries({
+                    queryKey: ["KitchenProvider-data"],
+                });
+                await queryClient.invalidateQueries({
+                    queryKey: ["Kithen-data"],
+                });
+                await queryClient.refetchQueries({
+                    queryKey: ["Kithen-data"],
+                })
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    useEffect(() => {
+        const serverKitchenOpen = (kitchenprovider?.CloudKitchenID as { CloudKitchenIsOpen?: boolean } | undefined)?.CloudKitchenIsOpen;
 
+        if (typeof serverKitchenOpen === "boolean") {
+            setKitchenOpen(serverKitchenOpen);
+        }
+    }, [kitchenprovider?.CloudKitchenID]);
+
+    const MenuonOff = async () => {
+        if (!kitchenprovider?.CloudKitchenID?._id || isKitchenStatusUpdating) {
+            return;
+        }
+
+        try {
+            setIsKitchenStatusUpdating(true)
+            const { data } = await axioseInstace.get(`/api/cloudkitchens/MenuonOff/${kitchenprovider?.CloudKitchenID?._id}`)
+            if (data.success) {
+                const updatedKitchenOpen = data?.responseData?.CloudKitchenIsOpen;
+
+                if (typeof updatedKitchenOpen === "boolean") {
+                    setKitchenOpen(updatedKitchenOpen);
+                }
+
+                await refreshCloudKitchenQueries()
+            }
+        } catch (error) {
+            console.log(error)
+            toast({
+                title: "Kitchen status update failed",
+                description: "Please try again once.",
+            });
+        } finally {
+            setIsKitchenStatusUpdating(false)
+        }
+    }
     const rejectOrder = (orderId: string) => {
         setOrders((currentOrders) =>
             currentOrders.map((order) =>
@@ -738,7 +823,11 @@ export default function CloudeKitchen() {
                                     : "New orders are paused until you reopen the kitchen."}
                             </p>
                         </div>
-                        <Switch checked={kitchenOpen} onCheckedChange={setKitchenOpen} />
+                        <Switch
+                            checked={kitchenOpen}
+                            disabled={isKitchenStatusUpdating}
+                            onCheckedChange={MenuonOff}
+                        />
                     </div>
                 </div>
             </div>
@@ -915,7 +1004,11 @@ export default function CloudeKitchen() {
                                     </p>
                                 </div>
 
-                                <Switch checked={kitchenOpen} onCheckedChange={setKitchenOpen} />
+                                <Switch
+                                    checked={kitchenOpen}
+                                    disabled={isKitchenStatusUpdating}
+                                    onCheckedChange={MenuonOff}
+                                />
                             </div>
                         </div>
 
@@ -1125,11 +1218,10 @@ export default function CloudeKitchen() {
                                 </p>
                             </div>
                             <span
-                                className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-semibold ${
-                                    menuItem.available
-                                        ? "bg-emerald-100 text-emerald-700"
-                                        : "bg-slate-100 text-slate-600"
-                                }`}
+                                className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-semibold ${menuItem.available
+                                    ? "bg-emerald-100 text-emerald-700"
+                                    : "bg-slate-100 text-slate-600"
+                                    }`}
                             >
                                 {menuItem.available ? "Available" : "Paused"}
                             </span>
@@ -1146,14 +1238,8 @@ export default function CloudeKitchen() {
                                 </span>
                             </div>
                             <div className="grid grid-cols-2 gap-2 sm:flex">
-                                <Button
-                                    variant="outline"
-                                    className="h-9 rounded-full border-slate-200 px-3 text-xs"
-                                >
-                                    <Pencil className="mr-1 h-3.5 w-3.5" />
-                                    Edit
-                                </Button>
-                                <Button
+                            
+                                <Button type="button" onClick={() => DeleteMenuByID(menuItem.id)}
                                     variant="outline"
                                     className="h-9 rounded-full border-rose-200 px-3 text-xs text-rose-600 hover:bg-rose-50 hover:text-rose-700"
                                 >
@@ -1247,8 +1333,19 @@ export default function CloudeKitchen() {
                             </p>
                         </div>
 
-                        <Button type="submit" className="h-12 w-full rounded-2xl bg-orange-500 text-base hover:bg-orange-600">
-                            Save Item
+                        <Button
+                            type="submit"
+                            disabled={isSavingMenuItem}
+                            className="h-12 w-full rounded-2xl bg-orange-500 text-base hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-80"
+                        >
+                            {isSavingMenuItem ? (
+                                <>
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    Saving Item...
+                                </>
+                            ) : (
+                                "Save Item"
+                            )}
                         </Button>
                     </form>
                 </CardContent>
@@ -1446,7 +1543,11 @@ export default function CloudeKitchen() {
                         <div className="rounded-[28px] border border-white/15 bg-white/10 p-5 backdrop-blur">
                             <p className="text-sm font-medium text-orange-50">Kitchen Mode</p>
                             <div className="mt-4 flex items-center gap-4">
-                                <Switch checked={kitchenOpen} onCheckedChange={setKitchenOpen} />
+                                <Switch
+                                    checked={kitchenOpen}
+                                    disabled={isKitchenStatusUpdating}
+                                    onCheckedChange={MenuonOff}
+                                />
                                 <span className="text-lg font-bold">
                                     {kitchenOpen ? "Open" : "Closed"}
                                 </span>

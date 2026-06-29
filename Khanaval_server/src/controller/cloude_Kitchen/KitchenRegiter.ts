@@ -6,6 +6,7 @@ import { ApiError } from "../../utils/Apierror.js";
 import { KitchenService } from "../../services/Cloudekitchen/KitchenAsMessService.js";
 import { redisclient } from "../../config/redis.js";
 import { KitchenMenu } from "../../model/KicthenMenu.js";
+import { DeleteDataFromRedis } from "../../utils/Redis.js";
 
 export const registerCloudKitchen = async (req: Request, res: Response) => {
     try {
@@ -80,7 +81,7 @@ export const registerCloudKitchen = async (req: Request, res: Response) => {
             isMessRegister: true,
             CloudKitchenID: cloudKitchen._id,
         });
-
+        await DeleteDataFromRedis(KEYFORMESDATA);
         return sendReponse(res, 201, "Cloud kitchen registered successfully", cloudKitchen);
     } catch (error) {
         return senderror(res, 500, "Internal Server Error in cloud kitchen register route", error);
@@ -96,6 +97,7 @@ export const AddItemToMenu = async (req: Request, res: Response) => {
         }
         const kitchenId = req.params.kid!
         await KitchenService.AddItemToMenu(productName, productprice, productimage, productCategory, kitchenId)
+        await DeleteDataFromRedis(KEYFORMESDATA);
         return sendReponse(res, 201, "Menu Create Suucesfully")
     } catch (error) {
         if (error instanceof ApiError) {
@@ -105,6 +107,47 @@ export const AddItemToMenu = async (req: Request, res: Response) => {
     }
 }
 const KEYFORMESDATA = "CLOUDEMESS"
+
+
+export const DeleteMenuByID = async (req: Request, res: Response) => {
+    try {
+        const menuId = req?.params.menuId!;
+        await KitchenMenu.findByIdAndDelete(menuId)
+        return sendReponse(res, 200, "Menu Delete Suucesfully",)
+        await DeleteDataFromRedis(KEYFORMESDATA);
+    } catch (error) {
+        if (error instanceof ApiError) {
+            return senderror(res, error.statusCode, error.message)
+        }
+        return senderror(res, 500, "Internal server Error")
+
+    }
+}
+export const MessOnOffByid = async (req: Request, res: Response) => {
+    try {
+        const messId = req?.params.messId!;
+        const kitchen = await CloudKitchen.findByIdAndUpdate(messId)
+        if (!kitchen) {
+            return senderror(res, 404, "Cloud Kitchen not found");
+        }
+        kitchen.CloudKitchenIsOpen = !kitchen.CloudKitchenIsOpen;
+        kitchen.save();
+        await DeleteDataFromRedis(KEYFORMESDATA);
+        return sendReponse(
+            res,
+            200,
+            `Kitchen is now ${kitchen.CloudKitchenIsOpen ? "Open" : "Closed"}`,
+            kitchen
+        );
+    } catch (error) {
+        if (error instanceof ApiError) {
+            return senderror(res, error.statusCode, error.message)
+        }
+        return senderror(res, 500, "Internal server Error")
+
+    }
+}
+
 export const GetAllCloudeKitchne = async (req: Request, res: Response) => {
     try {
         const data = await redisclient.get(KEYFORMESDATA)
@@ -127,42 +170,5 @@ export const GetAllCloudeKitchne = async (req: Request, res: Response) => {
             return senderror(res, error.statusCode, error.message)
         }
         return senderror(res, 500, "Internal server Error")
-    }
-}
-
-export const DeleteMenuByID = async (req: Request, res: Response) => {
-    try {
-        const menuId = req?.params.menuId!;
-        await KitchenMenu.findByIdAndDelete(menuId)
-        return sendReponse(res, 200, "Menu Delete Suucesfully",)
-    } catch (error) {
-        if (error instanceof ApiError) {
-            return senderror(res, error.statusCode, error.message)
-        }
-        return senderror(res, 500, "Internal server Error")
-
-    }
-}
-export const MessOnOffByid = async (req: Request, res: Response) => {
-    try {
-        const messId = req?.params.messId!;
-        const kitchen = await CloudKitchen.findByIdAndUpdate(messId)
-        if (!kitchen) {
-            return senderror(res, 404, "Cloud Kitchen not found");
-        }
-        kitchen.CloudKitchenIsOpen = !kitchen.CloudKitchenIsOpen;
-        kitchen.save();
-        return sendReponse(
-            res,
-            200,
-            `Kitchen is now ${kitchen.CloudKitchenIsOpen ? "Open" : "Closed"}`,
-            kitchen
-        );
-    } catch (error) {
-        if (error instanceof ApiError) {
-            return senderror(res, error.statusCode, error.message)
-        }
-        return senderror(res, 500, "Internal server Error")
-
     }
 }

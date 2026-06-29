@@ -6,6 +6,7 @@ import { ApiError } from "../../utils/Apierror.js";
 import { KitchenService } from "../../services/Cloudekitchen/KitchenAsMessService.js";
 import { redisclient } from "../../config/redis.js";
 import { KitchenMenu } from "../../model/KicthenMenu.js";
+import { DeleteDataFromRedis } from "../../utils/Redis.js";
 export const registerCloudKitchen = async (req, res) => {
     try {
         if (!req.CloudeUser?.id) {
@@ -53,6 +54,7 @@ export const registerCloudKitchen = async (req, res) => {
             isMessRegister: true,
             CloudKitchenID: cloudKitchen._id,
         });
+        await DeleteDataFromRedis(KEYFORMESDATA);
         return sendReponse(res, 201, "Cloud kitchen registered successfully", cloudKitchen);
     }
     catch (error) {
@@ -67,6 +69,7 @@ export const AddItemToMenu = async (req, res) => {
         }
         const kitchenId = req.params.kid;
         await KitchenService.AddItemToMenu(productName, productprice, productimage, productCategory, kitchenId);
+        await DeleteDataFromRedis(KEYFORMESDATA);
         return sendReponse(res, 201, "Menu Create Suucesfully");
     }
     catch (error) {
@@ -77,32 +80,12 @@ export const AddItemToMenu = async (req, res) => {
     }
 };
 const KEYFORMESDATA = "CLOUDEMESS";
-export const GetAllCloudeKitchne = async (req, res) => {
-    try {
-        const data = await redisclient.get(KEYFORMESDATA);
-        // Cache hit
-        if (data) {
-            return sendReponse(res, 201, "Menu Create Suucesfully", JSON.parse(data));
-        }
-        // Cache mess
-        const getAllCloudeMess = await CloudKitchen.find({})
-            .populate("KitchenOwnerId")
-            .populate("MenuId");
-        await redisclient.setex(KEYFORMESDATA, 60 * 60, JSON.stringify(getAllCloudeMess));
-        return sendReponse(res, 201, "Menu Create Suucesfully", getAllCloudeMess);
-    }
-    catch (error) {
-        if (error instanceof ApiError) {
-            return senderror(res, error.statusCode, error.message);
-        }
-        return senderror(res, 500, "Internal server Error");
-    }
-};
 export const DeleteMenuByID = async (req, res) => {
     try {
         const menuId = req?.params.menuId;
         await KitchenMenu.findByIdAndDelete(menuId);
         return sendReponse(res, 200, "Menu Delete Suucesfully");
+        await DeleteDataFromRedis(KEYFORMESDATA);
     }
     catch (error) {
         if (error instanceof ApiError) {
@@ -120,7 +103,29 @@ export const MessOnOffByid = async (req, res) => {
         }
         kitchen.CloudKitchenIsOpen = !kitchen.CloudKitchenIsOpen;
         kitchen.save();
+        await DeleteDataFromRedis(KEYFORMESDATA);
         return sendReponse(res, 200, `Kitchen is now ${kitchen.CloudKitchenIsOpen ? "Open" : "Closed"}`, kitchen);
+    }
+    catch (error) {
+        if (error instanceof ApiError) {
+            return senderror(res, error.statusCode, error.message);
+        }
+        return senderror(res, 500, "Internal server Error");
+    }
+};
+export const GetAllCloudeKitchne = async (req, res) => {
+    try {
+        const data = await redisclient.get(KEYFORMESDATA);
+        // Cache hit
+        if (data) {
+            return sendReponse(res, 201, "Menu Create Suucesfully", JSON.parse(data));
+        }
+        // Cache mess
+        const getAllCloudeMess = await CloudKitchen.find({})
+            .populate("KitchenOwnerId")
+            .populate("MenuId");
+        await redisclient.setex(KEYFORMESDATA, 60 * 60, JSON.stringify(getAllCloudeMess));
+        return sendReponse(res, 201, "Menu Create Suucesfully", getAllCloudeMess);
     }
     catch (error) {
         if (error instanceof ApiError) {

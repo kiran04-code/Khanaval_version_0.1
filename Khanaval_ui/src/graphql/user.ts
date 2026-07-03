@@ -53,7 +53,19 @@ query GetcurrentUser{
       landmark,
     }
    }
-  } 
+  } ,
+  Address {
+   address,
+    houseNo,
+    society,
+    landmark,
+    suburb,
+    city,
+    state,
+    postcode,
+    lat,
+    lng
+  }
   }
 }
 

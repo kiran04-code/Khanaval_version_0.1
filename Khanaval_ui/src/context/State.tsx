@@ -29,7 +29,9 @@ export const StateContextProvider = ({ children }: { children: ReactNode }) => {
         });
 
         instance.interceptors.request.use((config) => {
-            const token = localStorage.getItem("client_token");
+            const token =
+                localStorage.getItem("client_token") ||
+                localStorage.getItem("_user_Token__");
 
             if (token) {
                 config.headers.Authorization = `Bearer ${token}`;

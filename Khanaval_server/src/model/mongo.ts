@@ -39,7 +39,12 @@ const UserShema = new mongoose.Schema<Iuser>(
         myMess: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Subscription",
-        }
+        },
+        Address: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref:"UserAddres"
+        }]
+
     } as unknown as mongoose.SchemaDefinition<Iuser>
 )
 

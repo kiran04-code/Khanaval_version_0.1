@@ -113,8 +113,8 @@ export const DeleteMenuByID = async (req: Request, res: Response) => {
     try {
         const menuId = req?.params.menuId!;
         await KitchenMenu.findByIdAndDelete(menuId)
-        return sendReponse(res, 200, "Menu Delete Suucesfully",)
         await DeleteDataFromRedis(KEYFORMESDATA);
+        return sendReponse(res, 200, "Menu Delete Suucesfully",)
     } catch (error) {
         if (error instanceof ApiError) {
             return senderror(res, error.statusCode, error.message)

@@ -1,3 +1,4 @@
+import type mongoose from "mongoose";
 export interface Iuser {
     id?: string;
     first_name: string;
@@ -8,6 +9,7 @@ export interface Iuser {
     imageUrl: string;
     Subscriber?: boolean;
     FCMtoken?: string;
+    Address?: mongoose.Types.ObjectId[];
 }
 export interface IProvider {
     id?: string;

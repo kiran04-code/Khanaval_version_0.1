@@ -36,7 +36,11 @@ const UserShema = new mongoose.Schema({
     myMess: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Subscription",
-    }
+    },
+    Address: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "UserAddres"
+        }]
 });
 export const user = mongoose.model("Users", UserShema);
 //# sourceMappingURL=mongo.js.map

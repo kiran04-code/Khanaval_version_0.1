@@ -38,12 +38,17 @@ class UserService {
     }
     static async findcurrentUser(id) {
         try {
-            const userdata = await user.findById(id).populate({
-                path: "myMess", // subsciption
-                populate: {
-                    path: "messId", // MessSchema
+            const userdata = await user.findById(id).populate([
+                {
+                    path: "myMess",
+                    populate: {
+                        path: "messId",
+                    }
+                },
+                {
+                    path: "Address",
                 }
-            });
+            ]);
             return userdata;
         }
         catch (error) {

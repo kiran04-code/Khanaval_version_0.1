@@ -9,6 +9,7 @@ import jwtService from "./services/JwtToken.js"
 import providerRoutes from "./routes/Provider.js"
 import CloudProviderRouter from "./routes/CloudKitchenOwner.js"
 import { AuthMiddleware } from "./middleware/Auth.js"
+import UserRoutes from "./routes/UserRoute.js"
 dotenv.config()
 const app = express()
 const PORT = process.env.PORT || 3002
@@ -55,6 +56,7 @@ app.use("/graphql", expressMiddleware(await StartGraphql(), {
 await connectDB();
 
 app.use("/api", providerRoutes)
+app.use("/api/user", UserRoutes)
 app.use("/api/cloudkitchens", CloudProviderRouter)
 app.get("/api/getkeys", (req, res) => {
     return res.json({

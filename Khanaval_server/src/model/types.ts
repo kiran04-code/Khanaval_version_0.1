@@ -9,7 +9,8 @@ export interface Iuser {
     user_type?:string
     imageUrl:string
     Subscriber?:boolean
-    FCMtoken?:string
+    FCMtoken?:string,
+    Address?:mongoose.Types.ObjectId[];
 }
 export interface IProvider {
     id?:string,

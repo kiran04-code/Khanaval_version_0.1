@@ -40,12 +40,17 @@ class UserService {
     }
     public static async findcurrentUser(id: string) {
         try {
-            const userdata = await user.findById(id).populate({
-                path: "myMess",           // subsciption
-                populate: {
-                    path: "messId",        // MessSchema
+            const userdata = await user.findById(id).populate([
+                {
+                    path: "myMess",
+                    populate: {
+                        path: "messId",
+                    }
+                },
+                {
+                    path: "Address",
                 }
-            })
+            ])
             return userdata
         } catch (error) {
             throw Error("Backend findcurentUserError")

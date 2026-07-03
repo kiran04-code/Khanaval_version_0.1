@@ -1,3 +1,3 @@
 import { type Request, type Response } from "express";
-export declare const PlaceOrder: (req: Request, res: Response) => Promise<void>;
+export declare const PlaceOrder: (req: Request, res: Response) => Promise<Response<any, Record<string, any>>>;
 //# sourceMappingURL=order.controller.d.ts.map

@@ -101,7 +101,7 @@ export default function CloudKitchenDetailPage() {
         },
     ];
     const axioseInstace = stateContext?.axioseInstace;
-    console.log(visibleMenuItems.filter((item) => (    || 0) > 0))
+    console.log(visibleMenuItems.filter((item) => (cartQuantities[item._id] || 0) > 0))
     const cartItems = visibleMenuItems
         .filter((item) => (cartQuantities[item._id] || 0) > 0)
         .map((item) => ({

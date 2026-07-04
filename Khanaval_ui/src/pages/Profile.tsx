@@ -12,7 +12,7 @@ import {
 import { 
   LogOut, ChevronRight, MapPin, History, ShieldCheck, 
   UtensilsCrossed, Clock, Mail, QrCode, Calendar, ChevronDown, ChevronUp,
-  Search, Loader2, Navigation, Home, Building2, Landmark
+  Search, Loader2, Navigation, Home, Building2, Landmark, Receipt
 } from "lucide-react";
 import { useCurrentUser } from "@/hooks/user-hook";
 import { useQueryClient } from "@tanstack/react-query";
@@ -747,6 +747,24 @@ export default function KhanavalProfile() {
 
         {/* Footer Actions */}
         <div className="space-y-4">
+          <button
+            onClick={() => navigate("/MyOrder")}
+            className="w-full flex items-center justify-between p-5 lg:p-7 bg-white border border-slate-50 rounded-3xl lg:rounded-[35px] hover:border-orange-100 shadow-sm transition-all group"
+          >
+            <div className="flex items-center gap-3 lg:gap-5">
+              <div className="p-3 lg:p-4 rounded-xl lg:rounded-2xl bg-orange-50 text-orange-600 group-hover:bg-orange-600 group-hover:text-white transition-colors">
+                <Receipt className="w-5 h-5 lg:w-7 lg:h-7" />
+              </div>
+              <div className="text-left">
+                <p className="font-black text-slate-800 text-xs lg:text-lg">See My Orders</p>
+                <p className="text-[10px] lg:text-sm font-bold text-slate-400 uppercase truncate">
+                  Track your cloud kitchen orders and item details
+                </p>
+              </div>
+            </div>
+            <ChevronRight className="w-5 h-5 lg:w-7 lg:h-7 text-slate-200 group-hover:text-orange-500" />
+          </button>
+
           {myMess && (
             <button className="w-full flex items-center justify-between p-5 lg:p-7 bg-white border border-slate-50 rounded-3xl lg:rounded-[35px] hover:border-orange-100 shadow-sm transition-all group">
               <div className="flex items-center gap-3 lg:gap-5">

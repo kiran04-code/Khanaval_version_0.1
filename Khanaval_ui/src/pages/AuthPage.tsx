@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
-import { graphqlClient } from "../../api_server/api_end_point";
+import { graphqlClient, providerGraphqlClient } from "../../api_server/api_end_point";
 import { User, Building2, Phone, ArrowRight, ShieldCheck, Mail, Cloud } from "lucide-react";
 import { GoogleLogin } from "@react-oauth/google";
 import { VERIFIED_USER_GOOGLE, VERIFIED_USER_GOOGLE_LOGIN } from "@/graphql/user";
@@ -122,7 +122,7 @@ export default function HybridAuthPage() {
       if (providerMode === "signup") {
         const fcmToken = await requestPushPermission(); // <-- make sure service worker is active
         setfcToken(fcmToken)
-        const { ProviderverficationOTP } = await graphqlClient.request(PROVIDER_OTP_SIGNUP_QUERY, {
+        const { ProviderverficationOTP } = await providerGraphqlClient.request(PROVIDER_OTP_SIGNUP_QUERY, {
           number: providerNumber
         });
         if (ProviderverficationOTP.success) {
@@ -133,7 +133,7 @@ export default function HybridAuthPage() {
           setProviderMode(providerMode === "signup" ? "login" : "signup");
         }
       } else {
-        const { ProviderverficationOTPLogin } = await graphqlClient.request(PROVIDER_OTP_LOGIN_QUERY, {
+        const { ProviderverficationOTPLogin } = await providerGraphqlClient.request(PROVIDER_OTP_LOGIN_QUERY, {
           number: providerNumber
         });
 
@@ -164,7 +164,7 @@ export default function HybridAuthPage() {
           return;
         }
         setIsLoading(true);
-        const { Providerverfication } = await graphqlClient.request(PROVIDER_OTP_SIGNUP_VERYFIED_QUERY, {
+        const { Providerverfication } = await providerGraphqlClient.request(PROVIDER_OTP_SIGNUP_VERYFIED_QUERY, {
           payload: {
             number: providerNumber,
             Ownername: providerMode === "signup" ? providerName : "Existing User",
@@ -174,7 +174,7 @@ export default function HybridAuthPage() {
         });
 
         if (Providerverfication.success) {
-          localStorage.setItem("_user_Token__", Providerverfication.token);
+          localStorage.setItem("provider_token", Providerverfication.token);
           toast({ title: `${Providerverfication.message}` });
           queryclinet.invalidateQueries({
             queryKey: ["provider-data"]
@@ -189,7 +189,7 @@ export default function HybridAuthPage() {
           return;
         }
         setIsLoading(true);
-        const { ProviderverficationLogin } = await graphqlClient.request(PROVIDER_OTP_LOGIN_VERYFIED_QUERY, {
+        const { ProviderverficationLogin } = await providerGraphqlClient.request(PROVIDER_OTP_LOGIN_VERYFIED_QUERY, {
           payload: {
             number: providerNumber,
             otp: Number(providerOtp)
@@ -197,7 +197,7 @@ export default function HybridAuthPage() {
         });
         console.log(ProviderverficationLogin)
         if (ProviderverficationLogin.success) {
-          localStorage.setItem("_user_Token__", ProviderverficationLogin.token);
+          localStorage.setItem("provider_token", ProviderverficationLogin.token);
           toast({ title: `${ProviderverficationLogin.message}` });
           queryclinet.invalidateQueries({
             queryKey: ["provider-data"]

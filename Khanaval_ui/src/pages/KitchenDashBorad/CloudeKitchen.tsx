@@ -65,6 +65,7 @@ import { PaymentScreen } from "@/components/cloud-kitchen/PaymentScreen";
 import { RenewSubscriptionScreen } from "@/components/cloud-kitchen/RenewSubscriptionScreen";
 import { useStateContex } from "@/context/State";
 import { toast } from "@/hooks/use-toast";
+import { getMyOrderForkitchen } from "@/hooks/user-hook";
 
 type DashboardSection =
     | "dashboard"
@@ -91,6 +92,40 @@ type KitchenOrder = {
     status: OrderStatus;
     placedAt: string;
     eta: string;
+};
+
+type KitchenOrderProductRecord = {
+    count?: number;
+    productId?: {
+        _id?: string;
+        productName?: string;
+        productprice?: number | string;
+        productimage?: string;
+        productCategory?: string;
+    };
+};
+
+type KitchenOrderCustomerRecord = {
+    _id?: string;
+    first_name?: string;
+    last_name?: string;
+    emailId?: string;
+    number?: string;
+    imageUrl?: string;
+};
+
+type KitchenOrderFeedRecord = {
+    _id?: string;
+    userId?: KitchenOrderCustomerRecord;
+    KitchenId?: string;
+    totalPrice?: number;
+    paymentMode?: string;
+    OrderStatus?: string;
+    AllIteam?: string;
+    productList?: KitchenOrderProductRecord[];
+    AddressToDelivedProduct?: string;
+    orderPlaceTime?: string;
+    createdAt?: string;
 };
 
 type KitchenMenuItem = {
@@ -412,14 +447,23 @@ export default function CloudeKitchen() {
         setMenuItems(mappedMenuItems);
     }, [kitchenprovider?.CloudKitchenID?.MenuId]);
 
-    const newOrders = orders.filter((order) => order.status === "new");
-    const acceptedOrders = orders.filter((order) => order.status === "preparing");
-    const readyOrders = orders.filter((order) => order.status === "ready");
-    const completedOrders = orders.filter((order) => order.status === "delivered");
-    const activeOrders = orders.filter((order) => order.status !== "rejected");
-    const todaysRevenue = completedOrders.reduce((sum, order) => sum + order.amount, 0);
+    const { myordersforKtchen, isLoading: isKitchenOrdersLoading } = getMyOrderForkitchen(
+        kitchenprovider?.CloudKitchenID?._id || "",
+    );
+    const kitchenOrders = Array.isArray(myordersforKtchen)
+        ? (myordersforKtchen as KitchenOrderFeedRecord[])
+        : [];
+    const newOrders = kitchenOrders.filter((order) => order.OrderStatus === "Pending");
+    const acceptedOrders = kitchenOrders.filter(
+        (order) => order.OrderStatus === "Accepted" || order.OrderStatus === "Preparing",
+    );
+    const readyOrders = kitchenOrders.filter(
+        (order) => order.OrderStatus === "Ready" || order.OrderStatus === "OutForDelivery",
+    );
+    const completedOrders = kitchenOrders.filter((order) => order.OrderStatus === "Delivered");
+    const activeOrders = kitchenOrders.filter((order) => order.OrderStatus !== "Cancelled");
+    const todaysRevenue = completedOrders.reduce((sum, order) => sum + Number(order.totalPrice || 0), 0);
     const availableMenuCount = menuItems.filter((item) => item.available).length;
-
     const sidebarItems = [
         {
             id: "dashboard" as const,
@@ -1126,7 +1170,7 @@ export default function CloudeKitchen() {
         </div>
     );
 
-    const renderOrdersSection = () => (
+    const renderOrdersSectionLegacy = () => (
         <div className="space-y-4">
             <div className="grid gap-4 xl:grid-cols-2">
                 {orders.map((order) => (
@@ -1170,6 +1214,218 @@ export default function CloudeKitchen() {
             </div>
         </div>
     );
+
+    const renderOrdersSection = () => {
+        const orderStatusUi = (status?: string) => {
+            switch (status) {
+                case "Pending":
+                    return "bg-amber-50 text-amber-700";
+                case "Accepted":
+                    return "bg-sky-50 text-sky-700";
+                case "Preparing":
+                    return "bg-violet-50 text-violet-700";
+                case "Ready":
+                    return "bg-indigo-50 text-indigo-700";
+                case "OutForDelivery":
+                    return "bg-cyan-50 text-cyan-700";
+                case "Delivered":
+                    return "bg-emerald-50 text-emerald-700";
+                case "Cancelled":
+                    return "bg-rose-50 text-rose-700";
+                default:
+                    return "bg-slate-100 text-slate-700";
+            }
+        };
+
+        const formatOrderDate = (value?: string) => {
+            if (!value) {
+                return "Recently placed";
+            }
+
+            return new Date(value).toLocaleString("en-IN", {
+                day: "2-digit",
+                month: "short",
+                hour: "2-digit",
+                minute: "2-digit",
+            });
+        };
+
+        if (isKitchenOrdersLoading) {
+            return (
+                <div className="grid gap-4 xl:grid-cols-2">
+                    {Array.from({ length: 4 }).map((_, index) => (
+                        <Card key={index} className={detailCardClass}>
+                            <CardContent className="space-y-4 p-5">
+                                <Skeleton className="h-16 w-full rounded-2xl" />
+                                <Skeleton className="h-24 w-full rounded-2xl" />
+                                <Skeleton className="h-28 w-full rounded-2xl" />
+                            </CardContent>
+                        </Card>
+                    ))}
+                </div>
+            );
+        }
+
+        if (kitchenOrders.length === 0) {
+            return (
+                <Card className={detailCardClass}>
+                    <CardContent className="flex flex-col items-center justify-center px-6 py-14 text-center">
+                        <ShoppingBag className="h-10 w-10 text-orange-500" />
+                        <h3 className="mt-4 text-xl font-bold text-slate-900">
+                            No kitchen orders yet
+                        </h3>
+                        <p className="mt-2 max-w-md text-sm leading-6 text-slate-500">
+                            When customers place cloud kitchen orders, full order details will appear here.
+                        </p>
+                    </CardContent>
+                </Card>
+            );
+        }
+
+        return (
+            <div className="space-y-4">
+                <div className="grid gap-4 xl:grid-cols-2">
+                    {kitchenOrders
+                        .slice()
+                        .reverse()
+                        .map((order) => {
+                            const customerName = [order.userId?.first_name, order.userId?.last_name]
+                                .filter(Boolean)
+                                .join(" ")
+                                .trim() || "Customer";
+                            const customerInitial = customerName.charAt(0).toUpperCase() || "C";
+                            const productItems = Array.isArray(order.productList) ? order.productList : [];
+
+                            return (
+                                <Card key={order._id} className={detailCardClass}>
+                                    <CardContent className="space-y-4 p-5">
+                                        <div className="flex flex-wrap items-start justify-between gap-3">
+                                            <div className="flex min-w-0 items-start gap-3">
+                                                <Avatar className="h-12 w-12 border border-orange-100">
+                                                    <AvatarImage src={order.userId?.imageUrl} />
+                                                    <AvatarFallback className="bg-orange-100 font-semibold text-orange-700">
+                                                        {customerInitial}
+                                                    </AvatarFallback>
+                                                </Avatar>
+                                                <div className="min-w-0">
+                                                    <div className="flex flex-wrap items-center gap-2">
+                                                        <h3 className="text-base font-semibold text-slate-900">
+                                                            {customerName}
+                                                        </h3>
+                                                        <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${orderStatusUi(order.OrderStatus)}`}>
+                                                            {order.OrderStatus || "Pending"}
+                                                        </span>
+                                                    </div>
+                                                    <p className="mt-1 text-sm text-slate-500">
+                                                        {order._id} • {order.userId?.number || "No phone"}
+                                                    </p>
+                                                    <p className="mt-1 text-xs text-slate-400">
+                                                        {order.userId?.emailId || "No email"}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <div className="text-right">
+                                                <p className="text-lg font-black text-slate-900">
+                                                    Rs. {Number(order.totalPrice || 0)}
+                                                </p>
+                                                <p className="mt-1 text-xs font-semibold uppercase tracking-[0.12em] text-slate-400">
+                                                    {order.paymentMode || "Cash"}
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <div className="rounded-[20px] bg-slate-50 p-4">
+                                            <div className="mb-3 flex items-center justify-between gap-3">
+                                                <p className="text-sm font-bold text-slate-900">Ordered items</p>
+                                                <span className="text-xs font-semibold text-slate-500">
+                                                    {productItems.length} items
+                                                </span>
+                                            </div>
+                                            <div className="space-y-3">
+                                                {productItems.map((product, index) => (
+                                                    <div
+                                                        key={`${product.productId?._id || index}-${index}`}
+                                                        className="flex items-center gap-3 rounded-[18px] bg-white px-3 py-3"
+                                                    >
+                                                        <img
+                                                            src={product.productId?.productimage || "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=900&q=80"}
+                                                            alt={product.productId?.productName || "Order item"}
+                                                            className="h-14 w-14 rounded-2xl object-cover"
+                                                        />
+                                                        <div className="min-w-0 flex-1">
+                                                            <p className="line-clamp-1 text-sm font-bold text-slate-900">
+                                                                {product.productId?.productName || "Menu item"}
+                                                            </p>
+                                                            <p className="mt-1 text-xs text-slate-500">
+                                                                {product.productId?.productCategory || "Main Course"}
+                                                            </p>
+                                                        </div>
+                                                        <div className="text-right">
+                                                            <p className="text-xs font-semibold text-slate-500">
+                                                                Qty {product.count || 0}
+                                                            </p>
+                                                            <p className="mt-1 text-sm font-black text-slate-900">
+                                                                Rs. {Number(product.productId?.productprice || 0) * Number(product.count || 0)}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        <div className="grid gap-3 sm:grid-cols-2">
+                                            <div className="rounded-[20px] bg-slate-50 p-4">
+                                                <div className="flex items-start gap-3">
+                                                    <MapPin className="mt-0.5 h-4 w-4 text-orange-500" />
+                                                    <div>
+                                                        <p className="text-sm font-bold text-slate-900">
+                                                            Delivery Address
+                                                        </p>
+                                                        <p className="mt-1 text-sm leading-6 text-slate-600">
+                                                            {order.AddressToDelivedProduct || "Address not available"}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div className="rounded-[20px] bg-slate-50 p-4">
+                                                <div className="flex items-start gap-3">
+                                                    <Clock3 className="mt-0.5 h-4 w-4 text-orange-500" />
+                                                    <div>
+                                                        <p className="text-sm font-bold text-slate-900">
+                                                            Order Time
+                                                        </p>
+                                                        <p className="mt-1 text-sm leading-6 text-slate-600">
+                                                            {formatOrderDate(order.orderPlaceTime || order.createdAt)}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="rounded-[20px] border border-orange-100 bg-[linear-gradient(135deg,#fff7ed_0%,#ffffff_100%)] p-4">
+                                            <div className="flex flex-wrap items-start justify-between gap-3">
+                                                <div>
+                                                    <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-orange-500">
+                                                        Order Summary
+                                                    </p>
+                                                    <p className="mt-2 text-sm leading-6 text-slate-700">
+                                                        {order.AllIteam || "No item summary available"}
+                                                    </p>
+                                                </div>
+                                                <div className="rounded-full bg-white px-3 py-2 text-sm font-bold text-slate-900 shadow-sm">
+                                                    {order.paymentMode || "Cash"}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            );
+                        })}
+                </div>
+            </div>
+        );
+    };
 
     const renderMenuSection = () => (
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">

@@ -30,6 +30,7 @@ import CloudeKitchen from "./pages/KitchenDashBorad/CloudeKitchen";
 import CloudKitchenOnboarding from "./pages/KitchenDashBorad/CloudKitchenOnboarding";
 import AllCloudeMess from "./pages/CloudeKitchenPages/AllCloudeMess";
 import CloudKitchenDetailPage from "./pages/CloudeKitchenPages/CloudKitchenDetailPage";
+import ShowMyAllOrder from "./pages/ShowMyAllOrder";
 
 const App = () => {
   useEffect(() => {
@@ -70,6 +71,7 @@ const App = () => {
           <Route path="/how-it-works" element={<HowItWorks/>} />
           <Route path="/MealRedeem/:scanMessId" element={<MealRedeemPage/>} />
           <Route path="/HelpSupport" element={<HelpSupport/>} />
+          <Route path="/MyOrder" element={<ProtectedRoutes><ShowMyAllOrder/></ProtectedRoutes>} />
           <Route path="/tiffin" element={<UserDashboard />} />
           <Route path="/FeedBack" element={<FeedbackForm />} />
           <Route path="/getCloudeMess" element={<AllCloudeMess />} />

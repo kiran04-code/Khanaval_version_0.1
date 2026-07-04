@@ -5,6 +5,7 @@ import {
     Clock3,
     Heart,
     Languages,
+    Loader2,
     MapPin,
     Phone,
     Receipt,

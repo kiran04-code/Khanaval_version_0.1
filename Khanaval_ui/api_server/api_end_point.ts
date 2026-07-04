@@ -7,3 +7,9 @@ export const graphqlClient = new GraphQLClient(`${backend_url}/graphql`,{
         Authorization: isClient  ? `Bearer ${window.localStorage.getItem("_user_Token__")}` :""
     })
 })
+
+export const providerGraphqlClient = new GraphQLClient(`${backend_url}/graphql`, {
+    headers: () => ({
+        Authorization: isClient ? `Bearer ${window.localStorage.getItem("provider_token")}` : ""
+    })
+})

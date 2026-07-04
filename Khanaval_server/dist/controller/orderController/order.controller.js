@@ -12,6 +12,7 @@ export const PlaceOrder = async (req, res) => {
             return senderror(res, 401, "User not authenticated");
         }
         const { KitchenId, paymentMode, productList, AddressToDelivedProduct, } = req.body;
+        console.log(req.body);
         if (!KitchenId || !paymentMode || !Array.isArray(productList) || productList.length === 0) {
             return senderror(res, 400, "Kitchen, payment mode, and product list are required");
         }
@@ -76,11 +77,32 @@ export const PlaceOrder = async (req, res) => {
             })),
             AddressToDelivedProduct,
         });
+        console.log(placedOrder);
         return sendReponse(res, 201, "OrderPlace Successfull", placedOrder);
     }
     catch (error) {
         console.log(error);
         return senderror(res, 500, "internal Server Error");
+    }
+};
+export const getMyOrder = async (req, res) => {
+    try {
+        const OrderData = await Orders.find({ userId: req.params.id }).populate("KitchenId")
+            .populate("productList.productId");
+        return sendReponse(res, 200, "Order Data fetched", OrderData);
+    }
+    catch (error) {
+        return senderror(res, 500, "Error While Fetching Order Data");
+    }
+};
+export const getMyOrderForkitchen = async (req, res) => {
+    try {
+        const OrderData = await Orders.find({ KitchenId: req.params.id }).populate("userId")
+            .populate("productList.productId");
+        return sendReponse(res, 200, "Order Data fetched", OrderData);
+    }
+    catch (error) {
+        return senderror(res, 500, "Error While Fetching Order Data");
     }
 };
 //# sourceMappingURL=order.controller.js.map

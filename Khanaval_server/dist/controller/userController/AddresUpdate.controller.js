@@ -5,7 +5,6 @@ import { senderror, sendReponse } from "../../utils/Response.js";
 export const UpdateUserAdress = async (req, res) => {
     try {
         const userId = req.CloudeUser?.id;
-        console.log;
         if (!userId) {
             return senderror(res, 401, "User not authenticated");
         }
@@ -15,6 +14,10 @@ export const UpdateUserAdress = async (req, res) => {
         }
         if (typeof lat !== "number" || typeof lng !== "number") {
             return senderror(res, 400, "Valid latitude and longitude are required");
+        }
+        const existingUser = await user.findById(userId);
+        if (!existingUser) {
+            return senderror(res, 404, "User not found");
         }
         const createdAddress = await UserAdress.create({
             address,

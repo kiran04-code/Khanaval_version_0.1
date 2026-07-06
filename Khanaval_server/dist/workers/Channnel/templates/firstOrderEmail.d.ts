@@ -1,0 +1,2 @@
+export declare const firstOrderEmailTemplate: (userName: string, profileImage: string, kitchenImage: string, kitchenName: string, items: string, totalPrice: string, paymentMode: string, orderStatus: string, address: string, orderId: string, orderDate: Date) => string;
+//# sourceMappingURL=firstOrderEmail.d.ts.map

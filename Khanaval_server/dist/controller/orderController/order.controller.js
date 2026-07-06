@@ -5,6 +5,8 @@ import { user } from "../../model/mongo.js";
 import { CloudKitchen } from "../../model/MessAsCloude.js";
 import { KitchenMenu } from "../../model/KicthenMenu.js";
 import { senderror, sendReponse } from "../../utils/Response.js";
+import { KhanaavalEmailQueue } from "../../queue/EmailQueue.js";
+import { Backoffs } from "bullmq";
 export const PlaceOrder = async (req, res) => {
     try {
         const userId = req.CloudeUser?.id;
@@ -12,7 +14,6 @@ export const PlaceOrder = async (req, res) => {
             return senderror(res, 401, "User not authenticated");
         }
         const { KitchenId, paymentMode, productList, AddressToDelivedProduct, } = req.body;
-        console.log(req.body);
         if (!KitchenId || !paymentMode || !Array.isArray(productList) || productList.length === 0) {
             return senderror(res, 400, "Kitchen, payment mode, and product list are required");
         }
@@ -77,7 +78,17 @@ export const PlaceOrder = async (req, res) => {
             })),
             AddressToDelivedProduct,
         });
-        console.log(placedOrder);
+        await KhanaavalEmailQueue.add(// My-first-queue
+        "First-Order-Email", {
+            userId,
+            orderId: placedOrder._id,
+        }, {
+            attempts: 5,
+            backoff: {
+                type: "exponential",
+                delay: 120,
+            }
+        });
         return sendReponse(res, 201, "OrderPlace Successfull", placedOrder);
     }
     catch (error) {

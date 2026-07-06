@@ -3,6 +3,7 @@
   "scripts": {
     "build": "tsc -P .",
     "start": "node dist/index.js",
+    "worker": "node --watch dist/workers/worker.js",
     "dev": "tsc-watch --onSuccess \" npm start \" "
   },
   "devDependencies": {
@@ -11,6 +12,7 @@
     "@types/ioredis": "^4.28.10",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^25.0.3",
+    "@types/nodemailer": "^8.0.1",
     "expres": "^0.0.5",
     "express": "^5.2.1",
     "ioredis": "^5.9.1",
@@ -25,6 +27,7 @@
     "@types/multer": "^2.0.0",
     "@types/qrcode": "^1.5.6",
     "axios": "^1.13.2",
+    "bullmq": "^5.79.2",
     "cloudinary": "^2.9.0",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
@@ -34,6 +37,7 @@
     "mongodb": "^7.1.0",
     "mongoose": "^9.1.2",
     "multer": "^2.0.2",
+    "nodemailer": "^9.0.3",
     "qrcode": "^1.5.4",
     "razorpay": "^2.9.6"
   }

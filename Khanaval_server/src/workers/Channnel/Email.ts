@@ -22,7 +22,7 @@ export const sendEmail = async (UseEmail: string, imageUrl: string, UserName: st
         console.log("✅ SMTP Connected");
         const orderPlaceTime = new Date(order.orderPlaceTime);
         const info = await transport.sendMail({
-            from: `"Khanaaval" <support@khanaaval.com>`,
+            from: `"Khanaaval"<khanaaval.com@gmail.com>`,
             to: UseEmail,
             subject: "🎉 Your First Meal with Khanaaval!",
             html: firstOrderEmailTemplate(
@@ -39,7 +39,6 @@ export const sendEmail = async (UseEmail: string, imageUrl: string, UserName: st
                 orderPlaceTime
             )
         });
-        console.log(info)
         return info;
     } catch (error) {
         console.log(error)

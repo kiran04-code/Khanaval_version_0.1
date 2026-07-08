@@ -1,1 +1,1 @@
-{"version":3,"file":"Email.d.ts","sourceRoot":"","sources":["../../../src/workers/Channnel/Email.ts"],"names":[],"mappings":"AAGA,OAAO,eAAe,CAAA;AACtB,eAAO,MAAM,SAAS,GAAU,UAAU,MAAM,EAAE,UAAU,MAAM,EAAE,UAAU,MAAM,EAAE,OAAO,GAAG,0FAqC/F,CAAA"}
+{"version":3,"file":"Email.d.ts","sourceRoot":"","sources":["../../../src/workers/Channnel/Email.ts"],"names":[],"mappings":"AAIA,OAAO,eAAe,CAAA;AAItB,eAAO,MAAM,SAAS,GAAU,UAAU,MAAM,EAAE,UAAU,MAAM,EAAE,UAAU,MAAM,EAAE,OAAO,GAAG,qFAyC/F,CAAA"}

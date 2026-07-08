@@ -1,7 +1,11 @@
 import { createTransport } from "nodemailer"
+import dns from "dns";
 
 import { firstOrderEmailTemplate } from "./templates/firstOrderEmail.js";
 import "dotenv/config"
+const lookup = (hostname: string, options: any, callback: any) => {
+    dns.lookup(hostname, { family: 4 }, callback);
+};
 export const sendEmail = async (UseEmail: string, imageUrl: string, UserName: string, order: any) => {
     try {
         const transport = createTransport({
@@ -12,8 +16,12 @@ export const sendEmail = async (UseEmail: string, imageUrl: string, UserName: st
             auth: {
                 user: process.env.SMTP_USER!,
                 pass: process.env.SMTP_PASS!
-            }
-        })
+            },
+            tls: {
+                servername: "smtp.gmail.com",
+            },
+            lookup,
+        } as any)
         await transport.verify();
         console.log("✅ SMTP Connected");
         const orderPlaceTime = new Date(order.orderPlaceTime);

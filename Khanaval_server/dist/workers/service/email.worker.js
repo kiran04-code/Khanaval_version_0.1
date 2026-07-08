@@ -7,7 +7,6 @@ import { CloudKitchen } from "../../model/MessAsCloude.js";
 import { sendEmail } from "../Channnel/Email.js";
 export const emailWorker = new Worker("FirstEmailonFirstOrder", async (job) => {
     try {
-        console.log(job.data);
         const { userId, orderId } = job.data;
         const userData = await user.findById(userId);
         const OrderData = await Orders.findById(orderId).populate("KitchenId");

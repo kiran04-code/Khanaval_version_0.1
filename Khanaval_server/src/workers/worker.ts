@@ -12,7 +12,8 @@ const start = async (url: string) => {
     }
 }
 start(process.env.MONGODB_URI!)
-
+console.log(process.env.SMTP_USER);
+console.log(process.env.SMTP_PORT);
 emailWorker.on("completed", (Job) => {
     console.log("Prosseing email job is completed", Job.id, Job.name)
 })

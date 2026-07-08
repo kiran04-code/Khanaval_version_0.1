@@ -6,8 +6,9 @@ export const sendEmail = async (UseEmail: string, imageUrl: string, UserName: st
     try {
         const transport = createTransport({
             host: "smtp.gmail.com",
-            port: Number(process.env.SMTP_PORT),
-            secure: true,
+            port: 587,
+            secure: false,
+            requireTLS: true,
             auth: {
                 user: process.env.SMTP_USER!,
                 pass: process.env.SMTP_PASS!

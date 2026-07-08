@@ -12,6 +12,8 @@ export const sendEmail = async (UseEmail, imageUrl, UserName, order) => {
                 pass: process.env.SMTP_PASS
             }
         });
+        await transport.verify();
+        console.log("✅ SMTP Connected");
         const orderPlaceTime = new Date(order.orderPlaceTime);
         const info = await transport.sendMail({
             from: `"Khanaaval" <support@khanaaval.com>`,

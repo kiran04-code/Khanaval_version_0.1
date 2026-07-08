@@ -9,19 +9,15 @@ const lookup = (hostname: string, options: any, callback: any) => {
 export const sendEmail = async (UseEmail: string, imageUrl: string, UserName: string, order: any) => {
     try {
         const transport = createTransport({
-            host: "smtp.gmail.com",
-            port: 587,
+            host: process.env.SMTP_HOST,
+            port: Number(process.env.SMTP_PORT),
             secure: false,
-            requireTLS: true,
             auth: {
-                user: process.env.SMTP_USER!,
-                pass: process.env.SMTP_PASS!
+                user: process.env.SMTP_USER,
+                pass: process.env.SMTP_PASS,
             },
-            tls: {
-                servername: "smtp.gmail.com",
-            },
-            lookup,
-        } as any)
+
+        })
         await transport.verify();
         console.log("✅ SMTP Connected");
         const orderPlaceTime = new Date(order.orderPlaceTime);
@@ -43,6 +39,7 @@ export const sendEmail = async (UseEmail: string, imageUrl: string, UserName: st
                 orderPlaceTime
             )
         });
+        console.log(info)
         return info;
     } catch (error) {
         console.log(error)

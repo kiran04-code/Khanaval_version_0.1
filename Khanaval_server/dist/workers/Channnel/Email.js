@@ -8,18 +8,13 @@ const lookup = (hostname, options, callback) => {
 export const sendEmail = async (UseEmail, imageUrl, UserName, order) => {
     try {
         const transport = createTransport({
-            host: "smtp.gmail.com",
-            port: 587,
+            host: process.env.SMTP_HOST,
+            port: Number(process.env.SMTP_PORT),
             secure: false,
-            requireTLS: true,
             auth: {
                 user: process.env.SMTP_USER,
-                pass: process.env.SMTP_PASS
+                pass: process.env.SMTP_PASS,
             },
-            tls: {
-                servername: "smtp.gmail.com",
-            },
-            lookup,
         });
         await transport.verify();
         console.log("✅ SMTP Connected");
@@ -30,6 +25,7 @@ export const sendEmail = async (UseEmail, imageUrl, UserName, order) => {
             subject: "🎉 Your First Meal with Khanaaval!",
             html: firstOrderEmailTemplate(UserName, imageUrl, order.KitchenId.CloudKitchenimage, order.KitchenId.CloudKitchenName, order.AllIteam, order.totalPrice, order.paymentMode, order.OrderStatus, order.AddressToDelivedProduct, order._id, orderPlaceTime)
         });
+        console.log(info);
         return info;
     }
     catch (error) {

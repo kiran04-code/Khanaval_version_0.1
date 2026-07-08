@@ -12,6 +12,8 @@ export const sendEmail = async (UseEmail, imageUrl, UserName, order) => {
                 user: process.env.SMTP_USER,
                 pass: process.env.SMTP_PASS,
             },
+            logger: true,
+            debug: true,
         });
         await transport.verify();
         console.log("✅ SMTP Connected");

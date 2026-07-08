@@ -2,9 +2,6 @@ import { createTransport } from "nodemailer";
 import dns from "dns";
 import { firstOrderEmailTemplate } from "./templates/firstOrderEmail.js";
 import "dotenv/config";
-const lookup = (hostname, options, callback) => {
-    dns.lookup(hostname, { family: 4 }, callback);
-};
 export const sendEmail = async (UseEmail, imageUrl, UserName, order) => {
     try {
         const transport = createTransport({

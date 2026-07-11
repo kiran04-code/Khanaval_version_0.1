@@ -21,7 +21,7 @@ const Query = {
         if (!ctx.user?._id) {
             throw Error("user Not Authenticated");
         }
-        const userdata = await ProviderService.findcurrentUser(ctx.user._id);
+        const userdata = await ProviderService.findcurrentUser(ctx.user?._id);
         return userdata;
     },
     getproviderMessData: async (parent, {}, ctx) => {
@@ -33,7 +33,7 @@ const Query = {
             throw Error("user Not Resgiter There Mess");
         }
         const mess = await Mess.findOne({
-            providerId: ctx.user._id,
+            providerId: ctx.user?._id,
         }).populate([
             {
                 path: "myAllSubscribers",

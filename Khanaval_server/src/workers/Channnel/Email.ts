@@ -15,7 +15,7 @@ export const sendEmail = async (UseEmail: string, imageUrl: string, UserName: st
                 pass: process.env.SMTP_PASS,
             },
             logger: true,
-  debug: true,
+            debug: true,
 
         })
         await transport.verify();

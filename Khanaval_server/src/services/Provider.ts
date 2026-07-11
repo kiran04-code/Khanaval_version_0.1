@@ -85,15 +85,15 @@ class ProviderService {
                     message: "Provider not found. Kindly Create Account."
                 }
             }
-            const OTPSendSucess = await SENTOTPROVIDERS({ number: number, otp: GenratedProviderOTP })
             await redisclient.set(redisKey, GenratedProviderOTP)
+            const OTPSendSucess = await SENTOTPROVIDERS({ number: number, otp: GenratedProviderOTP })
+            console.log(OTPSendSucess)
             if (OTPSendSucess) {
                 return {
                     success: OTPSendSucess,
                     message: "OTP Send Sucessfully"
                 }
             }
-            console.log("OTP SENDED")
             return {
                 success: OTPSendSucess,
                 message: "number NOT VALID"

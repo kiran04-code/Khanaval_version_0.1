@@ -16,11 +16,12 @@ export function Navbar() {
   const queryClient = useQueryClient();
   
   const token = localStorage.getItem("_user_Token__");
+  const token2 = localStorage.getItem("provider_token");
   const { user } = useCurrentUser();
   const { Providerdata } = UserProviderdata();
   const { kitchenprovider } = KitchenProviderdata();
 
-  const isLoggedIn = Boolean(token);
+  const isLoggedIn = Boolean(token) || Boolean(token2);
   const isProvider = Boolean(Providerdata);
 
   useEffect(() => {

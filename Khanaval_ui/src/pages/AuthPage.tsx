@@ -252,7 +252,7 @@ export default function HybridAuthPage() {
         const { data } = await axioseInstace.post("/api/cloudkitchens/send-SignUp-otp", {
           phoneNumber: providerNumber
         })
-        
+
         if (data.success) {
           toast({ title: data.message, variant: "default" })
         }
@@ -286,9 +286,9 @@ export default function HybridAuthPage() {
         }
         setIsLoading(true)
         localStorage.setItem("client_token", data.responseData.token)
-         queryclinet.invalidateQueries({
-            queryKey: ["KitchenProvider-data"]
-          })
+        queryclinet.invalidateQueries({
+          queryKey: ["KitchenProvider-data"]
+        })
         navigate("/");
       } catch (error) {
         toast({
@@ -316,8 +316,8 @@ export default function HybridAuthPage() {
         setIsLoading(true)
         localStorage.setItem("client_token", data.responseData.token)
         queryclinet.invalidateQueries({
-            queryKey: ["KitchenProvider-data"]
-          })
+          queryKey: ["KitchenProvider-data"]
+        })
         navigate("/");
       } catch (error) {
         toast({
@@ -352,8 +352,8 @@ export default function HybridAuthPage() {
               setStep(1);
             }}
             className={`flex-1 flex items-center justify-center gap-2 px-3 py-3 rounded-xl text-sm font-bold transition-all duration-200 ${role === "user"
-                ? "bg-white text-orange-600 shadow-md"
-                : "text-slate-500 hover:text-slate-700"
+              ? "bg-white text-orange-600 shadow-md"
+              : "text-slate-500 hover:text-slate-700"
               }`}
           >
             <User className="w-4 h-4 shrink-0" />
@@ -366,8 +366,8 @@ export default function HybridAuthPage() {
               setProviderStep(1);
             }}
             className={`flex-1 flex items-center justify-center gap-2 px-3 py-3 rounded-xl text-sm font-bold transition-all duration-200 ${role === "provider"
-                ? "bg-white text-slate-900 shadow-md"
-                : "text-slate-500 hover:text-slate-700"
+              ? "bg-white text-slate-900 shadow-md"
+              : "text-slate-500 hover:text-slate-700"
               }`}
           >
             <Building2 className="w-4 h-4 shrink-0" />
@@ -380,8 +380,8 @@ export default function HybridAuthPage() {
               setProviderStep(1);
             }}
             className={`flex-1 flex items-center justify-center gap-2 px-3 py-3 rounded-xl text-sm font-bold transition-all duration-200 ${role === "Kitchen"
-                ? "bg-white text-slate-900 shadow-md"
-                : "text-slate-500 hover:text-slate-700"
+              ? "bg-white text-slate-900 shadow-md"
+              : "text-slate-500 hover:text-slate-700"
               }`}
           >
             <Cloud className="w-4 h-4 shrink-0" />

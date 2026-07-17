@@ -79,21 +79,21 @@ export declare const resolvers: {
             MessQrcode: string | null | undefined;
             Menu: mongoose.Types.DocumentArray<{
                 createdAt: NativeDate;
+                imageUrl?: string | null;
                 types?: "breakfast" | "dinner" | null;
                 menuText?: string | null;
-                imageUrl?: string | null;
                 menuDate?: NativeDate | null;
             }, mongoose.Types.Subdocument<mongoose.mongo.BSON.ObjectId, unknown, {
                 createdAt: NativeDate;
+                imageUrl?: string | null;
                 types?: "breakfast" | "dinner" | null;
                 menuText?: string | null;
-                imageUrl?: string | null;
                 menuDate?: NativeDate | null;
             }> & {
                 createdAt: NativeDate;
+                imageUrl?: string | null;
                 types?: "breakfast" | "dinner" | null;
                 menuText?: string | null;
-                imageUrl?: string | null;
                 menuDate?: NativeDate | null;
             }>;
             myAllSubscribers: mongoose.Types.ObjectId[];

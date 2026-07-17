@@ -124,7 +124,10 @@ export const GetAllCloudeKitchne = async (req, res) => {
         const getAllCloudeMess = await CloudKitchen.find({})
             .populate("KitchenOwnerId")
             .populate("MenuId");
-        await redisclient.setex(KEYFORMESDATA, 60 * 60, JSON.stringify(getAllCloudeMess));
+        // await redisclient.set(
+        //     KEYFORMESDATA,
+        //     JSON.stringify(getAllCloudeMess),
+        // );
         return sendReponse(res, 201, "Menu Create Suucesfully", getAllCloudeMess);
     }
     catch (error) {

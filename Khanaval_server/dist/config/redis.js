@@ -1,5 +1,5 @@
 import { Redis } from "ioredis";
-export const redisclient = new Redis("rediss://default:AXRNAAIncDI2NmRiOWIwNDdjYjg0ZjNjYTQwMDk2ZTVjNDEzODRmOHAyMjk3NzM@pure-gecko-29773.upstash.io:6379", {
+export const redisclient = new Redis("redis://default:gQAAAAAAAqAYAAIgcDJkZjM1NDJhMjBhNDg0Y2U3YTJkZThlZDdlOGMzMWUxZQ@talented-anchovy-172056.upstash.io:6379", {
     enableReadyCheck: false,
     maxRetriesPerRequest: null,
 });

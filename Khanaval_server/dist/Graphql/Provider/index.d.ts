@@ -79,21 +79,21 @@ export declare const Provider: {
                 MessQrcode: string | null | undefined;
                 Menu: import("mongoose").Types.DocumentArray<{
                     createdAt: NativeDate;
+                    imageUrl?: string | null;
                     types?: "breakfast" | "dinner" | null;
                     menuText?: string | null;
-                    imageUrl?: string | null;
                     menuDate?: NativeDate | null;
                 }, import("mongoose").Types.Subdocument<import("bson").ObjectId, unknown, {
                     createdAt: NativeDate;
+                    imageUrl?: string | null;
                     types?: "breakfast" | "dinner" | null;
                     menuText?: string | null;
-                    imageUrl?: string | null;
                     menuDate?: NativeDate | null;
                 }> & {
                     createdAt: NativeDate;
+                    imageUrl?: string | null;
                     types?: "breakfast" | "dinner" | null;
                     menuText?: string | null;
-                    imageUrl?: string | null;
                     menuDate?: NativeDate | null;
                 }>;
                 myAllSubscribers: import("mongoose").Types.ObjectId[];
